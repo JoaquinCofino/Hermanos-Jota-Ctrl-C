@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contacto — Hermanos Jota</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/contacto.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="contenedor">
+      <a href="index.html">
+        <img class="logo" src="assets/img/brand/logo.svg" alt="Hermanos Jota" />
+      </a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="menu-principal" aria-label="Abrir menú">☰</button>
+      <nav>
+        <ul class="site-nav" id="menu-principal">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="productos.html">Catálogo</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+          <li>
+            <a href="#" aria-label="Carrito">
+              Carrito<span class="carrito-contador" data-carrito-contador>0</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <h1>Contacto</h1>
+    <form class="form-contacto" data-form-contacto novalidate>
+      <label for="nombre">Nombre</label>
+      <input type="text" id="nombre" name="nombre" required />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="mensaje">Mensaje</label>
+      <textarea id="mensaje" name="mensaje" rows="5" required></textarea>
+
+      <button type="submit">Enviar mensaje</button>
+      <p class="mensaje-formulario" data-mensaje-formulario hidden></p>
+    </form>
+  </main>
+
+  <footer class="site-footer">
+    <div class="contenedor">
+      <p>&copy; 2026 Hermanos Jota. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="js/contact.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

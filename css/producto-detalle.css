@@ -1,0 +1,48 @@
+/* Mobile-first: la base es una sola columna, apilada */
+.detalle-producto {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacio-md);
+  padding-block: var(--espacio-md);
+}
+
+.detalle-producto__img {
+  background: var(--color-alabastro);
+  border-radius: var(--radio-borde);
+}
+
+.detalle-producto__precio {
+  font-size: 1.4rem;
+  color: var(--color-siena);
+  font-weight: 700;
+}
+
+[data-boton-agregar] {
+  background: var(--color-siena);
+  color: var(--color-blanco);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--radio-borde);
+  cursor: pointer;
+  font-family: var(--font-primaria);
+  font-weight: 600;
+  width: 100%;
+}
+
+.mensaje-exito {
+  color: var(--color-verde-salvia);
+  font-weight: 600;
+}
+
+/* A partir de tablet en adelante, dos columnas lado a lado */
+@media (min-width: 700px) {
+  .detalle-producto {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--espacio-lg);
+    padding-block: var(--espacio-lg);
+  }
+
+  [data-boton-agregar] {
+    width: auto;
+  }
+}

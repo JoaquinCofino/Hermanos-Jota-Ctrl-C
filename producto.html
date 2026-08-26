@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Producto — Hermanos Jota</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/productos.css" />
+  <link rel="stylesheet" href="css/producto-detalle.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="contenedor">
+      <a href="index.html">
+        <img class="logo" src="assets/img/brand/logo.svg" alt="Hermanos Jota" />
+      </a>
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="menu-principal" aria-label="Abrir menú">☰</button>
+      <nav>
+        <ul class="site-nav" id="menu-principal">
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="productos.html">Catálogo</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+          <li>
+            <a href="#" aria-label="Carrito">
+              Carrito<span class="carrito-contador" data-carrito-contador>0</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="contenedor detalle-producto" data-detalle-producto>
+    <p class="estado-carga">Cargando producto…</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="contenedor">
+      <p>&copy; 2026 Hermanos Jota. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="js/data/products-data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/product-detail.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

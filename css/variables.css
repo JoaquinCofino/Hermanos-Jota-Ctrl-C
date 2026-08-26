@@ -1,0 +1,29 @@
+/**
+ * Tokens de marca — Hermanos Jota
+ * Extraídos del Manual de Marca (paleta de colores y tipografía).
+ */
+:root {
+  /* Paleta */
+  --color-siena: #a0522d; /* Color principal, títulos */
+  --color-verde-salvia: #87a96b; /* Acento secundario, sustentabilidad */
+  --color-alabastro: #f5e6d3; /* Fondo principal */
+  --color-vara-oro: #d4a437; /* Detalles premium */
+  --color-rosa: #c47a6d; /* Acentos suaves */
+
+  --color-texto: #2b2118;
+  --color-texto-suave: #6b5d4f;
+  --color-borde: #e4d5c0;
+  --color-blanco: #ffffff;
+
+  /* Tipografía */
+  --font-primaria: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-secundaria: "Playfair Display", Georgia, serif;
+
+  /* Espaciado */
+  --espacio-xs: 0.5rem;
+  --espacio-sm: 1rem;
+  --espacio-md: 2rem;
+  --espacio-lg: 4rem;
+
+  --radio-borde: 4px;
+}
