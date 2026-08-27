@@ -6,7 +6,7 @@ Proyecto final de Full Stack Developer — ITBA Educación Ejecutiva.
 
 - Joaquin Cofino - JoaquinCofino
 - Lorenzo Fares — @lorenzofares
-- Nombre Apellido — @usuario-github
+- Fausto Tica — @faustotica
 - Nombre Apellido — @usuario-github
 - Nombre Apellido — @usuario-github
 
