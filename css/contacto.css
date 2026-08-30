@@ -15,8 +15,8 @@
 
 .columna-formulario h2 {
   margin-bottom: 1.5rem;
-  font-family: 'Playfair Display', Georgia, serif;
-  color: #A0522D; /* Siena Tostado */
+  font-family: var(--font-secundaria);
+  color: var(--color-siena);
 }
 
 .form-contacto {
@@ -34,7 +34,7 @@
 
 .form-grupo label {
   font-weight: 500;
-  color: #333;
+  color: var(--color-texto);
 }
 
 .form-grupo input,
@@ -43,9 +43,9 @@
   width: 100%;
   box-sizing: border-box;
   padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-family: inherit;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-borde);
+  font-family: var(--font-primaria);
   font-size: 1rem;
 }
 
@@ -57,7 +57,7 @@
 .form-grupo input:focus,
 .form-grupo textarea:focus {
   outline: none;
-  border-color: #A0522D;
+  border-color: var(--color-siena);
   box-shadow: 0 0 0 2px rgba(160, 82, 45, 0.2);
 }
 
@@ -77,8 +77,8 @@
 }
 
 .btn-enviar {
-  background-color: #A0522D;
-  color: #ffffff;
+  background-color: var(--color-siena);
+  color: var(--color-blanco);
   border: none;
   font-weight: 500;
   text-transform: uppercase;
@@ -94,9 +94,9 @@
 .feedback-mensaje {
   margin-top: 1.5rem;
   padding: 1rem;
-  background-color: #87A96B; /* Verde Salvia */
-  color: #ffffff;
-  border-radius: 4px;
+  background-color: var(--color-verde-salvia);
+  color: var(--color-blanco);
+  border-radius: var(--radio-borde);
   text-align: center;
   font-weight: 500;
 }
@@ -129,15 +129,15 @@
 }
 
 .datos-contacto {
-  background-color: #F5E6D3; /* Alabastro Cálido */
+  background-color: var(--color-alabastro);
   padding: 1.5rem;
-  border-radius: 4px;
-  color: #333;
+  border-radius: var(--radio-borde);
+  color: var(--color-texto);
 }
 
 .datos-contacto h3 {
-  font-family: 'Playfair Display', Georgia, serif;
-  color: #A0522D;
+  font-family: var(--font-secundaria);
+  color: var(--color-siena);
   margin-bottom: 0.5rem;
 }
 
@@ -153,7 +153,7 @@
 .horarios h4 {
   margin-bottom: 0.5rem;
   font-size: 1rem;
-  color: #A0522D;
+  color: var(--color-siena);
 }
 
 .horarios ul {
@@ -183,17 +183,17 @@
 .tabla-contacto th {
   font-weight: 500;
   width: 35%;
-  color: #A0522D;
+  color: var(--color-siena);
 }
 
 .tabla-contacto a {
-  color: #333;
+  color: var(--color-texto);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .tabla-contacto a:hover {
-  color: #A0522D;
+  color: var(--color-siena);
   text-decoration: underline;
 }
 
