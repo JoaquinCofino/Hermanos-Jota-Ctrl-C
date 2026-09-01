@@ -8,7 +8,7 @@ Proyecto final de Full Stack Developer — ITBA Educación Ejecutiva.
 - Lorenzo Fares — @lorenzofares
 - Fausto Tica — @faustotica
 - Juan Cruz Romero Huisi — @juanrohu
-- Nombre Apellido — @usuario-github
+- Gonzalo Daniele — @GonzaloDaniele
 
 ## Descripción de la funcionalidad
 
