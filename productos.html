@@ -1,54 +1,62 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Catálogo — Hermanos Jota</title>
-  <link rel="stylesheet" href="css/variables.css" />
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/productos.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo de Productos | Hermanos Jota</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/catalogo.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:wght@400;700&display=swap"
+    rel="stylesheet">
 </head>
+
 <body>
+
   <header class="site-header">
     <div class="contenedor">
       <a href="index.html">
-        <img class="logo" src="assets/img/brand/logo.svg" alt="Hermanos Jota" />
+        <img src="assets/img/brand/logo.svg" alt="Hermanos Jota" class="logo">
       </a>
-      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="menu-principal" aria-label="Abrir menú">☰</button>
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">☰</button>
       <nav>
-        <ul class="site-nav" id="menu-principal">
+        <ul class="site-nav" id="siteNav">
           <li><a href="index.html">Inicio</a></li>
           <li><a href="productos.html">Catálogo</a></li>
           <li><a href="contacto.html">Contacto</a></li>
-          <li>
-            <a href="#" aria-label="Carrito">
-              Carrito<span class="carrito-contador" data-carrito-contador>0</span>
-            </a>
-          </li>
+          <li><a href="#">Carrito <span class="carrito-contador">0</span></a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <main class="contenedor">
-    <h1>Catálogo</h1>
-    <div class="buscador">
-      <input type="search" data-buscador placeholder="Buscar por nombre o categoría…" />
-    </div>
-    <div class="grilla-productos" data-grilla-productos>
-      <p class="estado-carga">Cargando catálogo…</p>
-    </div>
+  <main class="contenedor seccion-catalogo">
+    <header class="catalogo-encabezado">
+      <h1>Catálogo de Colección</h1>
+      <p class="subtitulo-marca">Redescubrí el arte de vivir con piezas pensadas para perdurar.</p>
+
+      <div class="barra-busqueda-contenedor">
+        <input type="search" id="buscador" class="input-busqueda" placeholder="Buscar por nombre, material o estilo..."
+          aria-label="Buscar productos">
+      </div>
+    </header>
+
+    <section class="grid-productos" id="gridProductos" aria-live="polite">
+      <div class="estado-carga">Cargando colección de productos...</div>
+    </section>
   </main>
 
   <footer class="site-footer">
     <div class="contenedor">
-      <p>&copy; 2026 Hermanos Jota. Todos los derechos reservados.</p>
+      <p>© 2026 Hermanos Jota. Todos los derechos reservados. Redescubriendo el arte de vivir.</p>
     </div>
   </footer>
 
-  <script src="js/data/products-data.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/catalog.js"></script>
   <script src="js/main.js"></script>
+  <script src="js/catalog.js"></script>
 </body>
+
 </html>
