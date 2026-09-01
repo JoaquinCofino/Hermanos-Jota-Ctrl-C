@@ -10,6 +10,14 @@ body {
   color: var(--color-texto);
   background-color: var(--color-blanco);
   line-height: 1.6;
+  /* Layout para mantener el footer siempre al fondo */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
 }
 
 h1,
@@ -51,7 +59,7 @@ img {
 }
 
 .site-header .logo {
-  height: 32px;
+  height: 120px;
 }
 
 /* Base mobile: botón hamburguesa visible, menú oculto por defecto */
@@ -91,7 +99,7 @@ img {
 /* A partir de tablet: menú horizontal siempre visible, sin hamburguesa */
 @media (min-width: 700px) {
   .site-header .logo {
-    height: 40px;
+    height: 120px;
   }
 
   .nav-toggle {
