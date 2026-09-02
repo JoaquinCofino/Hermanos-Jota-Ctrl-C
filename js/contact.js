@@ -83,27 +83,4 @@ document.addEventListener('DOMContentLoaded', () => {
         return regex.test(email);
     }
 
-    // 2. Lógica del Carrito Simulado (Contador)
-    const contadorElemento = document.querySelector('[data-carrito-contador]');
-    
-    if (contadorElemento) {
-        // Leemos el valor del localStorage o inicializamos en 0
-        const carrito = JSON.parse(localStorage.getItem('hj_carrito')) || [];
-        const cantidadEnCarrito = carrito.length;
-        
-        // Actualizamos la vista inicial
-        actualizarContador(cantidadEnCarrito);
-
-
-    }
-
-    /**
-     * Actualiza el texto del contador del carrito
-     * @param {number} cantidad 
-     */
-    function actualizarContador(cantidad) {
-        if (contadorElemento) {
-            contadorElemento.textContent = cantidad;
-        }
-    }
 });
