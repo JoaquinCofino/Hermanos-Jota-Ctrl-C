@@ -1,0 +1,119 @@
+.fila-carrito {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  grid-template-areas:
+    "img info quitar"
+    "cantidad cantidad subtotal";
+  gap: 0.5rem var(--espacio-sm);
+  align-items: center;
+  padding: var(--espacio-sm) 0;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.fila-carrito__img {
+  grid-area: img;
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  background: var(--color-alabastro);
+  border-radius: var(--radio-borde);
+}
+
+.fila-carrito__info {
+  grid-area: info;
+}
+
+.fila-carrito__info h3 {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.fila-carrito__info .categoria {
+  font-size: 0.75rem;
+  color: var(--color-verde-salvia);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fila-carrito__cantidad {
+  grid-area: cantidad;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fila-carrito__cantidad button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-borde);
+  background: var(--color-blanco);
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.fila-carrito__subtotal {
+  grid-area: subtotal;
+  font-weight: 700;
+  color: var(--color-siena);
+  margin: 0;
+  justify-self: end;
+}
+
+.fila-carrito__quitar {
+  grid-area: quitar;
+  background: none;
+  border: none;
+  color: var(--color-rosa);
+  cursor: pointer;
+  font-size: 1rem;
+  justify-self: end;
+}
+
+.resumen-carrito {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--espacio-md);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.acciones-carrito {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+  margin-top: var(--espacio-md);
+}
+
+/* Botones propios de esta página (mismo estilo visual que [data-boton-agregar]) */
+.boton-carrito {
+  display: inline-block;
+  background: var(--color-siena);
+  color: var(--color-blanco);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: var(--radio-borde);
+  cursor: pointer;
+  font-family: var(--font-primaria);
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+}
+
+@media (min-width: 700px) {
+  .fila-carrito {
+    grid-template-columns: 64px 2fr 1fr 1fr auto;
+    grid-template-areas: "img info cantidad subtotal quitar";
+  }
+
+  .fila-carrito__cantidad,
+  .fila-carrito__subtotal {
+    justify-self: center;
+  }
+
+  .acciones-carrito {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

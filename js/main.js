@@ -23,6 +23,22 @@ function agregarAlCarrito(idProducto) {
   guardarCarrito(carrito);
 }
 
+function quitarUnidadDelCarrito(idProducto) {
+  const carrito = leerCarrito();
+  const indice = carrito.indexOf(idProducto);
+  if (indice !== -1) carrito.splice(indice, 1);
+  guardarCarrito(carrito);
+}
+
+function quitarProductoDelCarrito(idProducto) {
+  const carrito = leerCarrito().filter((id) => id !== idProducto);
+  guardarCarrito(carrito);
+}
+
+function vaciarCarrito() {
+  guardarCarrito([]);
+}
+
 function actualizarContadorCarrito() {
   const contador = document.querySelector("[data-carrito-contador]");
   if (contador) {

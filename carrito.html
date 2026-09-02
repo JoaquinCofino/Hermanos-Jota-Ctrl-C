@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Producto — Hermanos Jota</title>
+  <title>Carrito — Hermanos Jota</title>
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/productos.css" />
-  <link rel="stylesheet" href="css/producto-detalle.css" />
+  <link rel="stylesheet" href="css/carrito.css" />
 </head>
 <body>
   <header class="site-header">
@@ -31,8 +30,21 @@
     </div>
   </header>
 
-  <main class="contenedor detalle-producto" data-detalle-producto>
-    <p class="estado-carga">Cargando producto…</p>
+  <main class="contenedor">
+    <h1>Tu carrito</h1>
+    <div data-carrito-lista>
+      <p class="estado-carga">Cargando carrito…</p>
+    </div>
+
+    <div class="resumen-carrito">
+      <span>Total</span>
+      <span data-carrito-total>$ 0</span>
+    </div>
+
+    <div class="acciones-carrito">
+      <button type="button" class="boton-carrito" data-vaciar-carrito hidden>Vaciar carrito</button>
+      <a href="productos.html" class="boton-carrito">Seguir comprando</a>
+    </div>
   </main>
 
   <footer class="site-footer">
@@ -43,7 +55,6 @@
 
   <script src="js/data/products-data.js"></script>
   <script src="js/api.js"></script>
-  <script src="js/product-detail.js"></script>
   <script src="js/main.js"></script>
-</body>
+  <script src="js/cart.js"></script>
 </html>
