@@ -1,0 +1,131 @@
+.hero {
+width: 100%;
+background: var(--color-alabastro);
+margin: var(--espacio-md) 0 var(--espacio-lg);
+}
+
+.hero .contenedor {
+width: min(1100px, 92%);
+min-height: 220px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+padding: var(--espacio-md) 0;
+margin-inline: auto;
+}
+
+.hero h1 {
+margin-bottom: var(--espacio-sm);
+max-width: 750px;
+}
+
+.hero p {
+max-width: 850px;
+margin: 0;
+color: var(--color-texto-suave);
+}
+
+.catalogo-completo {
+display: block;
+width: fit-content;
+margin-left: auto;
+margin-bottom: var(--espacio-sm);
+
+color: var(--color-siena);
+text-decoration: none;
+font-weight: 500;
+letter-spacing: 0.03em;
+}
+
+.catalogo-completo:hover {
+text-decoration: underline;
+}
+
+.site-footer {
+background: var(--color-alabastro);
+padding: var(--espacio-md) 0 var(--espacio-sm);
+margin-top: var(--espacio-md);
+font-size: 0.85rem;
+color: var(--color-texto-suave);
+}
+
+.footer-info {
+display: flex;
+justify-content: space-between;
+gap: var(--espacio-lg);
+}
+
+.footer-showroom {
+text-align: left;
+}
+
+.footer-contacto {
+text-align: right;
+}
+
+.footer-info h3 {
+margin: 0 0 var(--espacio-xs);
+font-family: var(--font-secundaria);
+font-size: 0.9rem;
+color: var(--color-siena);
+}
+
+.footer-info p {
+margin: 0 0 var(--espacio-xs);
+line-height: 1.4;
+}
+
+.footer-contacto a {
+color: inherit;
+text-decoration: none;
+}
+
+.footer-contacto a:hover {
+color: var(--color-siena);
+text-decoration: underline;
+}
+
+.footer-bottom {
+margin-top: var(--espacio-sm);
+padding-top: var(--espacio-xs);
+border-top: 1px solid var(--color-borde);
+font-size: 0.75rem;
+text-align: center;
+}
+
+.footer-bottom p {
+margin: 0;
+
+}
+
+@media (max-width: 699px) {
+.hero {
+margin: var(--espacio-sm) 0 var(--espacio-md);
+}
+
+.hero .contenedor {
+min-height: 200px;
+padding: var(--espacio-md) 0;
+}
+
+.hero h1 {
+font-size: 1.7rem;
+}
+
+.hero p {
+font-size: 0.95rem;
+line-height: 1.5;
+}
+.footer-info {
+flex-direction: column;
+gap: var(--espacio-sm);
+}
+
+.footer-contacto {
+text-align: left;
+}
+
+.site-footer {
+padding: var(--espacio-sm) 0;
+}
+}
