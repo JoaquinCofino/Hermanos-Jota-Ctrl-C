@@ -1,41 +1,86 @@
 /**
- * Validación del lado del cliente + mensaje de éxito vía DOM (sin backend real)
+ * Lógica de interacción para la página de Contacto
  */
-function validarEmail(valor) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
-}
 
-function inicializarFormularioContacto() {
-  const formulario = document.querySelector("[data-form-contacto]");
-  if (!formulario) return;
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Lógica del formulario de contacto
+    const formContacto = document.getElementById('form-contacto');
+    const feedbackMensaje = document.getElementById('feedback-mensaje');
 
-  const mensaje = formulario.querySelector("[data-mensaje-formulario]");
+    if (formContacto) {
+        formContacto.addEventListener('submit', function (e) {
+            e.preventDefault(); // Evitamos el envío por defecto
 
-  formulario.addEventListener("submit", (evento) => {
-    evento.preventDefault();
+            // Referencias a los campos
+            const inputNombre = document.getElementById('nombre');
+            const inputEmail = document.getElementById('email');
+            const inputMensaje = document.getElementById('mensaje');
 
-    const nombre = formulario.nombre.value.trim();
-    const email = formulario.email.value.trim();
-    const texto = formulario.mensaje.value.trim();
-    const errores = [];
+            let isValid = true;
 
-    if (nombre.length < 2) errores.push("El nombre es obligatorio.");
-    if (!validarEmail(email)) errores.push("Ingresá un email válido.");
-    if (texto.length < 10) errores.push("El mensaje debe tener al menos 10 caracteres.");
+            // Validación de Nombre
+            if (inputNombre.value.trim() === '') {
+                marcarError(inputNombre, true);
+                isValid = false;
+            } else {
+                marcarError(inputNombre, false);
+            }
 
-    if (errores.length > 0) {
-      mensaje.textContent = errores.join(" ");
-      mensaje.className = "mensaje-formulario mensaje-formulario--error";
-      mensaje.hidden = false;
-      return;
+            // Validación de Email
+            if (inputEmail.value.trim() === '' || !validarEmail(inputEmail.value.trim())) {
+                marcarError(inputEmail, true);
+                isValid = false;
+            } else {
+                marcarError(inputEmail, false);
+            }
+
+            // Validación de Mensaje
+            if (inputMensaje.value.trim() === '') {
+                marcarError(inputMensaje, true);
+                isValid = false;
+            } else {
+                marcarError(inputMensaje, false);
+            }
+
+            // Si todo es válido, mostramos feedback y limpiamos el form
+            if (isValid) {
+                // Ocultar formulario y mostrar mensaje de éxito
+                formContacto.style.display = 'none';
+                feedbackMensaje.hidden = false;
+            }
+        });
+
+        // Limpiar errores al escribir
+        const inputs = formContacto.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                marcarError(input, false);
+            });
+        });
     }
 
-    // Sin backend: se simula el envío exitoso actualizando el DOM.
-    mensaje.textContent = `¡Gracias ${nombre}! Recibimos tu mensaje y te responderemos a la brevedad.`;
-    mensaje.className = "mensaje-formulario mensaje-formulario--exito";
-    mensaje.hidden = false;
-    formulario.reset();
-  });
-}
+    /**
+     * Función auxiliar para marcar/desmarcar error visual en un campo
+     * @param {HTMLElement} elemento - Input o Textarea
+     * @param {boolean} conError - Si tiene error o no
+     */
+    function marcarError(elemento, conError) {
+        const grupo = elemento.closest('.form-grupo');
+        if (conError) {
+            grupo.classList.add('has-error');
+        } else {
+            grupo.classList.remove('has-error');
+        }
+    }
 
-document.addEventListener("DOMContentLoaded", inicializarFormularioContacto);
+    /**
+     * Función auxiliar para validar formato de email mediante Regex
+     * @param {string} email 
+     * @returns {boolean}
+     */
+    function validarEmail(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+
+});
