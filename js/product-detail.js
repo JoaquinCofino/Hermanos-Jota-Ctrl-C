@@ -50,11 +50,19 @@ async function inicializarDetalle() {
       ${fabricacionHTML}
     `;
 
-    const boton = contenedor.querySelector("[data-boton-agregar]");
+        const boton = contenedor.querySelector("[data-boton-agregar]");
     const mensaje = contenedor.querySelector("[data-mensaje-exito]");
+    let timeoutMensaje;
     boton.addEventListener("click", () => {
       agregarAlCarrito(producto.id);
       mensaje.hidden = false;
+
+      // Si clickean varias veces seguidas, reinicia el cronómetro en vez de
+      // acumular varios setTimeout ocultando el mensaje en momentos distintos.
+      clearTimeout(timeoutMensaje);
+      timeoutMensaje = setTimeout(() => {
+        mensaje.hidden = true;
+      }, 2500);
     });
   } catch (error) {
     contenedor.innerHTML = `<p class="estado-carga">Ocurrió un error al cargar el producto.</p>`;
