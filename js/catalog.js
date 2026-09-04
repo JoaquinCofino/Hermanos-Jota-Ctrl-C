@@ -2,6 +2,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const gridProductos = document.getElementById('gridProductos');
   const buscador = document.getElementById('buscador');
 
+  const formateadorMoneda = new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits: 0
+  });
+
   const renderizarProductos = (lista) => {
     if (!gridProductos) return;
 
@@ -14,23 +20,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    gridProductos.innerHTML = lista.map(producto => `
-      <article class="tarjeta-producto">
-        <div class="contenedor-img">
-          <img src="${producto.imagen}" alt="${producto.nombre}" loading="lazy">
-        </div>
-        <div class="info-producto">
-          <h3>${producto.nombre}</h3>
-          <p class="precio-producto">${producto.precio || ''}</p>
-          <p class="medidas-producto">${producto.medidas || ''}</p>
-          <p class="descripcion-corta">${producto.descripcion}</p>
-          <div class="pie-tarjeta">
-            <span class="etiqueta-material">${producto.etiqueta || ''}</span>
-            <a href="producto.html?id=${producto.id}" class="btn-ver-detalle">Ver Detalle</a>
+    gridProductos.innerHTML = lista.map(producto => {
+      const precioFormateado = typeof producto.precio === 'number'
+        ? formateadorMoneda.format(producto.precio)
+        : (producto.precio || '');
+
+      return `
+        <article class="tarjeta-producto">
+          <div class="contenedor-img">
+            <img src="${producto.imagen}" alt="${producto.nombre}" loading="lazy">
           </div>
-        </div>
-      </article>
-    `).join('');
+          <div class="info-producto">
+            <h3>${producto.nombre}</h3>
+            <p class="precio-producto">${precioFormateado}</p>
+            <p class="medidas-producto">${producto.medidas || ''}</p>
+            <p class="descripcion-corta">${producto.descripcion}</p>
+            <div class="pie-tarjeta">
+              <span class="etiqueta-material">${producto.etiqueta || ''}</span>
+              <a href="producto.html?id=${producto.id}" class="btn-ver-detalle">Ver Detalle</a>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
   };
 
   let productosDisponibles = [];
@@ -51,6 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const filtrados = productosDisponibles.filter(prod =>
         prod.nombre.toLowerCase().includes(termino) ||
         prod.descripcion.toLowerCase().includes(termino) ||
+        (prod.categoria && prod.categoria.toLowerCase().includes(termino)) ||
         (prod.materiales && prod.materiales.toLowerCase().includes(termino)) ||
         (prod.etiqueta && prod.etiqueta.toLowerCase().includes(termino))
       );
