@@ -1,57 +1,82 @@
-/**
- * Renderizado del catálogo en productos.html
- */
-const formateador = new Intl.NumberFormat("es-AR", {
-  style: "currency",
-  currency: "ARS",
-  maximumFractionDigits: 0,
+const formateadorMoneda = new Intl.NumberFormat('es-AR', {
+  style: 'currency',
+  currency: 'ARS',
+  maximumFractionDigits: 0
 });
 
+// Función global requerida por home.js (para los 4 destacados) y catalog.js
 function crearTarjetaProducto(producto) {
-  const a = document.createElement("a");
-  a.href = `producto.html?id=${producto.id}`;
-  a.className = "tarjeta-producto";
-  a.innerHTML = `
-    <img class="tarjeta-producto__img" src="${producto.imagen}" alt="${producto.nombre}" loading="lazy" />
+  const precioFormateado = typeof producto.precio === 'number'
+    ? formateadorMoneda.format(producto.precio)
+    : (producto.precio || '');
+
+  const tarjeta = document.createElement('a');
+  tarjeta.href = `producto.html?id=${producto.id}`;
+  tarjeta.className = 'tarjeta-producto';
+
+  tarjeta.innerHTML = `
+    <img 
+      src="${producto.imagen}" 
+      alt="${producto.nombre}" 
+      class="tarjeta-producto__img" 
+      loading="lazy"
+    >
     <div class="tarjeta-producto__body">
-      <p class="tarjeta-producto__categoria">${producto.categoria}</p>
+      <span class="tarjeta-producto__categoria">${producto.categoria || ''}</span>
       <h3 class="tarjeta-producto__nombre">${producto.nombre}</h3>
-      <p class="tarjeta-producto__precio">${formateador.format(producto.precio)}</p>
+      <p class="tarjeta-producto__precio">${precioFormateado}</p>
     </div>
   `;
-  return a;
+
+  return tarjeta;
 }
 
-function renderizarProductos(lista) {
-  const grilla = document.querySelector("[data-grilla-productos]");
-  grilla.innerHTML = "";
-  if (lista.length === 0) {
-    grilla.innerHTML = `<p class="estado-carga">No se encontraron productos.</p>`;
-    return;
-  }
-  lista.forEach((producto) => grilla.appendChild(crearTarjetaProducto(producto)));
-}
+document.addEventListener('DOMContentLoaded', async () => {
+  const gridProductos = document.getElementById('gridProductos');
+  const buscador = document.getElementById('buscador');
 
-async function inicializarCatalogo() {
-  const grilla = document.querySelector("[data-grilla-productos]");
-  const buscador = document.querySelector("[data-buscador]");
-  if (!grilla) return; // esta página no tiene grilla de catálogo (ej: index.html)
+  const renderizarProductos = (lista) => {
+    if (!gridProductos) return;
 
+    gridProductos.innerHTML = '';
+
+    if (lista.length === 0) {
+      gridProductos.innerHTML = `
+        <div class="sin-resultados">
+          <p>No se encontraron productos que coincidan con tu búsqueda.</p>
+        </div>
+      `;
+      return;
+    }
+
+    lista.forEach(prod => {
+      gridProductos.appendChild(crearTarjetaProducto(prod));
+    });
+  };
+
+  let productosDisponibles = [];
   try {
-    const productos = await obtenerProductos();
-    renderizarProductos(productos);
+    if (typeof obtenerProductos === 'function') {
+      productosDisponibles = await obtenerProductos();
+    } else {
+      productosDisponibles = typeof PRODUCTS !== 'undefined' ? PRODUCTS : [];
+    }
+    renderizarProductos(productosDisponibles);
+  } catch (error) {
+    gridProductos.innerHTML = '<div class="estado-carga">Error al cargar los productos.</div>';
+  }
 
-    buscador.addEventListener("input", (evento) => {
-      const termino = evento.target.value.trim().toLowerCase();
-      const filtrados = productos.filter((p) =>
-        p.nombre.toLowerCase().includes(termino) || p.categoria.toLowerCase().includes(termino)
+  if (buscador) {
+    buscador.addEventListener('input', (e) => {
+      const termino = e.target.value.toLowerCase().trim();
+      const filtrados = productosDisponibles.filter(prod =>
+        prod.nombre.toLowerCase().includes(termino) ||
+        prod.descripcion.toLowerCase().includes(termino) ||
+        (prod.categoria && prod.categoria.toLowerCase().includes(termino)) ||
+        (prod.materiales && prod.materiales.toLowerCase().includes(termino)) ||
+        (prod.etiqueta && prod.etiqueta.toLowerCase().includes(termino))
       );
       renderizarProductos(filtrados);
     });
-  } catch (error) {
-    grilla.innerHTML = `<p class="estado-carga">Ocurrió un error al cargar el catálogo.</p>`;
-    console.error(error);
   }
-}
-
-document.addEventListener("DOMContentLoaded", inicializarCatalogo);
+});

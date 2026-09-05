@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:wght@400;700&display=swap');
+
 /**
  * Tokens de marca — Hermanos Jota
  * Extraídos del Manual de Marca (paleta de colores y tipografía).
@@ -26,4 +28,9 @@
   --espacio-lg: 4rem;
 
   --radio-borde: 4px;
+
+  /* Sombras y transiciones (agregadas para componentes) */
+  --sombra-card: 0 4px 14px rgba(43, 38, 35, 0.06);
+  --sombra-hover: 0 8px 24px rgba(160, 82, 45, 0.12);
+  --transicion: 0.25s ease-in-out;
 }
