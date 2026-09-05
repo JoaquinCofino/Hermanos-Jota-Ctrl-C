@@ -1,15 +1,44 @@
+const formateadorMoneda = new Intl.NumberFormat('es-AR', {
+  style: 'currency',
+  currency: 'ARS',
+  maximumFractionDigits: 0
+});
+
+// Función global requerida por home.js (para los 4 destacados) y catalog.js
+function crearTarjetaProducto(producto) {
+  const precioFormateado = typeof producto.precio === 'number'
+    ? formateadorMoneda.format(producto.precio)
+    : (producto.precio || '');
+
+  const tarjeta = document.createElement('a');
+  tarjeta.href = `producto.html?id=${producto.id}`;
+  tarjeta.className = 'tarjeta-producto';
+
+  tarjeta.innerHTML = `
+    <img 
+      src="${producto.imagen}" 
+      alt="${producto.nombre}" 
+      class="tarjeta-producto__img" 
+      loading="lazy"
+    >
+    <div class="tarjeta-producto__body">
+      <span class="tarjeta-producto__categoria">${producto.categoria || ''}</span>
+      <h3 class="tarjeta-producto__nombre">${producto.nombre}</h3>
+      <p class="tarjeta-producto__precio">${precioFormateado}</p>
+    </div>
+  `;
+
+  return tarjeta;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const gridProductos = document.getElementById('gridProductos');
   const buscador = document.getElementById('buscador');
 
-  const formateadorMoneda = new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits: 0
-  });
-
   const renderizarProductos = (lista) => {
     if (!gridProductos) return;
+
+    gridProductos.innerHTML = '';
 
     if (lista.length === 0) {
       gridProductos.innerHTML = `
@@ -20,29 +49,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    gridProductos.innerHTML = lista.map(producto => {
-      const precioFormateado = typeof producto.precio === 'number'
-        ? formateadorMoneda.format(producto.precio)
-        : (producto.precio || '');
-
-      return `
-        <article class="tarjeta-producto">
-          <div class="contenedor-img">
-            <img src="${producto.imagen}" alt="${producto.nombre}" loading="lazy">
-          </div>
-          <div class="info-producto">
-            <h3>${producto.nombre}</h3>
-            <p class="precio-producto">${precioFormateado}</p>
-            <p class="medidas-producto">${producto.medidas || ''}</p>
-            <p class="descripcion-corta">${producto.descripcion}</p>
-            <div class="pie-tarjeta">
-              <span class="etiqueta-material">${producto.etiqueta || ''}</span>
-              <a href="producto.html?id=${producto.id}" class="btn-ver-detalle">Ver Detalle</a>
-            </div>
-          </div>
-        </article>
-      `;
-    }).join('');
+    lista.forEach(prod => {
+      gridProductos.appendChild(crearTarjetaProducto(prod));
+    });
   };
 
   let productosDisponibles = [];
