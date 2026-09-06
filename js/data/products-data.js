@@ -7,7 +7,7 @@ const PRODUCTS = [
     destacado: true,
     medidas: "180 × 45 × 75 cm",
     materiales: "Nogal macizo FSC®, herrajes de latón",
-    descripcion: "Aparador de seis puertas fabricado en nogal sostenible con tiradores metálicos en acabado latón.",
+    descripcion: "Aparador de seis puertas fabricado en nogal sostenible con tiradores metálicos en acabado latón. Su silueta minimalista realza el veteado natural de la madera, creando una pieza que combina funcionalidad y elegancia atemporal para espacios contemporáneos.",
     imagen: "assets/img/productos/Aparador_Uspallata.png",
     etiqueta: "Nogal Macizo FSC®",
     fabricacion: [
@@ -25,7 +25,7 @@ const PRODUCTS = [
     destacado: true,
     medidas: "100 × 35 × 200 cm",
     materiales: "Estructura de acero, estantes de roble",
-    descripcion: "Sistema modular de estantes abierto que combina estructura de acero Sage Green y repisas en roble claro.",
+    descripcion: "Sistema modular de estantes abierto que combina estructura de acero Sage Green y repisas en roble claro. Perfecta para colecciones y objetos de diseño, su diseño versátil se adapta a cualquier espacio contemporáneo con elegancia funciona",
     imagen: "assets/img/productos/Biblioteca_Recoleta.png",
     etiqueta: "Roble y Acero",
     fabricacion: [
@@ -43,7 +43,7 @@ const PRODUCTS = [
     destacado: false,
     medidas: "80 × 75 × 85 cm",
     materiales: "Guatambú macizo, tela bouclé",
-    descripcion: "Butaca tapizada en bouclé Dusty Rose con base curva en madera noble de guatambú.",
+    descripcion: "Butaca tapizada en bouclé Dusty Rose con base de madera de guatambú. El respaldo curvo abraza el cuerpo y ofrece máximo confort, mientras que su diseño orgánico aporta calidez y sofisticación a cualquier ambiente contemporáneo.",
     imagen: "assets/img/productos/Butaca_Mendoza.png",
     etiqueta: "Guatambú Macizo",
     fabricacion: [
@@ -61,7 +61,7 @@ const PRODUCTS = [
     destacado: true,
     medidas: "90 × 85 × 95 cm",
     materiales: "Cuero curtido vegetal, acero pintado",
-    descripcion: "Sillón lounge en cuero cognac con base giratoria en acero Burnt Sienna. Inspirado en la estética brasilera moderna de los 60.",
+    descripcion: "Sillón lounge en cuero cognac con base giratoria en acero Burnt Sienna. Inspirado en la estética brasilera moderna de los 60, combina comodidad excepcional con un diseño icónico que trasciende tendencias y épocas.",
     imagen: "assets/img/productos/Sillon_Copacabana.png",
     etiqueta: "Cuero Curtido Vegetal",
     fabricacion: [
@@ -79,7 +79,7 @@ const PRODUCTS = [
     destacado: false,
     medidas: "90 × 90 × 45 cm",
     materiales: "Sobre de mármol Patagonia, patas de nogal",
-    descripcion: "Mesa de centro con sobre circular de mármol Patagonia y base de tres patas en madera de nogal.",
+    descripcion: "Mesa de centro con sobre circular de mármol Patagonia y base de tres patas en madera de nogal. Su diseño minimalista se convierte en el punto focal perfecto para cualquier sala de estar contemporánea, combinando la frialdad del mármol con la calidez de la madera.",
     imagen: "assets/img/productos/Mesa_de_Centro_Araucaria.png",
     etiqueta: "Mármol y Nogal",
     fabricacion: [
@@ -97,7 +97,7 @@ const PRODUCTS = [
     destacado: false,
     medidas: "45 × 35 × 60 cm",
     materiales: "Roble macizo FSC®, herrajes soft-close",
-    descripcion: "Mesa de noche con cajón oculto y repisa inferior en roble certificado FSC®.",
+    descripcion: "Mesa de noche con cajón oculto y repisa inferior en roble certificado FSC®. Su diseño limpio y funcional permite convivir con diferentes estilos de dormitorio, ofreciendo almacenamiento discreto y elegante para objetos personales.",
     imagen: "assets/img/productos/Mesa_de_Noche_Aconcagua.png",
     etiqueta: "Roble Macizo FSC®",
     fabricacion: [
@@ -115,7 +115,7 @@ const PRODUCTS = [
     destacado: true,
     medidas: "220 × 90 × 80 cm",
     materiales: "Madera de eucalipto certificada FSC®, lino natural",
-    descripcion: "Sofá de tres cuerpos tapizado en lino Warm Alabaster con patas cónicas de madera y plumón reciclado.",
+    descripcion: "Sofá de tres cuerpos tapizado en lino Warm Alabaster con patas cónicas de madera. Los cojines combinan espuma de alta resiliencia con plumón reciclado, ofreciendo comodidad duradera y sostenible para el hogar moderno.",
     imagen: "assets/img/productos/Sofa_Patagonia.png",
     etiqueta: "Lino 100% Natural",
     fabricacion: [
@@ -151,7 +151,7 @@ const PRODUCTS = [
     destacado: false,
     medidas: "45 × 52 × 80 cm (c/u)",
     materiales: "Contrachapado nogal, tubo de acero",
-    descripcion: "Set de cuatro sillas apilables en contrachapado moldeado de nogal y estructura tubular en Sage Green.",
+    descripcion: "Set de cuatro sillas apilables en contrachapado moldeado de nogal y estructura tubular pintada en Sage Green. Su diseño ergonómico y materiales de calidad garantizan comodidad y durabilidad en el uso diario, perfectas para comedores contemporáneos.",
     imagen: "assets/img/productos/Sillas_Cordoba.png",
     etiqueta: "Set de 4 Sillas",
     fabricacion: [
@@ -169,7 +169,7 @@ const PRODUCTS = [
     destacado: false,
     medidas: "120 × 60 × 75 cm",
     materiales: "Bambú laminado, herrajes ocultos",
-    descripcion: "Escritorio compacto con cajón organizado y tapa pasacables integrada en bambú laminado.",
+    descripcion: "Escritorio compacto con cajón organizado y tapa pasacables integrada en bambú laminado. Ideal para espacios de trabajo en casa, combina funcionalidad moderna con estética minimalista y sostenible, perfecto para el trabajo remoto.",
     imagen: "assets/img/productos/Escritorio_Costa.png",
     etiqueta: "Bambú Sostenible",
     fabricacion: [
@@ -187,7 +187,7 @@ const PRODUCTS = [
     destacado: false,
     medidas: "60 × 60 × 90-100 cm",
     materiales: "Malla técnica, tejido reciclado",
-    descripcion: "Silla ergonómica regulable en altura con respaldo de malla transpirable y certificación europea EN 1335.",
+    descripcion: "Silla ergonómica regulable en altura con respaldo de malla transpirable y asiento tapizado en tejido reciclado. Diseñada para largas jornadas de trabajo con máximo confort y apoyo lumbar, ideal para oficinas en casa y espacios de coworking.",
     imagen: "assets/img/productos/Silla_de_Trabajo_Belgrano.png",
     etiqueta: "Ergonomía Certificada",
     fabricacion: [
