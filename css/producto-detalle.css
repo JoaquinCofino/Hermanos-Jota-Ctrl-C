@@ -31,6 +31,8 @@
 }
 
 .detalle-producto__descripcion {
+  font-size: 1.1rem;
+  line-height: 1.7;
   margin-bottom: var(--espacio-sm);
 }
 
@@ -52,6 +54,7 @@
   grid-template-columns: auto 1fr;
   gap: 0.4rem var(--espacio-sm);
   margin: 0;
+  font-size: 1.05rem;
 }
 
 .detalle-fabricacion dt {

@@ -1,7 +1,7 @@
 # Hermanos Jota — E-commerce (Sprint 1 y 2)
 
 Proyecto final de Full Stack Developer — ITBA Educación Ejecutiva.
-
+Para ver la pagina deployeada: https://joaquincofino.github.io/Hermanos-Jota-Ctrl-C/
 ## Integrantes
 
 - Joaquin Cofino - JoaquinCofino
@@ -33,27 +33,32 @@ cumpliendo el requisito de simular una petición de datos sin backend.
 
 ```
 hermanos-jota/
-├── index.html              # Página de inicio (hero + destacados)
-├── productos.html           # Catálogo completo + buscador
-├── producto.html            # Detalle de un producto (?id=slug)
-├── contacto.html             # Formulario de contacto
+├── index.html # Página de inicio (hero + destacados)
+├── productos.html # Catálogo completo + buscador
+├── producto.html # Detalle de un producto (?id=slug)
+├── carrito.html # Carrito de compras
+├── contacto.html # Formulario de contacto
 ├── css/
-│   ├── variables.css        # Tokens de marca (colores, tipografía)
-│   ├── base.css              # Header, footer, layout compartido
-│   └── productos.css         # Grilla y tarjetas de producto
+│ ├── variables.css # Tokens de marca (colores, tipografía)
+│ ├── base.css # Header, footer, layout compartido
+│ ├── productos.css # Grilla y tarjetas de producto
+│ ├── producto-detalle.css # Detalle de producto + ficha de fabricación
+│ ├── carrito.css # Filas y resumen del carrito
+│ └── contacto.css # Formulario de contacto
 ├── js/
-│   ├── data/
-│   │   └── products-data.js # Array de objetos: el "catálogo"
-│   ├── api.js                 # Simula fetch async (setTimeout/Promise)
-│   ├── catalog.js             # Render + búsqueda en productos.html
-│   ├── home.js                 # Render de destacados en index.html
-│   ├── product-detail.js      # Render de producto.html
-│   ├── contact.js              # Validación del formulario
-│   └── main.js                  # Carrito simulado (localStorage) + header
-├── assets/
-│   └── img/
-│       ├── brand/logo.svg
-│       └── productos/*.png
+│ ├── data/
+│ │ └── products-data.js # Array de objetos: el "catálogo"
+│ ├── api.js # Simula fetch async (setTimeout/Promise)
+│ ├── catalog.js # Render + búsqueda en productos.html
+│ ├── home.js # Render de destacados en index.html
+│ ├── product-detail.js # Render de producto.html
+│ ├── cart.js # Render de carrito.html
+│ ├── contact.js # Validación del formulario
+│ └── main.js # Carrito simulado (localStorage) + header
+└── assets/
+└── img/
+├── brand/logo.svg
+└── productos/*.png
 ```
 
 Cada página carga solo los scripts que necesita, en orden: `products-data.js` →
