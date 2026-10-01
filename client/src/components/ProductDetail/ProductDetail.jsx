@@ -1,62 +1,71 @@
-import { urlImagen } from '../../services/api';
-import { formatearPrecio } from '../../utils/formatearPrecio';
+import { useState, useEffect, Fragment } from 'react';
 import './ProductDetail.css';
 
 export default function ProductDetail({ producto, onVolver, onAgregarAlCarrito }) {
+    const [mensajeExito, setMensajeExito] = useState(false);
+
+    useEffect(() => {
+        if (!mensajeExito) return;
+        const timer = setTimeout(() => {
+            setMensajeExito(false);
+        }, 2500);
+        return () => clearTimeout(timer);
+    }, [mensajeExito]);
+
+    if (!producto) return null;
+
+    const handleAgregar = () => {
+        onAgregarAlCarrito?.(producto);
+        setMensajeExito(true);
+    };
+
+    const precioFormateado = new Intl.NumberFormat('es-AR', {
+        style: 'currency',
+        currency: 'ARS',
+        maximumFractionDigits: 0
+    }).format(producto.precio);
+
+    const f = producto.fabricacion;
+
     return (
-        <article className="product-detail">
-            <button type="button" className="product-detail__volver" onClick={onVolver}>
-                ← Volver al catálogo
-            </button>
+        <article className="detalle-producto">
+            <img
+                className="detalle-producto__img"
+                src={producto.imagen}
+                alt={producto.nombre}
+            />
 
-            <div className="product-detail__grid">
-                <img
-                    className="product-detail__img"
-                    src={urlImagen(producto.imagen)}
-                    alt={producto.nombre}
-                />
+            <div className="detalle-producto__info">
+                <p className="tarjeta-producto__categoria">{producto.categoria}</p>
+                <h1>{producto.nombre}</h1>
 
-                <div className="product-detail__info">
-                    <p className="product-detail__categoria">{producto.categoria}</p>
-                    <h1>{producto.nombre}</h1>
-                    <p className="product-detail__precio">{formatearPrecio(producto.precio)}</p>
-
+                <div className="detalle-producto__compra">
+                    <p className="detalle-producto__precio">{precioFormateado}</p>
                     <button
                         type="button"
-                        className="product-detail__agregar"
-                        onClick={() => onAgregarAlCarrito?.(producto)}
+                        data-boton-agregar
+                        onClick={handleAgregar}
                     >
                         Añadir al carrito
                     </button>
-
-                    <p className="product-detail__descripcion">{producto.descripcion}</p>
-
-                    <dl className="product-detail__specs">
-                        {producto.medidas && (
-                            <>
-                                <dt>Medidas</dt>
-                                <dd>{producto.medidas}</dd>
-                            </>
-                        )}
-                        {producto.materiales && (
-                            <>
-                                <dt>Materiales</dt>
-                                <dd>{producto.materiales}</dd>
-                            </>
-                        )}
-                    </dl>
                 </div>
+
+                {mensajeExito && (
+                    <p className="mensaje-exito">Se agregó al carrito ✓</p>
+                )}
+
+                <p className="detalle-producto__descripcion">{producto.descripcion}</p>
             </div>
 
-            {producto.fabricacion?.length > 0 && (
-                <section className="product-detail__fabricacion">
+            {f && f.length > 0 && (
+                <section className="detalle-fabricacion">
                     <h2>Detalles de fabricación</h2>
-                    <dl className="product-detail__specs">
-                        {producto.fabricacion.map((item) => (
-                            <div key={item.label}>
+                    <dl>
+                        {f.map((item) => (
+                            <Fragment key={item.label}>
                                 <dt>{item.label}</dt>
                                 <dd>{item.value}</dd>
-                            </div>
+                            </Fragment>
                         ))}
                     </dl>
                 </section>

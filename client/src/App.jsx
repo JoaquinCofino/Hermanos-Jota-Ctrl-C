@@ -4,6 +4,8 @@ import ProductList from './components/ProductList/ProductList';
 import ProductDetail from './components/ProductDetail/ProductDetail';
 import { obtenerProductos } from './services/api';
 import './App.css';
+import './index.css';
+import Footer from './components/Footer/Footer';
 
 function App() {
     // Ciclo de vida de la petición: cargando → éxito (productos) | error
@@ -73,10 +75,19 @@ function App() {
     const renderVista = () => {
         if (productoSeleccionado) {
             return (
-                <ProductDetail
-                    producto={productoSeleccionado}
-                    onVolver={() => setProductoSeleccionadoId(null)}
-                />
+                <>
+                    <button
+                        type="button"
+                        className="boton-volver"
+                        onClick={() => setProductoSeleccionadoId(null)}
+                    >
+                        ← Volver al catálogo
+                    </button>
+                    <ProductDetail
+                        producto={productoSeleccionado}
+                        onVolver={() => setProductoSeleccionadoId(null)}
+                    />
+                </>
             );
         }
 
@@ -90,7 +101,7 @@ function App() {
         }
 
         if (vista === 'contacto') {
-            // TODO: reemplazar por <ContactForm /> cuando se mergee feature/contact-form
+            // TODO (Fausto): renderizar <ContactForm /> acá (ya está en components/ContactForm)
             return (
                 <section>
                     <h1>Contacto</h1>
@@ -119,6 +130,7 @@ function App() {
         <>
             <Navbar vistaActual={vista} onNavegar={handleNavegar} />
             <main className="contenedor">{renderVista()}</main>
+            <Footer />
         </>
     );
 }
