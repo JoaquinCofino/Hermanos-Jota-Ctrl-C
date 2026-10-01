@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:wght@400;700&display=swap');
+
 *,
 *::before,
 *::after {
@@ -198,4 +200,55 @@ margin: 0;
   padding: var(--espacio-lg) 0;
   text-align: center;
   color: var(--color-texto-suave);
+}
+
+/* Tokens usados por Navbar, ProductCard y ProductList (no están en index.css) */
+:root {
+  --sombra-card: 0 4px 14px rgba(43, 38, 35, 0.06);
+  --sombra-hover: 0 8px 24px rgba(160, 82, 45, 0.12);
+  --transicion: 0.25s ease-in-out;
+}
+
+main.contenedor {
+  padding-block: var(--espacio-md);
+}
+
+.hero {
+  padding: var(--espacio-md) 0 var(--espacio-lg);
+  max-width: 60ch;
+}
+
+.boton-volver {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--color-siena);
+  cursor: pointer;
+}
+
+.boton-volver:hover {
+  text-decoration: underline;
+}
+
+/* Estados del fetch: cargando / error */
+.estado {
+  padding: var(--espacio-lg) 0;
+  text-align: center;
+  color: var(--color-texto-suave);
+}
+
+.estado--error {
+  color: var(--color-siena);
+}
+
+.estado--error button {
+  margin-top: var(--espacio-xs);
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--color-siena);
+  border-radius: var(--radio-borde);
+  background: none;
+  color: var(--color-siena);
+  font: inherit;
+  cursor: pointer;
 }

@@ -1,0 +1,11 @@
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--espacio-md);
+}
+
+.product-list__vacio {
+    padding: var(--espacio-lg) 0;
+    text-align: center;
+    color: var(--color-texto-suave);
+}
