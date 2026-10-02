@@ -88,78 +88,84 @@ function App() {
         window.scrollTo(0, 0);
     }, [pathname]);
 
-    const peticion = {
-        cargando,
-        error,
-        onReintentar: () => setIntento((n) => n + 1)
+    const renderProductos = (lista) => {
+        if (cargando) {
+            return <p className="estado">Cargando productos…</p>;
+        }
+
+        if (error) {
+            return (
+                <div className="estado estado--error">
+                    <p>{error}</p>
+                    <button type="button" onClick={() => setIntento((n) => n + 1)}>
+                        Reintentar
+                    </button>
+                </div>
+            );
+        }
+
+        return <ProductList productos={lista} onSeleccionar={handleSeleccionar} />;
+    };
+
+    const renderVista = () => {
+        if (productoSeleccionado) {
+            return (
+                <>
+                    <button
+                        type="button"
+                        className="boton-volver"
+                        onClick={() => setProductoSeleccionadoId(null)}
+                    >
+                        ← Volver al catálogo
+                    </button>
+                    <ProductDetail
+                        producto={productoSeleccionado}
+                        onVolver={() => setProductoSeleccionadoId(null)}
+                        onAgregarAlCarrito={agregarAlCarrito}
+                    />
+                </>
+            );
+        }
+
+        if (vista === 'catalogo') {
+            return (
+                <section>
+                    <h1>Catálogo</h1>
+                    {renderProductos(productos)}
+                </section>
+            );
+        }
+
+        if (vista === 'contacto') {
+            return (
+                <section>
+                    <h1>Contacto</h1>
+                    <ContactForm />
+                </section>
+            );
+        }
+
+        return (
+            <>
+                <section className="hero">
+                    <h1>Muebles que alimentan el alma</h1>
+                    <p>
+                        En Hermanos Jota, somos fieles creyentes de que 
+                        las piezas nacen de la tradición y encuentran su lugar en el presente, tanto en la historia como en la necesidad de cada hogar. Creamos piezas que honran la tradición, los materiales nobles y el trabajo artesanal, pensando en el presente y en un futuro más consciente.
+                    </p>
+                </section>
+                <section>
+                    <h2>Destacados</h2>
+                    {renderProductos(productos.filter((p) => p.destacado))}
+                </section>
+            </>
+        );
     };
 
     return (
         <>
-            <Navbar cantidadCarrito={carrito.length} />
-            <main className="contenedor">
-                <Routes>
-                    <Route
-                        path="/"
-                        element={
-                            <>
-                                <section className="hero">
-                                    <h1>Muebles que alimentan el alma</h1>
-                                    <p>
-                                        Piezas que honran la tradición, los materiales nobles y el trabajo
-                                        artesanal, pensadas para el presente y un futuro más consciente.
-                                    </p>
-                                </section>
-                                <section>
-                                    <h2>Destacados</h2>
-                                    <EstadoPeticion {...peticion}>
-                                        <ProductList productos={productos.filter((p) => p.destacado)} />
-                                    </EstadoPeticion>
-                                </section>
-                            </>
-                        }
-                    />
-                    <Route
-                        path="/productos"
-                        element={
-                            <section>
-                                <h1>Catálogo</h1>
-                                <EstadoPeticion {...peticion}>
-                                    <ProductList productos={productos} />
-                                </EstadoPeticion>
-                            </section>
-                        }
-                    />
-                    <Route
-                        path="/productos/:id"
-                        element={
-                            <EstadoPeticion {...peticion}>
-                                <DetalleProducto
-                                    productos={productos}
-                                    onAgregarAlCarrito={(producto) => sumarUnidad(producto.id)}
-                                />
-                            </EstadoPeticion>
-                        }
-                    />
-                    <Route
-                        path="/carrito"
-                        element={
-                            <EstadoPeticion {...peticion}>
-                                <Carrito
-                                    carrito={carrito}
-                                    productos={productos}
-                                    onSumar={sumarUnidad}
-                                    onRestar={restarUnidad}
-                                    onQuitar={quitarProducto}
-                                    onVaciar={vaciarCarrito}
-                                />
-                            </EstadoPeticion>
-                        }
-                    />
-                    <Route path="/contacto" element={<ContactForm />} />
-                    <Route path="*" element={<NoEncontrado />} />
-                </Routes>
-            </main>
+            <Navbar vistaActual={vista} onNavegar={handleNavegar} cantidadCarrito={carrito.length} />
+            <main className="contenedor">{renderVista()}</main>
             <Footer />
         </>
     );

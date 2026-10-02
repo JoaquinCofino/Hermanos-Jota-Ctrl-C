@@ -67,7 +67,7 @@ const PRODUCTS = [
     imagen: "assets/img/productos/Escritorio_Costa.png",
     descripcion:
     "Escritorio compacto con cajón organizado y tapa pasacables integrada en bambú laminado. Ideal para espacios de trabajo en casa, combina funcionalidad moderna con estética minimalista y sostenible, perfecto para el trabajo remoto.",
-    destacado: true,
+    destacado: false,
     fabricacion: [
     { label: "Medidas", value: "120 × 60 × 75 cm" },
     { label: "Materiales", value: "Bambú laminado, herrajes ocultos" },
