@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar/Navbar';
 import ProductList from './components/ProductList/ProductList';
 import ProductDetail from './components/ProductDetail/ProductDetail';
+import ContactForm from './components/ContactForm/ContactForm';
 import { obtenerProductos } from './services/api';
 import './App.css';
 import './index.css';
@@ -17,10 +18,13 @@ function App() {
     const [vista, setVista] = useState('inicio');
     const [productoSeleccionadoId, setProductoSeleccionadoId] = useState(null);
 
-    // TODO (FT): estado del carrito acá. Conectar con:
-    //   <Navbar cantidadCarrito={...} />  y  <ProductDetail onAgregarAlCarrito={...} />
+    const [carrito, setCarrito] = useState([]);
 
+    const agregarAlCarrito = (producto) => {
+        setCarrito((prev) => [...prev, producto]);
+    };
     useEffect(() => {
+
         // Cancela el fetch si el componente se desmonta (o StrictMode ejecuta el efecto dos veces)
         const controller = new AbortController();
 
@@ -86,6 +90,7 @@ function App() {
                     <ProductDetail
                         producto={productoSeleccionado}
                         onVolver={() => setProductoSeleccionadoId(null)}
+                        onAgregarAlCarrito={agregarAlCarrito}
                     />
                 </>
             );
@@ -101,10 +106,10 @@ function App() {
         }
 
         if (vista === 'contacto') {
-            // TODO (Fausto): renderizar <ContactForm /> acá (ya está en components/ContactForm)
             return (
                 <section>
                     <h1>Contacto</h1>
+                    <ContactForm />
                 </section>
             );
         }
@@ -128,7 +133,7 @@ function App() {
 
     return (
         <>
-            <Navbar vistaActual={vista} onNavegar={handleNavegar} />
+            <Navbar vistaActual={vista} onNavegar={handleNavegar} cantidadCarrito={carrito.length} />
             <main className="contenedor">{renderVista()}</main>
             <Footer />
         </>
