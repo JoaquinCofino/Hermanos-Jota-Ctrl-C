@@ -1,9 +1,29 @@
 {
-  "installCommand": "cd client && npm install && cd ../backend && npm install",
-  "buildCommand": "cd client && npm run build",
-  "outputDirectory": "client/build",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "backend": {
+      "root": "backend",
+      "framework": "express",
+      "entrypoint": "server.js"
+    },
+    "client": {
+      "root": "client",
+      "framework": "create-react-app",
+      "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+    }
+  },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/api",
+      "destination": { "service": "backend" }
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": { "service": "backend" }
+    },
+    {
+      "source": "/(.*)",
+      "destination": { "service": "client" }
+    }
   ]
 }

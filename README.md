@@ -53,11 +53,14 @@ de error con un botón para reintentar.
 Frontend y backend se publican juntos en un solo proyecto de [Vercel](https://vercel.com),
 con una sola URL:
 
-- `vercel.json` (en la raíz) instala las dependencias de `client` y `backend`, compila el
-  frontend y define las rutas: `/api/...` va a Express y todo lo demás a la app de React
-  (así React Router funciona al recargar o entrar por un link).
-- `api/index.js` expone la app de Express de `backend/server.js` como función serverless.
-  En local, `server.js` sigue levantando el servidor con `app.listen` como siempre.
+- `vercel.json` (en la raíz) usa [Vercel Services](https://vercel.com/docs/services) con dos
+  servicios: `backend` (Express, carpeta `backend/`) y `client` (create-react-app, carpeta
+  `client/`). Cada uno se compila por separado.
+- Las peticiones a `/api/...` van a `backend`, que recibe la ruta completa
+  (`/api/productos`); todo lo demás va a `client`. Dentro de `client`, cualquier ruta
+  devuelve `index.html` para que React Router funcione al recargar o entrar por un link.
+- `backend/server.js` exporta la app de Express para Vercel. En local sigue levantando el
+  servidor con `app.listen` como siempre.
 
 Para publicar: importar el repo en Vercel dejando el *Root Directory* en la raíz. No hace
 falta configurar variables de entorno. Cada push a la rama configurada vuelve a publicar.
@@ -66,7 +69,7 @@ falta configurar variables de entorno. Cada push a la rama configurada vuelve a 
 
 | Método | Ruta | Respuesta |
 |---|---|---|
-| `GET` | `/` | Mensaje de bienvenida |
+| `GET` | `/api` | Mensaje de bienvenida |
 | `GET` | `/api/productos` | Array con todos los productos (JSON) |
 | `GET` | `/api/productos/:id` | Un producto por id (ej. `/api/productos/sofa-patagonia`). Si no existe: `404` con `{ "mensaje": "Producto no encontrado" }` |
 | cualquier otra | — | `404` con `{ "message": "Ruta no encontrada: ..." }` |

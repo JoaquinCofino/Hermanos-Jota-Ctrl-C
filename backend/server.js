@@ -10,7 +10,8 @@ const productosRoutes = require('./routes/productos-routes');
 app.use(logger);
 app.use(express.json());
 
-app.get('/', (req, res) => {
+// En /api (y no en /) porque en Vercel la raíz del sitio la sirve el frontend
+app.get('/api', (req, res) => {
     res.send('Este es la API de Hermanos Jota');
 });
 
