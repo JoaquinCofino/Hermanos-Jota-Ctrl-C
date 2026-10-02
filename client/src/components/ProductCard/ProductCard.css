@@ -12,17 +12,11 @@
     transform: translateY(-2px);
 }
 
-/* Reset del botón para que toda la tarjeta sea clickeable y accesible por teclado */
-.product-card__boton {
+/* Toda la tarjeta es un link a /productos/:id */
+.product-card__link {
     display: block;
-    width: 100%;
-    padding: 0;
-    border: none;
-    background: none;
-    font: inherit;
     color: inherit;
-    text-align: left;
-    cursor: pointer;
+    text-decoration: none;
 }
 
 .product-card__img {

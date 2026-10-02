@@ -1,28 +1,25 @@
 import { useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import logo from '../../assets/logo.svg';
 import './Navbar.css';
 
 const LINKS = [
-    { vista: 'inicio', texto: 'Inicio' },
-    { vista: 'catalogo', texto: 'Catálogo' },
-    { vista: 'contacto', texto: 'Contacto' }
+    { to: '/', texto: 'Inicio' },
+    { to: '/productos', texto: 'Catálogo' },
+    { to: '/contacto', texto: 'Contacto' }
 ];
 
-export default function Navbar({ cantidadCarrito = 0, vistaActual, onNavegar }) {
+export default function Navbar({ cantidadCarrito = 0 }) {
     const [menuAbierto, setMenuAbierto] = useState(false);
 
-    const handleNavegar = (e, vista) => {
-        e.preventDefault();
-        onNavegar(vista);
-        setMenuAbierto(false);
-    };
+    const cerrarMenu = () => setMenuAbierto(false);
 
     return (
         <header className="navbar">
             <div className="navbar__contenedor">
-                <a href="/" onClick={(e) => handleNavegar(e, 'inicio')}>
+                <Link to="/" onClick={cerrarMenu}>
                     <img className="navbar__logo" src={logo} alt="Hermanos Jota" />
-                </a>
+                </Link>
 
                 <button
                     type="button"
@@ -41,21 +38,30 @@ export default function Navbar({ cantidadCarrito = 0, vistaActual, onNavegar }) 
                         className={`navbar__links ${menuAbierto ? 'navbar__links--abierto' : ''}`}
                     >
                         {LINKS.map((link) => (
-                            <li key={link.vista}>
-                                <a
-                                    href={`#${link.vista}`}
-                                    className={vistaActual === link.vista ? 'navbar__link--activo' : ''}
-                                    onClick={(e) => handleNavegar(e, link.vista)}
+                            <li key={link.to}>
+                                {/* "end" evita que "/" quede activo en todas las rutas */}
+                                <NavLink
+                                    to={link.to}
+                                    end={link.to === '/'}
+                                    className={({ isActive }) => (isActive ? 'navbar__link--activo' : '')}
+                                    onClick={cerrarMenu}
                                 >
                                     {link.texto}
-                                </a>
+                                </NavLink>
                             </li>
                         ))}
                         <li>
-                            <span className="navbar__carrito" aria-label={`Carrito: ${cantidadCarrito} productos`}>
+                            <NavLink
+                                to="/carrito"
+                                className={({ isActive }) =>
+                                    `navbar__carrito ${isActive ? 'navbar__link--activo' : ''}`
+                                }
+                                aria-label={`Carrito: ${cantidadCarrito} productos`}
+                                onClick={cerrarMenu}
+                            >
                                 Carrito
                                 <span className="navbar__contador">{cantidadCarrito}</span>
-                            </span>
+                            </NavLink>
                         </li>
                     </ul>
                 </nav>

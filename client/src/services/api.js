@@ -1,4 +1,4 @@
-// En desarrollo, el "proxy" de package.json redirige /api y /assets a http://localhost:4000,
+// En desarrollo, el "proxy" de package.json redirige /api a http://localhost:4000,
 // así que no hace falta CORS ni escribir la URL completa del backend.
 const API_URL = process.env.REACT_APP_API_URL || '';
 
@@ -10,11 +10,13 @@ export async function obtenerProductos(signal) {
         throw new Error(`Error ${respuesta.status} al cargar los productos`);
     }
 
-    return respuesta.json();
+    const productos = await respuesta.json();
+    return productos.map((producto) => ({ ...producto, imagen: rutaAbsoluta(producto.imagen) }));
 }
 
-// El backend puede devolver la imagen como ruta relativa ("assets/img/...") o como URL completa.
-export function urlImagen(imagen) {
-    if (!imagen || /^https?:\/\//.test(imagen)) return imagen;
-    return `${API_URL}/${imagen.replace(/^\//, '')}`;
+// La API devuelve "assets/img/...". Con rutas como /productos/:id, una ruta relativa se
+// resolvería como /productos/assets/img/..., así que se convierte a "/assets/img/...".
+function rutaAbsoluta(imagen) {
+    if (!imagen || /^(https?:)?\//.test(imagen)) return imagen;
+    return `/${imagen}`;
 }

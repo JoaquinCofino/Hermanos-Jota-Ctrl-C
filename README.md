@@ -10,11 +10,11 @@ locales: pide el catálogo al backend con `fetch` y lo muestra dinámicamente.
 
 | Integrante | GitHub | Aportes principales |
 |---|---|---|
-| Joaquín Cofiño | [@JoaquinCofino](https://github.com/JoaquinCofino) | Fetch a la API con estados de carga y error, Navbar, ProductList, ProductCard, detalle por renderizado condicional |
+| Joaquín Cofiño | [@JoaquinCofino](https://github.com/JoaquinCofino) | Fetch a la API con estados de carga y error, Navbar, ProductList, ProductCard, navegación con React Router, página de carrito |
 | Lorenzo Fares | [@lorenzofares](https://github.com/lorenzofares) | Estructura base, datos y rutas del backend, Footer, assets |
 | Juan Cruz Romero Huisi | [@juanrohu](https://github.com/juanrohu) | Middleware de logging |
-| Gonzalo Daniele | [@GonzaloDaniele](https://github.com/GonzaloDaniele) | ProductDetail |
-| Fausto Tica | [@faustotica](https://github.com/faustotica) | ContactForm |
+| Gonzalo Daniele | [@GonzaloDaniele](https://github.com/GonzaloDaniele) | ProductDetail, manejador de 404 y de errores del backend |
+| Fausto Tica | [@faustotica](https://github.com/faustotica) | ContactForm, estado del carrito en App |
 
 ## Requisitos previos
 
@@ -48,13 +48,6 @@ npm start
 Se abre `http://localhost:3000`. Si el backend no está corriendo, la app muestra un mensaje
 de error con un botón para reintentar.
 
-### Tests del frontend
-
-```bash
-cd client
-npm test
-```
-
 ## API
 
 | Método | Ruta | Respuesta |
@@ -62,9 +55,24 @@ npm test
 | `GET` | `/` | Mensaje de bienvenida |
 | `GET` | `/api/productos` | Array con todos los productos (JSON) |
 | `GET` | `/api/productos/:id` | Un producto por id (ej. `/api/productos/sofa-patagonia`). Si no existe: `404` con `{ "mensaje": "Producto no encontrado" }` |
+| cualquier otra | — | `404` con `{ "message": "Ruta no encontrada: ..." }` |
 
 Cada request se registra en consola con fecha, método y URL, por ejemplo:
 `[01/10/2026, 14:05] [GET] /api/productos`.
+
+Los errores se resuelven en un **manejador centralizado**: responde en JSON con el status del
+error (o `500` si no tiene) y, fuera de producción, incluye el `stack` para depurar.
+
+## Páginas del frontend
+
+| URL | Página |
+|---|---|
+| `/` | Inicio: presentación y productos destacados |
+| `/productos` | Catálogo completo |
+| `/productos/:id` | Detalle de un producto (ej. `/productos/sofa-patagonia`) |
+| `/carrito` | Carrito: cantidades, subtotales, total, quitar y vaciar |
+| `/contacto` | Formulario de contacto |
+| cualquier otra | Página "no encontrada" |
 
 ## Arquitectura
 
@@ -73,7 +81,7 @@ Cada request se registra en consola con fecha, método y URL, por ejemplo:
  │  client/ (React, :3000)   │ ─────────────────────▶ │ backend/ (Express, :4000) │
  │                           │ ◀───────────────────── │                           │
  │  App.jsx guarda el estado │   JSON (productos)     │  logger → express.json()  │
- │  y decide qué vista ver   │                        │  → router /api/productos  │
+ │  y define las rutas       │                        │  → router → 404 → errores │
  └───────────────────────────┘                        └───────────────────────────┘
 ```
 
@@ -81,27 +89,33 @@ Cada request se registra en consola con fecha, método y URL, por ejemplo:
 
 ```
 backend/
-├── server.js                   # Crea la app, registra middlewares y monta las rutas
+├── server.js                   # Crea la app, registra middlewares, rutas y manejo de errores
 ├── data/productos.js           # Array de objetos con los 11 productos del catálogo
 ├── routes/productos-routes.js  # express.Router: GET / y GET /:id
 └── middlewares/logger.js       # Middleware global: loguea fecha, método y URL
 ```
 
-Orden de los middlewares en `server.js`: `logger` → `express.json()` (para futuras
-peticiones POST) → rutas de `/api/productos`.
+Orden en `server.js`: `logger` → `express.json()` (para futuras peticiones POST) → rutas de
+`/api/productos` → manejador de 404 → manejador de errores centralizado.
 
 ### Frontend (`/client`)
 
 ```
 client/src/
-├── App.jsx                   # Estado global: productos, carga, error y vista actual
+├── index.js                  # Monta la app dentro de <BrowserRouter>
+├── App.jsx                   # Estado global (productos, carga, error, carrito) y <Routes>
 ├── services/api.js           # obtenerProductos(): fetch a /api/productos
 ├── utils/formatearPrecio.js  # Formato de precios en pesos argentinos
+├── pages/
+│   ├── DetalleProducto/      # Lee el :id de la URL con useParams y muestra ProductDetail
+│   ├── Carrito/              # Lista del carrito agrupada por producto, con total
+│   └── NoEncontrado/         # Página para rutas inexistentes
 └── components/
-    ├── Navbar/               # Logo, navegación y contador del carrito (por props)
+    ├── Navbar/               # Links con NavLink y contador del carrito (por props)
     ├── ProductList/          # Recorre los productos con .map() y key={producto.id}
-    ├── ProductCard/          # Tarjeta de un producto; al hacer click lo selecciona
-    ├── ProductDetail/        # Vista de detalle de un producto
+    ├── ProductCard/          # Tarjeta de un producto; es un Link a /productos/:id
+    ├── ProductDetail/        # Detalle de un producto con botón "Añadir al carrito"
+    ├── EstadoPeticion/       # Muestra "cargando" o el error del fetch con "Reintentar"
     ├── ContactForm/          # Formulario de contacto controlado con useState
     └── Footer/
 ```
@@ -110,20 +124,22 @@ client/src/
 
 1. Al montarse, `App` llama a `obtenerProductos()` dentro de un `useEffect` y maneja los
    tres estados de la petición: **cargando**, **éxito** (guarda los productos) y **error**.
+   `EstadoPeticion` muestra el mensaje que corresponde en cada página.
 2. `App` pasa los productos por props a `ProductList`, que renderiza un `ProductCard` por
    producto.
-3. Al hacer click en una tarjeta, `ProductCard` avisa a `App` con el callback
-   `onSeleccionar(id)`, y `App` guarda ese id en el estado `productoSeleccionadoId`.
-4. Si hay un producto seleccionado, `App` muestra `ProductDetail` en lugar de la lista
-   (renderizado condicional). El botón "Volver al catálogo" limpia la selección.
-5. La `Navbar` cambia la vista (`inicio`, `catalogo` o `contacto`) llamando a
-   `onNavegar`, otro callback que recibe por props.
+3. Cada `ProductCard` es un `Link` a `/productos/:id`. En esa ruta, `DetalleProducto` toma el
+   id de la URL con `useParams`, busca el producto y muestra `ProductDetail`; si el id no
+   existe, muestra "Producto no encontrado" (renderizado condicional).
+4. El botón "Añadir al carrito" de `ProductDetail` llama a un callback de `App`, que suma el
+   producto al estado `carrito`. La `Navbar` recibe la cantidad por props y la muestra.
+5. La página `/carrito` recibe el carrito y los productos por props, agrupa las unidades y
+   usa callbacks de `App` para sumar, restar, quitar y vaciar.
 
 ## Decisiones tomadas
 
-- **Navegación con estado y renderizado condicional, sin React Router.** La consigna pide
-  mostrar distintas vistas con renderizado condicional; una variable de estado `vista` en
-  `App` alcanza para tres secciones y evita agregar dependencias.
+- **React Router para la navegación.** Cada página tiene su propia URL, así funcionan el
+  botón "atrás" del navegador, recargar la página y compartir el link de un producto. Se usa
+  la versión 6 porque funciona con create-react-app sin configuración extra.
 - **Proxy de desarrollo en lugar de CORS.** `client/package.json` tiene
   `"proxy": "http://localhost:4000"`, así el frontend llama a `/api/productos` como si
   fuera del mismo origen y el backend no necesita configurar CORS.
@@ -134,20 +150,19 @@ client/src/
 - **`AbortController` en el `useEffect`.** Cancela la petición si el componente se desmonta
   (o cuando `StrictMode` ejecuta el efecto dos veces en desarrollo), evitando actualizar
   estado de un componente que ya no está.
-- **El estado vive en `App` y baja por props.** Productos, vista seleccionada y carrito se
-  guardan en el componente padre; los hijos reciben datos y callbacks.
+- **Los productos se piden una sola vez.** El fetch está en `App`, que no se desmonta al
+  cambiar de página; todas las rutas usan la misma lista sin volver a pedirla.
+- **El estado vive en `App` y baja por props.** Productos y carrito se guardan en el
+  componente padre; los hijos reciben datos y callbacks.
+- **El carrito guarda ids y se persiste en `localStorage`.** Cada id repetido es una unidad;
+  la página del carrito los agrupa y toma precio e imagen de los productos de la API. Al
+  guardarse en el navegador, el carrito no se pierde al recargar.
+- **Rutas de imagen absolutas.** La API devuelve `assets/img/...`; `services/api.js` las
+  convierte en `/assets/img/...` para que carguen también dentro de `/productos/:id`.
 - **Ids legibles (`"sofa-patagonia"`)** en lugar de números, igual que en la versión
-  anterior del sitio, para que las URLs de la API sean descriptivas.
+  anterior del sitio, para que las URLs sean descriptivas.
 - **Imágenes en `client/public/assets`.** Las sirve el propio servidor de React, así el
   backend solo devuelve datos.
-
-## Pendientes antes de la entrega
-
-- [ ] Manejador de 404 para rutas inexistentes y manejador de errores centralizado en
-      `backend/server.js`.
-- [ ] Carrito de compras como estado en `App.jsx`, conectado al contador de la `Navbar` y
-      al botón "Añadir al carrito" de `ProductDetail`.
-- [ ] Renderizar `<ContactForm />` en la vista de contacto de `App.jsx`.
 
 ## Versión anterior (Sprint 1 y 2)
 
