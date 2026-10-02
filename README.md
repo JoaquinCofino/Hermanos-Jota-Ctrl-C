@@ -48,6 +48,20 @@ npm start
 Se abre `http://localhost:3000`. Si el backend no está corriendo, la app muestra un mensaje
 de error con un botón para reintentar.
 
+## Publicación (Vercel)
+
+Frontend y backend se publican juntos en un solo proyecto de [Vercel](https://vercel.com),
+con una sola URL:
+
+- `vercel.json` (en la raíz) instala las dependencias de `client` y `backend`, compila el
+  frontend y define las rutas: `/api/...` va a Express y todo lo demás a la app de React
+  (así React Router funciona al recargar o entrar por un link).
+- `api/index.js` expone la app de Express de `backend/server.js` como función serverless.
+  En local, `server.js` sigue levantando el servidor con `app.listen` como siempre.
+
+Para publicar: importar el repo en Vercel dejando el *Root Directory* en la raíz. No hace
+falta configurar variables de entorno. Cada push a la rama configurada vuelve a publicar.
+
 ## API
 
 | Método | Ruta | Respuesta |

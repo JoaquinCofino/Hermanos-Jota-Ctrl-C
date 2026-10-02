@@ -35,6 +35,12 @@ app.use((err,req,res,next) => {
 })
 
 
-app.listen(PORT, () => {
-    console.log(`Servidor escuchando en el puerto http://localhost:${PORT}`);
-});
+// Con "npm start" / "npm run dev" se levanta el servidor normalmente.
+// En Vercel no se llama a listen: api/index.js importa la app y la ejecuta como función.
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Servidor escuchando en el puerto http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
