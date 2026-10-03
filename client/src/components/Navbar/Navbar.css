@@ -15,7 +15,9 @@
 }
 
 .navbar__logo {
-    height: 80px;
+    height: 50px;
+    width: auto;
+    display: block;
 }
 
 .navbar__toggle {
@@ -49,10 +51,14 @@
 }
 
 .navbar__links a {
+    font-family: var(--font-primaria);
     color: inherit;
     text-decoration: none;
     font-weight: 500;
     letter-spacing: 0.04em;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     transition: color var(--transicion);
 }
 
@@ -68,6 +74,7 @@
 .navbar__carrito {
     font-weight: 500;
     letter-spacing: 0.04em;
+    letter-spacing: 0.08em;
 }
 
 .navbar__contador {
@@ -80,10 +87,6 @@
 }
 
 @media (min-width: 700px) {
-    .navbar__logo {
-        height: 120px;
-    }
-
     .navbar__toggle {
         display: none;
     }
