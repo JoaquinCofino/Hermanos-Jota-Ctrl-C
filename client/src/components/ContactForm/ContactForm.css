@@ -204,7 +204,7 @@
 @media (max-width: 600px) {
   .tabla-contacto th {
     width: 30%;
-    font-size: 0.rem;
+    font-size: 0.8rem;
   }
 
   .tabla-contacto td {

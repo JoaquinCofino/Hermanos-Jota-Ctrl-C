@@ -18,6 +18,14 @@ body {
   min-height: 100vh;
 }
 
+/* React monta la app dentro de #root: el flex sigue acá para que main ocupe el espacio
+   libre y el footer quede al fondo aunque la página tenga poco contenido (ej. carrito vacío) */
+#root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 main {
   flex: 1;
 }
