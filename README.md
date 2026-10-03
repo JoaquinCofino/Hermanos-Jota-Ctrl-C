@@ -10,8 +10,8 @@ locales: pide el catálogo al backend con `fetch` y lo muestra dinámicamente.
 
 | Integrante | GitHub | Aportes principales |
 |---|---|---|
-| Joaquín Cofiño | [@JoaquinCofino](https://github.com/JoaquinCofino) | Fetch a la API con estados de carga y error, Navbar, ProductList, ProductCard, navegación con React Router, página de carrito |
-| Lorenzo Fares | [@lorenzofares](https://github.com/lorenzofares) | Estructura base, datos y rutas del backend, Footer, assets |
+| Joaquín Cofiño | [@JoaquinCofino](https://github.com/JoaquinCofino) | Fetch a la API con estados de carga y error, Navbar, ProductList, ProductCard, navegación con React Router, página de carrito, buscador del catálogo |
+| Lorenzo Fares | [@lorenzofares](https://github.com/lorenzofares) | Estructura base, datos y rutas del backend, Footer, assets, página de contacto con validación y mapa |
 | Juan Cruz Romero Huisi | [@juanrohu](https://github.com/juanrohu) | Middleware de logging |
 | Gonzalo Daniele | [@GonzaloDaniele](https://github.com/GonzaloDaniele) | ProductDetail, manejador de 404 y de errores del backend |
 | Fausto Tica | [@faustotica](https://github.com/faustotica) | ContactForm, estado del carrito en App |
@@ -85,10 +85,10 @@ error (o `500` si no tiene) y, fuera de producción, incluye el `stack` para dep
 | URL | Página |
 |---|---|
 | `/` | Inicio: presentación y productos destacados |
-| `/productos` | Catálogo completo |
+| `/productos` | Catálogo completo con buscador (por nombre, categoría, descripción o material) |
 | `/productos/:id` | Detalle de un producto (ej. `/productos/sofa-patagonia`) |
 | `/carrito` | Carrito: cantidades, subtotales, total, quitar y vaciar |
-| `/contacto` | Formulario de contacto |
+| `/contacto` | Formulario de contacto con validación, mapa, horarios y datos de contacto |
 | cualquier otra | Página "no encontrada" |
 
 ## Arquitectura
@@ -124,6 +124,7 @@ client/src/
 ├── services/api.js           # obtenerProductos(): fetch a /api/productos
 ├── utils/formatearPrecio.js  # Formato de precios en pesos argentinos
 ├── pages/
+│   ├── Catalogo/             # Catálogo con buscador (filtra la lista con useState)
 │   ├── DetalleProducto/      # Lee el :id de la URL con useParams y muestra ProductDetail
 │   ├── Carrito/              # Lista del carrito agrupada por producto, con total
 │   └── NoEncontrado/         # Página para rutas inexistentes
@@ -133,7 +134,7 @@ client/src/
     ├── ProductCard/          # Tarjeta de un producto; es un Link a /productos/:id
     ├── ProductDetail/        # Detalle de un producto con botón "Añadir al carrito"
     ├── EstadoPeticion/       # Muestra "cargando" o el error del fetch con "Reintentar"
-    ├── ContactForm/          # Formulario de contacto controlado con useState
+    ├── ContactForm/          # Formulario controlado con useState y validación, mapa y datos
     └── Footer/
 ```
 
@@ -143,7 +144,8 @@ client/src/
    tres estados de la petición: **cargando**, **éxito** (guarda los productos) y **error**.
    `EstadoPeticion` muestra el mensaje que corresponde en cada página.
 2. `App` pasa los productos por props a `ProductList`, que renderiza un `ProductCard` por
-   producto.
+   producto. En `/productos`, `Catalogo` guarda el texto del buscador en un `useState` y le
+   pasa a la lista solo los productos que coinciden (sin distinguir mayúsculas ni tildes).
 3. Cada `ProductCard` es un `Link` a `/productos/:id`. En esa ruta, `DetalleProducto` toma el
    id de la URL con `useParams`, busca el producto y muestra `ProductDetail`; si el id no
    existe, muestra "Producto no encontrado" (renderizado condicional).

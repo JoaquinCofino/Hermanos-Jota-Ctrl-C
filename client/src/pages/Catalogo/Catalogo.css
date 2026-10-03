@@ -1,0 +1,24 @@
+.catalogo-encabezado {
+    margin-bottom: var(--espacio-md);
+}
+
+.catalogo-subtitulo {
+    margin: 0;
+    color: var(--color-texto-suave);
+}
+
+/* Mismo estilo que el buscador del sitio anterior (css/productos.css) */
+.buscador {
+    display: flex;
+    gap: var(--espacio-xs);
+    padding-top: var(--espacio-md);
+}
+
+.buscador input {
+    flex: 1;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-borde);
+    font-family: var(--font-primaria);
+    font-size: 1rem;
+}

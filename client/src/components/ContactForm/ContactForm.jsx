@@ -57,7 +57,7 @@ function ContactForm() {
   };
 
   return (
-    <main className="contenedor contacto-main">
+    <section className="contacto-main">
       <div className="columna-formulario">
         <h2>Envíanos un mensaje</h2>
 
@@ -232,7 +232,7 @@ function ContactForm() {
           </table>
         </div>
       </div>
-    </main>
+    </section>
   );
 }
 

@@ -5,6 +5,7 @@ import ProductList from './components/ProductList/ProductList';
 import ContactForm from './components/ContactForm/ContactForm';
 import Footer from './components/Footer/Footer';
 import EstadoPeticion from './components/EstadoPeticion/EstadoPeticion';
+import Catalogo from './pages/Catalogo/Catalogo';
 import DetalleProducto from './pages/DetalleProducto/DetalleProducto';
 import Carrito from './pages/Carrito/Carrito';
 import NoEncontrado from './pages/NoEncontrado/NoEncontrado';
@@ -104,68 +105,80 @@ function App() {
             );
         }
 
-        return <ProductList productos={lista} onSeleccionar={handleSeleccionar} />;
+        return <ProductList productos={lista} />;
     };
 
-    const renderVista = () => {
-        if (productoSeleccionado) {
-            return (
-                <>
-                    <button
-                        type="button"
-                        className="boton-volver"
-                        onClick={() => setProductoSeleccionadoId(null)}
-                    >
-                        ← Volver al catálogo
-                    </button>
-                    <ProductDetail
-                        producto={productoSeleccionado}
-                        onVolver={() => setProductoSeleccionadoId(null)}
-                        onAgregarAlCarrito={agregarAlCarrito}
-                    />
-                </>
-            );
-        }
-
-        if (vista === 'catalogo') {
-            return (
-                <section>
-                    <h1>Catálogo</h1>
-                    {renderProductos(productos)}
-                </section>
-            );
-        }
-
-        if (vista === 'contacto') {
-            return (
-                <section>
-                    <h1>Contacto</h1>
-                    <ContactForm />
-                </section>
-            );
-        }
-
-        return (
-            <>
-                <section className="hero">
-                    <h1>Muebles que alimentan el alma</h1>
-                    <p>
-                        En Hermanos Jota, somos fieles creyentes de que 
-                        las piezas nacen de la tradición y encuentran su lugar en el presente, tanto en la historia como en la necesidad de cada hogar. Creamos piezas que honran la tradición, los materiales nobles y el trabajo artesanal, pensando en el presente y en un futuro más consciente.
-                    </p>
-                </section>
-                <section>
-                    <h2>Destacados</h2>
-                    {renderProductos(productos.filter((p) => p.destacado))}
-                </section>
-            </>
-        );
+    const peticion = {
+        cargando,
+        error,
+        onReintentar: () => setIntento((n) => n + 1)
     };
 
     return (
         <>
-            <Navbar vistaActual={vista} onNavegar={handleNavegar} cantidadCarrito={carrito.length} />
-            <main className="contenedor">{renderVista()}</main>
+            <Navbar cantidadCarrito={carrito.length} />
+            <main className="contenedor">
+                <Routes>
+                    <Route
+                        path="/"
+                        element={
+                            <>
+                                <section className="hero">
+                                    <h1>Muebles que alimentan el alma</h1>
+                                    <p>
+                                        En Hermanos Jota, somos fieles creyentes de que
+                                        las piezas nacen de la tradición y encuentran su lugar en el presente, tanto en la historia como en la necesidad de cada hogar. Creamos piezas que honran la tradición, los materiales nobles y el trabajo artesanal, pensando en el presente y en un futuro más consciente.
+                                    </p>
+                                </section>
+                                <section>
+                                    <h2>Destacados</h2>
+                                    {renderProductos(productos.filter((p) => p.destacado))}
+                                </section>
+                            </>
+                        }
+                    />
+                    <Route
+                        path="/productos"
+                        element={<Catalogo productos={productos} renderProductos={renderProductos} />}
+                    />
+                    <Route
+                        path="/productos/:id"
+                        element={
+                            <EstadoPeticion {...peticion}>
+                                <DetalleProducto
+                                    productos={productos}
+                                    onAgregarAlCarrito={(producto) => sumarUnidad(producto.id)}
+                                />
+                            </EstadoPeticion>
+                        }
+                    />
+                    <Route
+                        path="/carrito"
+                        element={
+                            <EstadoPeticion {...peticion}>
+                                <Carrito
+                                    carrito={carrito}
+                                    productos={productos}
+                                    onSumar={sumarUnidad}
+                                    onRestar={restarUnidad}
+                                    onQuitar={quitarProducto}
+                                    onVaciar={vaciarCarrito}
+                                />
+                            </EstadoPeticion>
+                        }
+                    />
+                    <Route
+                        path="/contacto"
+                        element={
+                            <section>
+                                <h1>Contacto</h1>
+                                <ContactForm />
+                            </section>
+                        }
+                    />
+                    <Route path="*" element={<NoEncontrado />} />
+                </Routes>
+            </main>
             <Footer />
         </>
     );
