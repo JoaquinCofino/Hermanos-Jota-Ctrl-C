@@ -15,7 +15,6 @@ gap: var(--espacio-sm);
 .footer-showroom {
 text-align: left;
 }
-
 .footer-contacto {
 text-align: left;
 }
@@ -24,6 +23,7 @@ text-align: left;
 margin: 0 0 var(--espacio-xs);
 font-family: var(--font-secundaria);
 font-size: 0.9rem;
+text-align: left;
 color: var(--color-siena);
 }
 
