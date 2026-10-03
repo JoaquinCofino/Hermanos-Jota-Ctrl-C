@@ -131,7 +131,12 @@ function App() {
                                     </p>
                                 </section>
                                 <section>
-                                    <h2>Destacados</h2>
+                                    <header className="seccion-encabezado">
+                                        <h2>Piezas Destacadas</h2>
+                                        <p className="seccion-subtitulo">
+                                            Una selección de piezas que combinan materiales nobles y trabajo consciente.
+                                        </p>
+                                    </header>
                                     {renderProductos(productos.filter((p) => p.destacado))}
                                 </section>
                             </>
@@ -171,7 +176,12 @@ function App() {
                         path="/contacto"
                         element={
                             <section>
-                                <h1>Contacto</h1>
+                                <header className="seccion-encabezado">
+                                    <h1>Contacto</h1>
+                                    <p className="seccion-subtitulo">
+                                        Escribinos para coordinar visitas a nuestra Casa Taller o iniciar un proyecto a medida.
+                                    </p>
+                                </header>
                                 <ContactForm />
                             </section>
                         }

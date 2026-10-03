@@ -24,7 +24,12 @@ export default function Carrito({ carrito, productos, onSumar, onRestar, onQuita
     if (items.length === 0) {
         return (
             <section>
-                <h1>Tu carrito</h1>
+                <header className="seccion-encabezado">
+                    <h1>Tu Carrito</h1>
+                    <p className="seccion-subtitulo">
+                        Revisá tu selección de piezas artesanales antes de finalizar tu compra.
+                    </p>
+                </header>
                 <p className="estado">
                     Tu carrito está vacío. <Link to="/productos">Ver catálogo →</Link>
                 </p>
@@ -34,7 +39,12 @@ export default function Carrito({ carrito, productos, onSumar, onRestar, onQuita
 
     return (
         <section>
-            <h1>Tu carrito</h1>
+            <header className="seccion-encabezado">
+                <h1>Tu Carrito</h1>
+                <p className="seccion-subtitulo">
+                    Revisá tu selección de piezas artesanales antes de finalizar tu compra.
+                </p>
+            </header>
 
             {items.map(({ producto, cantidad }) => (
                 <article key={producto.id} className="fila-carrito">
