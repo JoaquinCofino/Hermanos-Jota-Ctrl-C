@@ -1,7 +1,14 @@
 import { useState, useEffect, Fragment } from 'react';
 import './ProductDetail.css';
 
-export default function ProductDetail({ producto, onVolver, onAgregarAlCarrito }) {
+export default function ProductDetail({
+    producto,
+    cantidad = 0,
+    onVolver,
+    onAgregarAlCarrito,
+    onSumar,
+    onRestar
+}) {
     const [mensajeExito, setMensajeExito] = useState(false);
 
     useEffect(() => {
@@ -15,8 +22,26 @@ export default function ProductDetail({ producto, onVolver, onAgregarAlCarrito }
     if (!producto) return null;
 
     const handleAgregar = () => {
-        onAgregarAlCarrito?.(producto);
+        if (onSumar) {
+            onSumar(producto);
+        } else {
+            onAgregarAlCarrito?.(producto);
+        }
         setMensajeExito(true);
+    };
+
+    const handleSumar = () => {
+        if (onSumar) {
+            onSumar(producto);
+        } else {
+            onAgregarAlCarrito?.(producto);
+        }
+    };
+
+    const handleRestar = () => {
+        if (cantidad > 0) {
+            onRestar?.(producto);
+        }
     };
 
     const precioFormateado = new Intl.NumberFormat('es-AR', {
@@ -41,6 +66,33 @@ export default function ProductDetail({ producto, onVolver, onAgregarAlCarrito }
 
                 <div className="detalle-producto__compra">
                     <p className="detalle-producto__precio">{precioFormateado}</p>
+
+                    {cantidad > 0 && (
+                        <div className="detalle-producto__contador">
+                            <button
+                                type="button"
+                                className="detalle-producto__contador-btn"
+                                aria-label="Restar una unidad"
+                                onClick={handleRestar}
+                            >
+                                −
+                            </button>
+                            <span className="detalle-producto__contador-valor">
+                                {cantidad}
+                            </span>
+                            <button
+                                type="button"
+                                className="detalle-producto__contador-btn"
+                                aria-label="Sumar una unidad"
+                                onClick={handleSumar}
+                            >
+                                +
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                <div className="detalle-producto__acciones">
                     <button
                         type="button"
                         data-boton-agregar
@@ -48,11 +100,13 @@ export default function ProductDetail({ producto, onVolver, onAgregarAlCarrito }
                     >
                         Añadir al carrito
                     </button>
-                </div>
 
-                {mensajeExito && (
-                    <p className="mensaje-exito">Se agregó al carrito ✓</p>
-                )}
+                    {mensajeExito && (
+                        <span className="mensaje-exito" role="status" aria-live="polite">
+                            Se agregó al carrito ✓
+                        </span>
+                    )}
+                </div>
 
                 <p className="detalle-producto__descripcion">{producto.descripcion}</p>
             </div>
