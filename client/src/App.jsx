@@ -124,11 +124,14 @@ function App() {
                         element={
                             <>
                                 <section className="hero">
-                                    <h1>Muebles que alimentan el alma</h1>
-                                    <p>
-                                        En Hermanos Jota, somos fieles creyentes de que
-                                        las piezas nacen de la tradición y encuentran su lugar en el presente, tanto en la historia como en la necesidad de cada hogar. Creamos piezas que honran la tradición, los materiales nobles y el trabajo artesanal, pensando en el presente y en un futuro más consciente.
-                                    </p>
+                                    <div className="hero__contenido">
+                                        <span className="hero__etiqueta">Casa Taller & Oficio</span>
+                                        <h1>Muebles que alimentan el alma</h1>
+                                        <p>
+                                            En Hermanos Jota, somos fieles creyentes de que
+                                            las piezas nacen de la tradición y encuentran su lugar en el presente, tanto en la historia como en la necesidad de cada hogar. Creamos piezas que honran la tradición, los materiales nobles y el trabajo artesanal, pensando en el presente y en un futuro más consciente.
+                                        </p>
+                                    </div>
                                 </section>
                                 <section>
                                     <header className="seccion-encabezado">
@@ -152,7 +155,10 @@ function App() {
                             <EstadoPeticion {...peticion}>
                                 <DetalleProducto
                                     productos={productos}
+                                    carrito={carrito}
                                     onAgregarAlCarrito={(producto) => sumarUnidad(producto.id)}
+                                    onSumar={sumarUnidad}
+                                    onRestar={restarUnidad}
                                 />
                             </EstadoPeticion>
                         }
