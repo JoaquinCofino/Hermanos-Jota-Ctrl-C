@@ -55,7 +55,7 @@
 .fila-carrito__subtotal {
   grid-area: subtotal;
   font-weight: 700;
-  color: var(--color-vara-oro);
+  color: var(--texto-principal);
   margin: 0;
   justify-self: end;
 }

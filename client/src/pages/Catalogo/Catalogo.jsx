@@ -24,9 +24,9 @@ export default function Catalogo({ productos, renderProductos }) {
 
     return (
         <section>
-            <header className="catalogo-encabezado">
+            <header className="seccion-encabezado catalogo-encabezado">
                 <h1>Catálogo</h1>
-                <p className="catalogo-subtitulo">
+                <p className="seccion-subtitulo catalogo-subtitulo">
                     Redescubrí el arte de vivir con piezas pensadas para perdurar.
                 </p>
                 <div className="buscador">

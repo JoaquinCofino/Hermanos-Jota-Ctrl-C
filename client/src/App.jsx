@@ -124,14 +124,22 @@ function App() {
                         element={
                             <>
                                 <section className="hero">
-                                    <h1>Muebles que alimentan el alma</h1>
-                                    <p>
-                                        En Hermanos Jota, somos fieles creyentes de que
-                                        las piezas nacen de la tradición y encuentran su lugar en el presente, tanto en la historia como en la necesidad de cada hogar. Creamos piezas que honran la tradición, los materiales nobles y el trabajo artesanal, pensando en el presente y en un futuro más consciente.
-                                    </p>
+                                    <div className="hero__contenido">
+                                        <span className="hero__etiqueta">Casa Taller & Oficio</span>
+                                        <h1>Muebles que alimentan el alma</h1>
+                                        <p>
+                                            En Hermanos Jota, somos fieles creyentes de que
+                                            las piezas nacen de la tradición y encuentran su lugar en el presente, tanto en la historia como en la necesidad de cada hogar. Creamos piezas que honran la tradición, los materiales nobles y el trabajo artesanal, pensando en el presente y en un futuro más consciente.
+                                        </p>
+                                    </div>
                                 </section>
                                 <section>
-                                    <h2>Destacados</h2>
+                                    <header className="seccion-encabezado">
+                                        <h2>Piezas Destacadas</h2>
+                                        <p className="seccion-subtitulo">
+                                            Una selección de piezas que combinan materiales nobles y trabajo consciente.
+                                        </p>
+                                    </header>
                                     {renderProductos(productos.filter((p) => p.destacado))}
                                 </section>
                             </>
@@ -147,7 +155,10 @@ function App() {
                             <EstadoPeticion {...peticion}>
                                 <DetalleProducto
                                     productos={productos}
+                                    carrito={carrito}
                                     onAgregarAlCarrito={(producto) => sumarUnidad(producto.id)}
+                                    onSumar={sumarUnidad}
+                                    onRestar={restarUnidad}
                                 />
                             </EstadoPeticion>
                         }
@@ -171,7 +182,12 @@ function App() {
                         path="/contacto"
                         element={
                             <section>
-                                <h1>Contacto</h1>
+                                <header className="seccion-encabezado">
+                                    <h1>Contacto</h1>
+                                    <p className="seccion-subtitulo">
+                                        Escribinos para coordinar visitas a nuestra Casa Taller o iniciar un proyecto a medida.
+                                    </p>
+                                </header>
                                 <ContactForm />
                             </section>
                         }
