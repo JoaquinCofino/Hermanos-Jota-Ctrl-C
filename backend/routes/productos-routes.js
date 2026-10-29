@@ -1,26 +1,27 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const PRODUCTS = require('../data/productos');
+const {
+  getProducts,
+  getProductById,
+  createProduct,
+  updateProduct,
+  deleteProduct
+} = require("../controller/productsController");
 
-// RUTAS 
-// Todos los productos
-router.get('/', (req, res) => {
-    res.json(PRODUCTS);
-});
+// Obtener todos los productos
+router.get("/", getProducts);
 
-// Buscamos por ID 
-router.get("/:id", (req, res) => {
-    const id = req.params.id;
-    const producto = PRODUCTS.find(producto => producto.id === id);
+// Obtener un producto por ID
+router.get("/:id", getProductById);
 
-    if (!producto) {
-        return res.status(404).json({
-            mensaje: "Producto no encontrado"
-        });
-    }
+// Crear un producto
+router.post("/", createProduct);
 
-    res.json(producto);
-});
+// Actualizar un producto
+router.put("/:id", updateProduct);
+
+// Eliminar un producto
+router.delete("/:id", deleteProduct);
 
 module.exports = router;
