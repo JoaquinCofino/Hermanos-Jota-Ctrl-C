@@ -1,0 +1,36 @@
+.aviso {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacio-sm);
+    margin: 0 0 var(--espacio-md);
+    padding: 0.75rem 1rem;
+    border-left: 4px solid var(--color-verde-salvia);
+    border-radius: var(--radio-borde);
+    background: rgba(135, 169, 107, 0.14);
+    color: var(--color-texto);
+    font-size: 0.95rem;
+    animation: aviso-entrada 0.25s ease-out;
+}
+
+.aviso button {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    padding: 0 0.25rem;
+    color: var(--color-texto-suave);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+@keyframes aviso-entrada {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
