@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const cors = require("cors");
 const logger = require("./middlewares/logger");
 const conectarDB = require("./utils/db");
 const productosRoutes = require("./routes/productos-routes");
@@ -9,6 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // Middlewares
+app.use(cors());
 app.use(logger);
 app.use(express.json());
 
