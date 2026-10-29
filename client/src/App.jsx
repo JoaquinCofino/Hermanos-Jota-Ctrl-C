@@ -5,9 +5,12 @@ import ProductList from './components/ProductList/ProductList';
 import ContactForm from './components/ContactForm/ContactForm';
 import Footer from './components/Footer/Footer';
 import EstadoPeticion from './components/EstadoPeticion/EstadoPeticion';
+import Aviso from './components/Aviso/Aviso';
 import Catalogo from './pages/Catalogo/Catalogo';
 import DetalleProducto from './pages/DetalleProducto/DetalleProducto';
 import Carrito from './pages/Carrito/Carrito';
+import CrearProducto from './pages/AdminProducto/CrearProducto';
+import EditarProducto from './pages/AdminProducto/EditarProducto';
 import NoEncontrado from './pages/NoEncontrado/NoEncontrado';
 import { obtenerProductos } from './services/api';
 import './App.css';
@@ -62,6 +65,24 @@ function App() {
     const vaciarCarrito = () => {
         setCarrito([]);
     };
+
+    // CRUD desde el front: la API ya guardó el cambio en la base,
+    // acá se actualiza la lista en memoria para no tener que volver a pedirla.
+    const agregarProducto = (nuevo) => {
+        setProductos((prev) => [...prev, nuevo]);
+    };
+
+    const reemplazarProducto = (actualizado) => {
+        setProductos((prev) => prev.map((p) => (p.id === actualizado.id ? actualizado : p)));
+    };
+
+    const borrarProducto = (id) => {
+        setProductos((prev) => prev.filter((p) => p.id !== id));
+        quitarProducto(id); // si estaba en el carrito, se saca
+    };
+
+    // Categorías que ya existen, para sugerirlas en el formulario
+    const categorias = [...new Set(productos.map((p) => p.categoria).filter(Boolean))].sort();
 
     useEffect(() => {
         // Cancela el fetch si el componente se desmonta (o StrictMode ejecuta el efecto dos veces)
@@ -118,6 +139,8 @@ function App() {
         <>
             <Navbar cantidadCarrito={carrito.length} />
             <main className="contenedor">
+                {/* key: al cambiar de página se vuelve a crear y lee el aviso de la nueva ruta */}
+                <Aviso key={pathname} />
                 <Routes>
                     <Route
                         path="/"
@@ -159,6 +182,23 @@ function App() {
                                     onAgregarAlCarrito={(producto) => sumarUnidad(producto.id)}
                                     onSumar={sumarUnidad}
                                     onRestar={restarUnidad}
+                                    onEliminado={borrarProducto}
+                                />
+                            </EstadoPeticion>
+                        }
+                    />
+                    <Route
+                        path="/admin/crear-producto"
+                        element={<CrearProducto categorias={categorias} onCreado={agregarProducto} />}
+                    />
+                    <Route
+                        path="/admin/editar-producto/:id"
+                        element={
+                            <EstadoPeticion {...peticion}>
+                                <EditarProducto
+                                    productos={productos}
+                                    categorias={categorias}
+                                    onActualizado={reemplazarProducto}
                                 />
                             </EstadoPeticion>
                         }
