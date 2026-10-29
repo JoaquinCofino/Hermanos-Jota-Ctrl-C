@@ -3,12 +3,17 @@ import { formatearPrecio } from '../../utils/formatearPrecio';
 import './ProductCard.css';
 
 export default function ProductCard({ producto }) {
+    const imagenSrc =
+        producto.imagenUrl?.startsWith('http') || producto.imagenUrl?.startsWith('/')
+            ? producto.imagenUrl
+            : `/${producto.imagenUrl}`;
+
     return (
         <article className="product-card">
-            <Link className="product-card__link" to={`/productos/${producto.id}`}>
+            <Link className="product-card__link" to={`/productos/${producto._id}`}>
                 <img
                     className="product-card__img"
-                    src={producto.imagen}
+                    src={imagenSrc}
                     alt={producto.nombre}
                     loading="lazy"
                 />

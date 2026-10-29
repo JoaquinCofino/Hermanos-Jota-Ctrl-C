@@ -1,6 +1,6 @@
-// En desarrollo, el "proxy" de package.json redirige /api a http://localhost:4000,
-// así que no hace falta CORS ni escribir la URL completa del backend.
-const API_URL = process.env.REACT_APP_API_URL || '';
+// En desarrollo, si REACT_APP_API_URL no está definida, el "proxy" de package.json
+// redirige /api a http://localhost:4000. En producción (Vercel), usa REACT_APP_API_URL.
+const API_URL = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
 
 export async function obtenerProductos(signal) {
     const respuesta = await fetch(`${API_URL}/api/productos`, { signal });
@@ -11,7 +11,11 @@ export async function obtenerProductos(signal) {
     }
 
     const productos = await respuesta.json();
-    return productos.map((producto) => ({ ...producto, imagen: rutaAbsoluta(producto.imagen) }));
+    return productos.map((producto) => ({
+        ...producto,
+        imagen: rutaAbsoluta(producto.imagenUrl || producto.imagen),
+        imagenUrl: rutaAbsoluta(producto.imagenUrl || producto.imagen),
+    }));
 }
 
 // La API devuelve "assets/img/...". Con rutas como /productos/:id, una ruta relativa se

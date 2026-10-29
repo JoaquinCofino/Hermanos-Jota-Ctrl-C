@@ -10,7 +10,7 @@ export default function DetalleProducto({
     onRestar
 }) {
     const { id } = useParams();
-    const producto = productos.find((p) => p.id === id);
+    const producto = productos.find((p) => p._id === id);
 
     if (!producto) {
         return (
@@ -34,8 +34,8 @@ export default function DetalleProducto({
                 producto={producto}
                 cantidad={cantidad}
                 onAgregarAlCarrito={onAgregarAlCarrito}
-                onSumar={() => (onSumar ? onSumar(producto.id) : onAgregarAlCarrito?.(producto))}
-                onRestar={() => onRestar?.(producto.id)}
+                onSumar={() => (onSumar ? onSumar(producto._id) : onAgregarAlCarrito?.(producto))}
+                onRestar={() => onRestar?.(producto._id)}
             />
         </>
     );

@@ -11,7 +11,7 @@ function agruparCarrito(idsCarrito, productos) {
 
     return Object.keys(cantidades)
         .map((id) => {
-            const producto = productos.find((p) => p.id === id);
+            const producto = productos.find((p) => p._id === id);
             return producto ? { producto, cantidad: cantidades[id] } : null;
         })
         .filter(Boolean);
@@ -46,33 +46,40 @@ export default function Carrito({ carrito, productos, onSumar, onRestar, onQuita
                 </p>
             </header>
 
-            {items.map(({ producto, cantidad }) => (
-                <article key={producto.id} className="fila-carrito">
-                    <img className="fila-carrito__img" src={producto.imagen} alt={producto.nombre} />
-                    <div className="fila-carrito__info">
-                        <h3>{producto.nombre}</h3>
-                        <p className="categoria">{formatearPrecio(producto.precio)} c/u</p>
-                    </div>
-                    <div className="fila-carrito__cantidad">
-                        <button type="button" aria-label="Quitar una unidad" onClick={() => onRestar(producto.id)}>
-                            −
+            {items.map(({ producto, cantidad }) => {
+                const imagenSrc =
+                    producto.imagenUrl?.startsWith('http') || producto.imagenUrl?.startsWith('/')
+                        ? producto.imagenUrl
+                        : `/${producto.imagenUrl}`;
+
+                return (
+                    <article key={producto._id} className="fila-carrito">
+                        <img className="fila-carrito__img" src={imagenSrc} alt={producto.nombre} />
+                        <div className="fila-carrito__info">
+                            <h3>{producto.nombre}</h3>
+                            <p className="categoria">{formatearPrecio(producto.precio)} c/u</p>
+                        </div>
+                        <div className="fila-carrito__cantidad">
+                            <button type="button" aria-label="Quitar una unidad" onClick={() => onRestar(producto._id)}>
+                                −
+                            </button>
+                            <span>{cantidad}</span>
+                            <button type="button" aria-label="Agregar una unidad" onClick={() => onSumar(producto._id)}>
+                                +
+                            </button>
+                        </div>
+                        <p className="fila-carrito__subtotal">{formatearPrecio(producto.precio * cantidad)}</p>
+                        <button
+                            type="button"
+                            className="fila-carrito__quitar"
+                            aria-label="Quitar producto"
+                            onClick={() => onQuitar(producto._id)}
+                        >
+                            ✕
                         </button>
-                        <span>{cantidad}</span>
-                        <button type="button" aria-label="Agregar una unidad" onClick={() => onSumar(producto.id)}>
-                            +
-                        </button>
-                    </div>
-                    <p className="fila-carrito__subtotal">{formatearPrecio(producto.precio * cantidad)}</p>
-                    <button
-                        type="button"
-                        className="fila-carrito__quitar"
-                        aria-label="Quitar producto"
-                        onClick={() => onQuitar(producto.id)}
-                    >
-                        ✕
-                    </button>
-                </article>
-            ))}
+                    </article>
+                );
+            })}
 
             <div className="resumen-carrito">
                 <span>Total</span>

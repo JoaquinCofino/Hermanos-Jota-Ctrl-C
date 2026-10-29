@@ -51,12 +51,16 @@ export default function ProductDetail({
     }).format(producto.precio);
 
     const f = producto.fabricacion;
+    const imagenSrc =
+        producto.imagenUrl?.startsWith('http') || producto.imagenUrl?.startsWith('/')
+            ? producto.imagenUrl
+            : `/${producto.imagenUrl}`;
 
     return (
         <article className="detalle-producto">
             <img
                 className="detalle-producto__img"
-                src={producto.imagen}
+                src={imagenSrc}
                 alt={producto.nombre}
             />
 
