@@ -1,5 +1,8 @@
-/* Mobile-first: hamburguesa visible y menú oculto hasta que se abre */
+/* Mobile-first: logo + carrito + hamburguesa en una fila; los links en un panel desplegable */
 .navbar {
+    position: relative;
+    z-index: 50; /* por encima del fondo oscuro del menú */
+    background: var(--color-blanco);
     border-bottom: 1px solid var(--color-borde);
     padding: var(--espacio-sm) 0;
 }
@@ -10,8 +13,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
     gap: var(--espacio-xs);
+}
+
+.navbar__marca {
+    display: block;
 }
 
 .navbar__logo {
@@ -20,63 +26,207 @@
     display: block;
 }
 
-.navbar__toggle {
-    display: inline-flex;
+.navbar__acciones {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    background: none;
-    border: 1px solid var(--color-borde);
-    border-radius: var(--radio-borde);
-    padding: 0.4rem 0.6rem;
-    font-size: 1.2rem;
-    line-height: 1;
-    cursor: pointer;
+    gap: 1.25rem;
 }
 
-.navbar nav {
-    flex-basis: 100%;
+/* ---------- Botón hamburguesa: tres barras que se convierten en X ---------- */
+.navbar__toggle {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0;
+    background: none;
+    border: 1px solid var(--color-borde);
+    border-radius: 999px;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: background-color var(--transicion), border-color var(--transicion), color var(--transicion);
+}
+
+.navbar__toggle:hover,
+.navbar__toggle[aria-expanded="true"] {
+    border-color: var(--color-siena);
+    color: var(--color-siena);
+}
+
+.navbar__toggle[aria-expanded="true"] {
+    background: var(--color-alabastro);
+}
+
+.navbar__toggle:focus-visible {
+    outline: 2px solid var(--color-siena);
+    outline-offset: 2px;
+}
+
+.navbar__toggle-barra {
+    display: block;
+    width: 18px;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+/* 5px de gap + 2px de barra = 7px: las barras de arriba y abajo se juntan en el centro */
+.navbar__toggle[aria-expanded="true"] .navbar__toggle-barra:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.navbar__toggle[aria-expanded="true"] .navbar__toggle-barra:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.navbar__toggle[aria-expanded="true"] .navbar__toggle-barra:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ---------- Panel desplegable (mobile) ---------- */
+.navbar__menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-blanco);
+    border-top: 1px solid var(--color-borde);
+    border-bottom: 3px solid var(--color-siena);
+    box-shadow: 0 18px 30px rgba(43, 33, 24, 0.12);
+    opacity: 0;
+    visibility: hidden; /* oculto también para teclado y lectores de pantalla */
+    transform: translateY(-0.75rem);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s linear 0.25s;
+}
+
+.navbar--abierto .navbar__menu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0s;
 }
 
 .navbar__links {
-    display: none;
-    flex-direction: column;
-    gap: var(--espacio-sm);
+    width: min(1100px, 92%);
+    margin: 0 auto;
+    padding: 0.25rem 0 1rem;
     list-style: none;
-    margin: var(--espacio-sm) 0 0;
-    padding: 0;
-}
-
-.navbar__links--abierto {
     display: flex;
+    flex-direction: column;
 }
 
-.navbar__links a {
+.navbar__links li + li {
+    border-top: 1px solid var(--color-borde);
+}
+
+/* Los links entran uno detrás del otro al abrir */
+.navbar--abierto .navbar__links li {
+    animation: navbar-item 0.35s ease both;
+}
+
+.navbar--abierto .navbar__links li:nth-child(2) {
+    animation-delay: 0.05s;
+}
+
+.navbar--abierto .navbar__links li:nth-child(3) {
+    animation-delay: 0.1s;
+}
+
+@keyframes navbar-item {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.navbar__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0.25rem; /* filas altas: fáciles de tocar con el dedo */
     font-family: var(--font-primaria);
-    color: inherit;
-    text-decoration: none;
+    font-size: 0.95rem;
     font-weight: 500;
-    letter-spacing: 0.04em;
-    font-size: 0.85rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    text-decoration: none;
+    color: var(--color-texto);
     transition: color var(--transicion);
 }
 
-.navbar__links a:hover,
+.navbar__link::after {
+    content: "→";
+    color: var(--color-texto-suave);
+    transition: transform var(--transicion), color var(--transicion);
+}
+
+.navbar__link:hover,
 .navbar__link--activo {
     color: var(--color-siena);
 }
 
-.navbar__link--activo {
-    border-bottom: 2px solid var(--color-siena);
+.navbar__link:hover::after,
+.navbar__link--activo::after {
+    color: var(--color-siena);
+    transform: translateX(4px);
 }
 
+.navbar__link--activo {
+    font-weight: 700;
+}
+
+/* Fondo oscuro detrás del panel; tocarlo cierra el menú */
+.navbar-fondo {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: rgba(43, 33, 24, 0.35);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+}
+
+.navbar-fondo--visible {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.25s ease, visibility 0s;
+}
+
+/* Con el menú abierto la página de atrás no scrollea (solo en mobile) */
+@media (max-width: 699px) {
+    body.menu-mobile-abierto {
+        overflow: hidden;
+    }
+}
+
+/* ---------- Carrito ---------- */
 .navbar__carrito {
     position: relative;
     display: inline-flex;
     align-items: center;
     width: fit-content;
     margin-right: 0.8rem;
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--transicion);
+}
+
+.navbar__carrito:hover,
+.navbar__carrito.navbar__link--activo {
+    color: var(--color-siena);
+}
+
+.navbar__carrito.navbar__link--activo {
+    border-bottom: 2px solid var(--color-siena);
 }
 
 .navbar__carrito svg {
@@ -104,21 +254,69 @@
     pointer-events: none;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .navbar__menu,
+    .navbar-fondo,
+    .navbar__toggle-barra,
+    .navbar--abierto .navbar__links li {
+        transition: none;
+        animation: none;
+    }
+}
+
+/* ---------- Desde tablet: menú horizontal de siempre, sin hamburguesa ---------- */
 @media (min-width: 700px) {
-    .navbar__toggle {
+    .navbar__toggle,
+    .navbar-fondo {
         display: none;
     }
 
-    .navbar nav {
-        flex-basis: auto;
-        min-width: 0;
+    .navbar__menu {
+        position: static;
+        margin-left: auto;
+        background: none;
+        border: 0;
+        box-shadow: none;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        transition: none;
     }
 
     .navbar__links {
-        display: flex;
+        width: auto;
+        margin: 0;
+        padding: 0;
         flex-direction: row;
         align-items: center;
         gap: var(--espacio-md);
-        margin: 0;
+    }
+
+    .navbar__links li + li {
+        border-top: 0;
+    }
+
+    .navbar--abierto .navbar__links li {
+        animation: none;
+    }
+
+    .navbar__link {
+        display: inline;
+        padding: 0;
+        font-size: 0.85rem;
+        letter-spacing: 0.08em;
+    }
+
+    .navbar__link::after {
+        content: none;
+    }
+
+    .navbar__link--activo {
+        font-weight: 500;
+        border-bottom: 2px solid var(--color-siena);
+    }
+
+    .navbar__acciones {
+        margin-left: var(--espacio-md);
     }
 }
