@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './Catalogo.css';
+import '../AdminProducto/AdminProducto.css';
 
 // Minúsculas y sin tildes, para que "sofa" encuentre "Sofá"
 function normalizar(texto = '') {
@@ -38,6 +40,9 @@ export default function Catalogo({ productos, renderProductos }) {
                         onChange={(e) => setBusqueda(e.target.value)}
                     />
                 </div>
+                <Link className="admin-boton catalogo-nuevo" to="/admin/crear-producto">
+                    + Nuevo producto
+                </Link>
             </header>
 
             {renderProductos(filtrados)}

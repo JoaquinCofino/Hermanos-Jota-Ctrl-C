@@ -1,0 +1,71 @@
+/* Páginas de alta y edición de productos */
+.admin-producto {
+    width: 100%;
+    max-width: 680px;
+    margin-inline: auto;
+}
+
+.admin-producto > .boton-volver {
+    display: inline-block;
+    margin-bottom: var(--espacio-sm);
+    text-decoration: none;
+}
+
+/* Botones de "Editar" / "Eliminar" en el detalle y "Nuevo producto" en el catálogo */
+.admin-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacio-sm);
+}
+
+.admin-acciones__botones {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.admin-boton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.95rem;
+    border: 1px solid var(--color-borde);
+    border-radius: 999px;
+    background: var(--color-blanco);
+    color: var(--color-texto);
+    font-family: var(--font-primaria);
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color var(--transicion), color var(--transicion), background-color var(--transicion);
+}
+
+.admin-boton:hover:not(:disabled) {
+    border-color: var(--color-siena);
+    color: var(--color-siena);
+}
+
+.admin-boton--peligro {
+    color: #b3261e;
+}
+
+.admin-boton--peligro:hover:not(:disabled) {
+    border-color: #b3261e;
+    color: #b3261e;
+    background: #fdecea;
+}
+
+.admin-boton:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.admin-error {
+    margin: var(--espacio-xs) 0 0;
+    color: #b3261e;
+    font-size: 0.9rem;
+}
