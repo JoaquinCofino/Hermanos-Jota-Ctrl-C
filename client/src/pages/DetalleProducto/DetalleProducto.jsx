@@ -14,7 +14,11 @@ export default function DetalleProducto({
     onEliminado
 }) {
     const { id } = useParams();
-    const producto = productos.find((p) => p._id === id);
+    const navigate = useNavigate();
+    const [eliminando, setEliminando] = useState(false);
+    const [errorEliminar, setErrorEliminar] = useState(null);
+
+    const producto = productos.find((p) => p.id === id);
 
     if (!producto) {
         return (
@@ -78,8 +82,8 @@ export default function DetalleProducto({
                 producto={producto}
                 cantidad={cantidad}
                 onAgregarAlCarrito={onAgregarAlCarrito}
-                onSumar={() => (onSumar ? onSumar(producto._id) : onAgregarAlCarrito?.(producto))}
-                onRestar={() => onRestar?.(producto._id)}
+                onSumar={() => (onSumar ? onSumar(producto.id) : onAgregarAlCarrito?.(producto))}
+                onRestar={() => onRestar?.(producto.id)}
             />
         </>
     );
