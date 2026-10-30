@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatearPrecio } from '../../utils/formatearPrecio';
 import './Carrito.css';
@@ -18,8 +19,15 @@ function agruparCarrito(idsCarrito, productos) {
 }
 
 export default function Carrito({ carrito, productos, onSumar, onRestar, onQuitar, onVaciar }) {
+    const [compraRealizada, setCompraRealizada] = useState(false);
     const items = agruparCarrito(carrito, productos);
     const total = items.reduce((acc, { producto, cantidad }) => acc + producto.precio * cantidad, 0);
+
+    const handleFinalizarCompra = () => {
+        alert('¡Gracias por tu compra en Hermanos Jota! Tu pedido ha sido procesado.');
+        onVaciar();
+        setCompraRealizada(true);
+    };
 
     if (items.length === 0) {
         return (
@@ -31,7 +39,11 @@ export default function Carrito({ carrito, productos, onSumar, onRestar, onQuita
                     </p>
                 </header>
                 <p className="estado">
-                    Tu carrito está vacío. <Link to="/productos">Ver catálogo →</Link>
+                    {compraRealizada ? (
+                        <>¡Muchas gracias por elegirnos! <Link to="/productos">Seguir explorando el catalogo →</Link> </>
+                    ) : (
+                        <>Tu carrito está vacío. <Link to="/productos">Ver catálogo →</Link></>
+                    )}
                 </p>
             </section>
         );
@@ -86,6 +98,9 @@ export default function Carrito({ carrito, productos, onSumar, onRestar, onQuita
                 <Link to="/productos" className="boton-carrito">
                     Seguir comprando
                 </Link>
+                <button type="button" className="boton-carrito" onClick={handleFinalizarCompra}>
+                    Efectuar compra
+                </button>
             </div>
         </section>
     );
