@@ -1,8 +1,6 @@
-// En desarrollo, el "proxy" de package.json redirige /api a http://localhost:4000,
-// así que no hace falta CORS ni escribir la URL completa del backend.
-// En producción (Vercel) REACT_APP_API_URL apunta al backend en Render, ej: https://xxx.onrender.com
-// Se le saca la "/" final para no terminar pidiendo "//api/productos".
-const API_URL = (process.env.REACT_APP_API_URL || '').replace(/\/+$/, '');
+// En desarrollo, si REACT_APP_API_URL no está definida, el "proxy" de package.json
+// redirige /api a http://localhost:4000. En producción (Vercel), usa REACT_APP_API_URL.
+const API_URL = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
 
 // Imagen que se muestra cuando un producto no tiene imagenUrl
 const IMAGEN_POR_DEFECTO = '/assets/img/productos/sin-imagen.svg';
