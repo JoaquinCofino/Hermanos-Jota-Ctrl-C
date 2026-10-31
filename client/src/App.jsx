@@ -19,33 +19,45 @@ import './index.css';
 // El carrito se guarda en localStorage para que no se pierda al recargar la página
 const CARRITO_KEY = 'hj_carrito';
 
-function leerCarritoGuardado() {
+// Copia de los productos de la última visita: se muestran al instante mientras llega
+// la lista nueva (el backend gratis de Render tarda hasta un minuto en "despertarse").
+const PRODUCTOS_KEY = 'hj_productos_v1';
+
+function leerGuardado(clave) {
     try {
-        return JSON.parse(localStorage.getItem(CARRITO_KEY)) || [];
+        return JSON.parse(localStorage.getItem(clave)) || [];
     } catch {
         return [];
     }
 }
 
+function guardar(clave, valor) {
+    try {
+        localStorage.setItem(clave, JSON.stringify(valor));
+    } catch {
+        // Si el navegador bloquea localStorage, la app sigue funcionando en memoria
+    }
+}
+
 function App() {
     // Ciclo de vida de la petición: cargando → éxito (productos) | error
-    const [productos, setProductos] = useState([]);
+    const [productos, setProductos] = useState(() => leerGuardado(PRODUCTOS_KEY));
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState(null);
     const [intento, setIntento] = useState(0);
 
     // Array de ids de producto: cada id repetido es una unidad más
-    const [carrito, setCarrito] = useState(leerCarritoGuardado);
+    const [carrito, setCarrito] = useState(() => leerGuardado(CARRITO_KEY));
 
     const { pathname } = useLocation();
 
     useEffect(() => {
-        try {
-            localStorage.setItem(CARRITO_KEY, JSON.stringify(carrito));
-        } catch {
-            // Si el navegador bloquea localStorage, el carrito sigue funcionando en memoria
-        }
+        guardar(CARRITO_KEY, carrito);
     }, [carrito]);
+
+    useEffect(() => {
+        guardar(PRODUCTOS_KEY, productos);
+    }, [productos]);
 
     const sumarUnidad = (id) => {
         setCarrito((prev) => [...prev, id]);
@@ -110,30 +122,21 @@ function App() {
         window.scrollTo(0, 0);
     }, [pathname]);
 
-    const renderProductos = (lista) => {
-        if (cargando) {
-            return <p className="estado">Cargando productos…</p>;
-        }
-
-        if (error) {
-            return (
-                <div className="estado estado--error">
-                    <p>{error}</p>
-                    <button type="button" onClick={() => setIntento((n) => n + 1)}>
-                        Reintentar
-                    </button>
-                </div>
-            );
-        }
-
-        return <ProductList productos={lista} />;
-    };
+    // Si ya hay productos (de la copia guardada), se muestran aunque la petición siga en curso
+    // o haya fallado; "cargando" y el error solo se ven cuando no hay nada para mostrar.
+    const sinProductos = productos.length === 0;
 
     const peticion = {
-        cargando,
-        error,
+        cargando: cargando && sinProductos,
+        error: sinProductos ? error : null,
         onReintentar: () => setIntento((n) => n + 1)
     };
+
+    const renderProductos = (lista) => (
+        <EstadoPeticion {...peticion}>
+            <ProductList productos={lista} />
+        </EstadoPeticion>
+    );
 
     return (
         <>
