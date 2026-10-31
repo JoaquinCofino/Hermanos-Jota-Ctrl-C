@@ -2,28 +2,27 @@ import { useState } from 'react';
 import { rutaImagen } from '../../services/api';
 import './ProductForm.css';
 
-const VALORES_VACIOS = {
-    nombre: '',
-    categoria: '',
-    precio: '',
-    stock: '',
-    imagenUrl: '',
-    descripcion: '',
-    destacado: false
-};
+// Cada fila de "Detalles de fabricación" tiene una clave propia para que React
+// no mezcle los inputs cuando se borra una fila del medio.
+let siguienteClave = 0;
+const nuevaFila = (label = '', value = '') => ({ clave: siguienteClave++, label, value });
 
 // Pasa un producto de la API a los valores del formulario (los inputs trabajan con strings)
 function valoresDesdeProducto(producto) {
-    if (!producto) return VALORES_VACIOS;
+    const fabricacion = producto?.fabricacion?.length
+        ? producto.fabricacion.map((item) => nuevaFila(item.label, item.value))
+        : [nuevaFila()];
+
     return {
-        nombre: producto.nombre ?? '',
-        categoria: producto.categoria ?? '',
-        precio: producto.precio != null ? String(producto.precio) : '',
-        stock: producto.stock != null ? String(producto.stock) : '',
+        nombre: producto?.nombre ?? '',
+        categoria: producto?.categoria ?? '',
+        precio: producto?.precio != null ? String(producto.precio) : '',
+        stock: producto?.stock != null ? String(producto.stock) : '',
         // imagenUrl es el valor crudo de Mongo; "imagen" es el del backend viejo
-        imagenUrl: producto.imagenUrl ?? producto.imagen ?? '',
-        descripcion: producto.descripcion ?? '',
-        destacado: Boolean(producto.destacado)
+        imagenUrl: producto?.imagenUrl ?? producto?.imagen ?? '',
+        descripcion: producto?.descripcion ?? '',
+        destacado: Boolean(producto?.destacado),
+        fabricacion
     };
 }
 
@@ -41,6 +40,13 @@ function validar(valores) {
     if (valores.stock.trim() !== '' && !(Number.isInteger(Number(valores.stock)) && Number(valores.stock) >= 0)) {
         errores.stock = 'El stock tiene que ser un número entero (0 o más).';
     }
+
+    // Una fila con nombre pero sin valor (o al revés) está incompleta; una fila vacía se ignora
+    const filasIncompletas = valores.fabricacion
+        .filter((fila) => Boolean(fila.label.trim()) !== Boolean(fila.value.trim()))
+        .map((fila) => fila.clave);
+    if (filasIncompletas.length > 0) errores.fabricacion = filasIncompletas;
+
     return errores;
 }
 
@@ -60,6 +66,23 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
         setErrores((prev) => ({ ...prev, [name]: undefined }));
     };
 
+    const cambiarDetalle = (clave, campo, valor) => {
+        setValores((prev) => ({
+            ...prev,
+            fabricacion: prev.fabricacion.map((fila) => (fila.clave === clave ? { ...fila, [campo]: valor } : fila))
+        }));
+        setErrores((prev) => ({ ...prev, fabricacion: undefined }));
+    };
+
+    const agregarDetalle = () => {
+        setValores((prev) => ({ ...prev, fabricacion: [...prev.fabricacion, nuevaFila()] }));
+    };
+
+    const quitarDetalle = (clave) => {
+        setValores((prev) => ({ ...prev, fabricacion: prev.fabricacion.filter((fila) => fila.clave !== clave) }));
+        setErrores((prev) => ({ ...prev, fabricacion: undefined }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -77,7 +100,11 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
                 stock: valores.stock.trim() === '' ? 0 : Number(valores.stock),
                 imagenUrl: valores.imagenUrl.trim(),
                 descripcion: valores.descripcion.trim(),
-                destacado: valores.destacado
+                destacado: valores.destacado,
+                // Solo se mandan las filas completas (nombre + valor)
+                fabricacion: valores.fabricacion
+                    .filter((fila) => fila.label.trim() && fila.value.trim())
+                    .map((fila) => ({ label: fila.label.trim(), value: fila.value.trim() }))
             });
             // Si salió bien, la página que usa el form navega a otra ruta
         } catch (err) {
@@ -192,11 +219,66 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
                     id="producto-descripcion"
                     name="descripcion"
                     rows="4"
-                    placeholder="Materiales, medidas, terminaciones…"
+                    placeholder="Contá cómo es la pieza y para qué espacio está pensada…"
                     value={valores.descripcion}
                     onChange={handleChange}
                 />
             </div>
+
+            {/* Lista libre de pares nombre → valor: cada producto puede tener detalles distintos */}
+            <fieldset className="form-producto__fabricacion">
+                <legend>Detalles de fabricación</legend>
+                <p className="form-producto__ayuda">
+                    Opcional. Por ejemplo: <strong>Medidas</strong> → 100 × 35 × 200 cm.
+                </p>
+
+                {valores.fabricacion.map((fila, indice) => {
+                    const incompleta = errores.fabricacion?.includes(fila.clave);
+                    return (
+                        <div
+                            key={fila.clave}
+                            className={`form-producto__detalle ${incompleta ? 'form-producto__detalle--error' : ''}`}
+                        >
+                            <input
+                                type="text"
+                                className="form-producto__detalle-nombre"
+                                aria-label={`Nombre del detalle ${indice + 1}`}
+                                placeholder="Ej: Medidas"
+                                value={fila.label}
+                                onChange={(e) => cambiarDetalle(fila.clave, 'label', e.target.value)}
+                                aria-invalid={Boolean(incompleta && !fila.label.trim())}
+                            />
+                            <input
+                                type="text"
+                                className="form-producto__detalle-valor"
+                                aria-label={`Valor del detalle ${indice + 1}`}
+                                placeholder="Ej: 100 × 35 × 200 cm"
+                                value={fila.value}
+                                onChange={(e) => cambiarDetalle(fila.clave, 'value', e.target.value)}
+                                aria-invalid={Boolean(incompleta && !fila.value.trim())}
+                            />
+                            <button
+                                type="button"
+                                className="form-producto__detalle-quitar"
+                                aria-label={`Quitar el detalle ${indice + 1}`}
+                                onClick={() => quitarDetalle(fila.clave)}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    );
+                })}
+
+                {errores.fabricacion && (
+                    <span className="form-producto__error">
+                        Completá el nombre y el valor de cada detalle, o quitá la fila.
+                    </span>
+                )}
+
+                <button type="button" className="form-producto__agregar" onClick={agregarDetalle}>
+                    + Agregar detalle
+                </button>
+            </fieldset>
 
             <label className="form-producto__check">
                 <input

@@ -98,6 +98,106 @@
     border-radius: var(--radio-borde);
 }
 
+/* ---------- Detalles de fabricación ---------- */
+.form-producto__fabricacion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 0;
+    margin: 0;
+    padding: 1rem;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-borde);
+    background: #fcfaf6;
+}
+
+.form-producto__fabricacion legend {
+    padding: 0 0.4rem;
+    font-family: var(--font-secundaria);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-siena);
+}
+
+.form-producto__ayuda {
+    margin: 0 0 0.25rem;
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+}
+
+/* Mobile: nombre + botón arriba, valor abajo a todo el ancho */
+.form-producto__detalle {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "nombre quitar"
+        "valor valor";
+    gap: 0.4rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px dashed var(--color-borde);
+}
+
+.form-producto__detalle-nombre {
+    grid-area: nombre;
+    font-weight: 600;
+}
+
+.form-producto__detalle-valor {
+    grid-area: valor;
+}
+
+.form-producto .form-producto__detalle input {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.95rem;
+}
+
+.form-producto__detalle--error input[aria-invalid="true"] {
+    border-color: #d32f2f;
+    box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.15);
+}
+
+.form-producto__detalle-quitar {
+    grid-area: quitar;
+    align-self: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: none;
+    color: var(--color-texto-suave);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: color var(--transicion), border-color var(--transicion), background-color var(--transicion);
+}
+
+.form-producto__detalle-quitar:hover {
+    color: #b3261e;
+    border-color: #f2c4bf;
+    background: #fdecea;
+}
+
+.form-producto__agregar {
+    align-self: flex-start;
+    padding: 0.45rem 0.95rem;
+    border: 1px dashed var(--color-siena);
+    border-radius: 999px;
+    background: none;
+    color: var(--color-siena);
+    font-family: var(--font-primaria);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color var(--transicion);
+}
+
+.form-producto__agregar:hover {
+    background: var(--color-alabastro);
+}
+
 .form-producto__check {
     display: flex;
     align-items: center;
@@ -160,5 +260,13 @@
     .form-producto__acciones {
         flex-direction: row;
         justify-content: flex-end;
+    }
+
+    /* Desde tablet: nombre | valor | quitar en una sola fila, como se ve en el detalle */
+    .form-producto__detalle {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) auto;
+        grid-template-areas: "nombre valor quitar";
+        padding-bottom: 0;
+        border-bottom: 0;
     }
 }
