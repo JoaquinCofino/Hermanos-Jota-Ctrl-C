@@ -3,7 +3,7 @@
 const API_URL = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
 
 // Imagen que se muestra cuando un producto no tiene imagenUrl
-const IMAGEN_POR_DEFECTO = '/assets/img/productos/sin-imagen.svg';
+const IMAGEN_POR_DEFECTO = '/assets/img/productos/sin-imagen.png';
 
 // Hace la petición y devuelve el JSON. Si el backend responde con error, lanza un Error
 // con el mensaje que mandó el servidor ("mensaje" en el CRUD, "message" en el handler central).
@@ -32,7 +32,16 @@ export async function obtenerProductos(signal) {
 
 // POST /api/productos — devuelve el producto creado (con su _id de Mongo)
 export async function crearProducto(datos) {
-    const creado = await pedir('/api/productos', { method: 'POST', body: datos });
+    const datosProducto = {
+        ...datos,
+        imagenUrl: datos.imagenUrl?.trim() || IMAGEN_POR_DEFECTO
+    };
+
+    const creado = await pedir('/api/productos', {
+        method: 'POST',
+        body: datosProducto
+    });
+
     return normalizarProducto(creado);
 }
 
@@ -53,10 +62,15 @@ export async function eliminarProducto(id) {
 // Con MongoDB el backend devuelve "_id" e "imagenUrl"; el frontend usa "id" e "imagen".
 // Se aceptan los dos formatos para que funcione con el backend viejo y con el nuevo.
 function normalizarProducto(producto) {
+    const imagenOriginal = producto.imagenUrl ?? producto.imagen ?? '';
+
+    const imagenFinal = rutaImagen(imagenOriginal);
+
     return {
         ...producto,
         id: String(producto.id ?? producto._id),
-        imagen: rutaImagen(producto.imagen ?? producto.imagenUrl)
+        imagenUrl: imagenOriginal || IMAGEN_POR_DEFECTO,
+        imagen: imagenFinal
     };
 }
 
