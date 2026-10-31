@@ -15,6 +15,7 @@ export default function DetalleProducto({
 }) {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [confirmando, setConfirmando] = useState(false);
     const [eliminando, setEliminando] = useState(false);
     const [errorEliminar, setErrorEliminar] = useState(null);
 
@@ -34,11 +35,6 @@ export default function DetalleProducto({
     const cantidad = carrito.filter((itemId) => itemId === id).length;
 
     const handleEliminar = async () => {
-        const confirmado = window.confirm(
-            `¿Eliminar "${producto.nombre}"? Esta acción no se puede deshacer.`
-        );
-        if (!confirmado) return;
-
         setEliminando(true);
         setErrorEliminar(null);
         try {
@@ -49,6 +45,7 @@ export default function DetalleProducto({
         } catch (err) {
             setErrorEliminar(err.message || 'No se pudo eliminar el producto.');
             setEliminando(false);
+            setConfirmando(false);
         }
     };
 
@@ -65,13 +62,40 @@ export default function DetalleProducto({
                     <button
                         type="button"
                         className="admin-boton admin-boton--peligro"
-                        onClick={handleEliminar}
+                        onClick={() => setConfirmando(true)}
                         disabled={eliminando}
                     >
-                        {eliminando ? 'Eliminando…' : 'Eliminar'}
+                        Eliminar
                     </button>
                 </div>
             </div>
+
+            {confirmando && (
+                <div className="admin-confirmacion" role="alert">
+                    <p>
+                        ¿Eliminar <strong>"{producto.nombre}"</strong>? Esta acción no se puede deshacer.
+                    </p>
+                    <div className="admin-acciones__botones">
+                        <button
+                            type="button"
+                            className="admin-boton"
+                            onClick={() => setConfirmando(false)}
+                            disabled={eliminando}
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="button"
+                            className="admin-boton admin-boton--confirmar-peligro"
+                            onClick={handleEliminar}
+                            disabled={eliminando}
+                        >
+                            {eliminando ? 'Eliminando…' : 'Sí, eliminar'}
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {errorEliminar && (
                 <p className="admin-error" role="alert">
                     {errorEliminar}
