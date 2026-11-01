@@ -7,6 +7,18 @@ consume una **API REST propia hecha con Node.js y Express**, conectada a **Mongo
 **Mongoose**. El frontend pide el catálogo al backend con `fetch` y permite listar, crear,
 editar y eliminar productos.
 
+## Links
+
+| | URL |
+|---|---|
+| Frontend (Vercel) | [hermanos-jota-ctrl-c.vercel.app](https://hermanos-jota-ctrl-c.vercel.app/) |
+| Backend / API (Render) | [hermanos-jota-ctrl-c.onrender.com/api/productos](https://hermanos-jota-ctrl-c.onrender.com/api/productos) |
+| Repositorio | [github.com/JoaquinCofino/Hermanos-Jota-Ctrl-C](https://github.com/JoaquinCofino/Hermanos-Jota-Ctrl-C) |
+
+> El backend está en el plan gratuito de Render, que apaga el servidor después de 15 minutos
+> sin uso. La primera visita después de ese tiempo puede tardar hasta un minuto en cargar los
+> productos; las siguientes son inmediatas.
+
 ## Integrantes
 
 | Integrante | GitHub | Aportes principales |
@@ -36,15 +48,21 @@ MONGO_URI=mongodb+srv://<usuario>:<password>@<cluster>.mongodb.net/<base>
 PORT=4000
 ```
 
+Hay un ejemplo en [`backend/.env.example`](backend/.env.example).
+
 ```bash
 cd backend
 npm install
+npm run seed     # solo la primera vez: carga los 11 productos del catálogo en la base
 npm run dev      # con nodemon (se reinicia al guardar)
 # o: npm start   # sin nodemon
 ```
 
-La API queda en `http://localhost:4000`. El puerto se puede cambiar con la variable de
-entorno `PORT`.
+> **Ojo:** `npm run seed` borra la colección de productos y la vuelve a cargar desde
+> `backend/data/productos.js`, así que también borra los productos creados desde el frontend.
+
+La API queda en `http://localhost:4000/api/productos`. El puerto se puede cambiar con la
+variable de entorno `PORT`.
 
 ### 2. Frontend (React) — puerto 3000
 
@@ -54,37 +72,50 @@ npm install
 npm start
 ```
 
-Se abre `http://localhost:3000`. Si el backend no está corriendo, la app muestra un mensaje
-de error con un botón para reintentar.
+Se abre `http://localhost:3000`. En desarrollo no hace falta configurar nada: el `"proxy"` de
+`client/package.json` redirige `/api` al backend en `http://localhost:4000`. Si el backend no
+está corriendo, la app muestra un mensaje de error con un botón para reintentar.
 
-## Publicación (Vercel)
+## Despliegue
 
-Frontend y backend se publican juntos en un solo proyecto de [Vercel](https://vercel.com),
-con una sola URL ([hermanos-jota-ctrl-c.vercel.app](https://hermanos-jota-ctrl-c.vercel.app/)):
+```
+ Navegador ──▶ Vercel (frontend React) ──fetch──▶ Render (API Express) ──▶ MongoDB Atlas
+```
 
-- `vercel.json` (en la raíz) usa [Vercel Services](https://vercel.com/docs/services) con dos
-  servicios: `backend` (Express, carpeta `backend/`) y `client` (create-react-app, carpeta
-  `client/`). Cada uno se compila por separado.
-- Las peticiones a `/api/...` van a `backend`, que recibe la ruta completa
-  (`/api/productos`); todo lo demás va a `client`. Dentro de `client`, cualquier ruta
-  devuelve `index.html` para que React Router funcione al recargar o entrar por un link.
-- `backend/server.js` exporta la app de Express para Vercel. En local sigue levantando el
-  servidor con `app.listen` como siempre.
+### Variables de entorno
 
-Para publicar: importar el repo en Vercel dejando el *Root Directory* en la raíz y configurar
-la variable de entorno `MONGO_URI`. Cada push a la rama configurada vuelve a publicar.
+| Variable | Dónde se configura | Valor | Para qué sirve |
+|---|---|---|---|
+| `MONGO_URI` | Render (y `backend/.env` en local) | `mongodb+srv://<usuario>:<password>@<cluster>.mongodb.net/<base>` | Conexión del backend a MongoDB Atlas |
+| `PORT` | Opcional | `4000` en local; Render la define solo | Puerto del servidor Express |
+| `NODE_ENV` | Render | `production` | Oculta el `stack` de los errores en las respuestas de la API |
+| `REACT_APP_API_URL` | Vercel (Production y Preview) | `https://hermanos-jota-ctrl-c.onrender.com` | URL del backend que usa el frontend en `client/src/services/api.js` |
 
-## Publicación (Render)
+`REACT_APP_API_URL` se incorpora al frontend cuando Vercel lo compila: si se cambia, hay que
+hacer **Redeploy** para que tome el valor nuevo.
 
-El backend (`/backend`) también se puede publicar por separado como un Web Service en
-[Render](https://render.com):
+### Backend en Render
 
-- En Render se configura `backend` como *Root Directory*, `npm install` como *Build Command*,
-  `npm start` como *Start Command* y la variable de entorno `MONGO_URI` con la URI de MongoDB
-  Atlas.
-- En el frontend (`client`) se configura la variable de entorno `REACT_APP_API_URL` con la URL
-  del servicio en Render (por ejemplo, `https://<servicio>.onrender.com`), que
-  `client/src/services/api.js` usa como base para todas las peticiones a `/api/productos`.
+Web Service en [Render](https://render.com) conectado a este repositorio:
+
+- **Root Directory:** `backend`
+- **Build Command:** `npm install`
+- **Start Command:** `npm start`
+- **Variables de entorno:** `MONGO_URI` y `NODE_ENV=production`
+- En MongoDB Atlas, en **Network Access**, hay que permitir `0.0.0.0/0` para que Render se
+  pueda conectar a la base.
+
+### Frontend en Vercel
+
+Proyecto de [Vercel](https://vercel.com) conectado a este repositorio, con el *Root
+Directory* en la raíz:
+
+- `vercel.json` publica solo `client/` (create-react-app). Cualquier ruta devuelve
+  `index.html`, así React Router funciona al recargar o al entrar directo por un link (por
+  ejemplo, `/productos/:id`).
+- **Variable de entorno:** `REACT_APP_API_URL` con la URL del backend en Render.
+
+Cada push a `main` vuelve a publicar los dos servicios.
 
 ## API
 
@@ -212,6 +243,9 @@ client/src/
   estado de un componente que ya no está.
 - **Los productos se piden una sola vez.** El fetch está en `App`, que no se desmonta al
   cambiar de página; todas las rutas usan la misma lista sin volver a pedirla.
+- **Copia de los productos en `localStorage`.** Desde la segunda visita, el catálogo se
+  muestra al instante con la lista guardada y se actualiza solo cuando responde la API. Así
+  la espera del backend gratuito de Render solo se nota en la primera visita.
 - **El estado vive en `App` y baja por props.** Productos y carrito se guardan en el
   componente padre; los hijos reciben datos y callbacks.
 - **El carrito guarda ids y se persiste en `localStorage`.** Cada id repetido es una unidad;
