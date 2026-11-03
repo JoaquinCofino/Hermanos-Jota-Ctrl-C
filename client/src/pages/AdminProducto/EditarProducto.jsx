@@ -3,16 +3,22 @@ import ProductForm from '../../components/ProductForm/ProductForm';
 import { actualizarProducto } from '../../services/api';
 import './AdminProducto.css';
 
-// Página de /admin/editar-producto/:id — carga el producto de la lista y lo edita con el mismo form
-export default function EditarProducto({ productos, categorias, onActualizado }) {
+// Página de /admin/editar-producto/:id
+export default function EditarProducto({
+    productos,
+    categorias,
+    onActualizado
+}) {
     const { id } = useParams();
     const navigate = useNavigate();
+
     const producto = productos.find((p) => p.id === id);
 
     if (!producto) {
         return (
             <div className="estado">
                 <p>Producto no encontrado.</p>
+
                 <Link className="boton-volver" to="/productos">
                     Ver el catálogo
                 </Link>
@@ -22,8 +28,12 @@ export default function EditarProducto({ productos, categorias, onActualizado })
 
     const handleSubmit = async (datos) => {
         const actualizado = await actualizarProducto(producto.id, datos);
+
         onActualizado(actualizado);
-        navigate(`/productos/${actualizado.id}`, { state: { aviso: 'Los cambios se guardaron.' } });
+
+        navigate(`/productos/${actualizado.id}`, {
+            state: { aviso: 'Los cambios se guardaron.' }
+        });
     };
 
     return (

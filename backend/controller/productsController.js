@@ -1,88 +1,113 @@
 const Product = require("../models/Products");
+const Categoria = require("../models/Categoria");
+
+async function buscarCategoriaPorId(id) {
+  return Categoria.findById(id);
+}
 
 // GET /api/productos
 exports.getProducts = async (req, res) => {
-  try {
-    const productos = await Product.find();
-    res.status(200).json(productos);
-  } catch (error) {
-    res.status(500).json({ mensaje: error.message });
+  const filtro = {};
+
+  if (req.query.categoria !== undefined) {
+    const categoria = await buscarCategoriaPorId(req.query.categoria);
+
+    if (!categoria) {
+      return res.status(200).json([]);
+    }
+
+    filtro.categoria = categoria._id;
   }
+
+  const productos = await Product.find(filtro)
+    .populate("categoria", "nombre");
+
+  res.status(200).json(productos);
 };
 
 // GET /api/productos/:id
 exports.getProductById = async (req, res) => {
-  try {
-    const producto = await Product.findById(req.params.id);
+  const producto = await Product.findById(req.params.id)
+    .populate("categoria", "nombre");
 
-    if (!producto) {
-      return res.status(404).json({
-        mensaje: "Producto no encontrado"
-      });
-    }
-
-    res.status(200).json(producto);
-  } catch (error) {
-    res.status(400).json({ mensaje: "ID inválido" });
+  if (!producto) {
+    return res.status(404).json({
+      error: "Producto no encontrado"
+    });
   }
+
+  res.status(200).json(producto);
 };
 
 // POST /api/productos
 exports.createProduct = async (req, res) => {
-  try {
-    const producto = await Product.create(req.body);
-    res.status(201).json(producto);
-  } catch (error) {
-    res.status(400).json({ mensaje: error.message });
+  const { categoria, ...datosProducto } = req.body || {};
+
+  if (categoria !== undefined) {
+    const categoriaEncontrada = await buscarCategoriaPorId(categoria);
+
+    if (!categoriaEncontrada) {
+      return res.status(400).json({
+        error: "La categoría no existe"
+      });
+    }
+
+    datosProducto.categoria = categoriaEncontrada._id;
   }
+
+  const producto = await Product.create(datosProducto);
+  await producto.populate("categoria", "nombre");
+
+  res.status(201).json(producto);
 };
 
 // PUT /api/productos/:id
 exports.updateProduct = async (req, res) => {
-  try {
-    if (req.body.precio && req.body.precio < 0) {
-      return res.status(400).json({
-        mensaje: "El precio no puede ser negativo"
-      });
-    }
-    const producto = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        returnDocument: 'after',
-        runValidators: true
-      }
+  const datosActualizados = { ...(req.body || {}) };
+
+  if (datosActualizados.categoria !== undefined) {
+    const categoriaEncontrada = await buscarCategoriaPorId(
+      datosActualizados.categoria
     );
 
-    if (!producto) {
-      return res.status(404).json({
-        mensaje: "Producto no encontrado"
+    if (!categoriaEncontrada) {
+      return res.status(400).json({
+        error: "La categoría no existe"
       });
     }
 
-    res.status(200).json(producto);
-  } catch (error) {
-    res.status(400).json({ mensaje: error.message });
+    datosActualizados.categoria = categoriaEncontrada._id;
   }
+
+  const producto = await Product.findByIdAndUpdate(
+    req.params.id,
+    datosActualizados,
+    {
+      returnDocument: "after",
+      runValidators: true
+    }
+  ).populate("categoria", "nombre");
+
+  if (!producto) {
+    return res.status(404).json({
+      error: "Producto no encontrado"
+    });
+  }
+
+  res.status(200).json(producto);
 };
 
 // DELETE /api/productos/:id
 exports.deleteProduct = async (req, res) => {
-  try {
-    const producto = await Product.findByIdAndDelete(
-      req.params.id
-    );
+  const producto = await Product.findByIdAndDelete(req.params.id);
 
-    if (!producto) {
-      return res.status(404).json({
-        mensaje: "Producto no encontrado"
-      });
-    }
-
-    res.status(200).json({
-      mensaje: "Producto eliminado correctamente"
+  if (!producto) {
+    return res.status(404).json({
+      error: "Producto no encontrado"
     });
-  } catch (error) {
-    res.status(400).json({ mensaje: "ID inválido" });
   }
+
+  res.status(200).json({
+    mensaje: "Producto eliminado correctamente"
+  });
 };
