@@ -1,8 +1,27 @@
 const Product = require("../models/Products");
 const Categoria = require("../models/Categoria");
 
+const ID_VALIDO = /^[0-9a-fA-F]{24}$/;
+
+// Filtro ?categoria=: solo acepta _id (un id mal formado lanza CastError → 400).
 async function buscarCategoriaPorId(id) {
   return Categoria.findById(id);
+}
+
+// POST / PUT: la categoría puede venir como _id o como nombre
+// (el formulario del front manda el nombre, ej. "Living").
+// Devuelve null si no existe → el controller responde 400 "La categoría no existe".
+async function resolverCategoria(valor) {
+  if (typeof valor !== "string") return null; // evita inyección de operadores ({ $gt: "" })
+
+  const texto = valor.trim();
+  if (!texto) return null;
+
+  if (ID_VALIDO.test(texto)) {
+    return Categoria.findById(texto);
+  }
+
+  return Categoria.findOne({ nombre: texto });
 }
 
 // GET /api/productos
@@ -44,7 +63,7 @@ exports.createProduct = async (req, res) => {
   const { categoria, ...datosProducto } = req.body || {};
 
   if (categoria !== undefined) {
-    const categoriaEncontrada = await buscarCategoriaPorId(categoria);
+    const categoriaEncontrada = await resolverCategoria(categoria);
 
     if (!categoriaEncontrada) {
       return res.status(400).json({
@@ -66,7 +85,7 @@ exports.updateProduct = async (req, res) => {
   const datosActualizados = { ...(req.body || {}) };
 
   if (datosActualizados.categoria !== undefined) {
-    const categoriaEncontrada = await buscarCategoriaPorId(
+    const categoriaEncontrada = await resolverCategoria(
       datosActualizados.categoria
     );
 
