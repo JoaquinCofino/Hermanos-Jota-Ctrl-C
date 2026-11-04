@@ -8,6 +8,11 @@ export default function ProductCard({ producto }) {
         producto.imagenUrl ?? producto.imagen
     );
 
+    const categoriaNombre =
+        typeof producto.categoria === 'object'
+            ? producto.categoria?.nombre
+            : producto.categoria;
+
     return (
         <article className="product-card">
             <Link
@@ -27,7 +32,7 @@ export default function ProductCard({ producto }) {
 
                 <div className="product-card__info">
                     <p className="product-card__categoria">
-                        {producto.categoria}
+                        {categoriaNombre || 'Sin categoría'}
                     </p>
 
                     <h3 className="product-card__nombre">

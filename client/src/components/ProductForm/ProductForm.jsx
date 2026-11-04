@@ -2,12 +2,28 @@ import { useState } from 'react';
 import { rutaImagen } from '../../services/api';
 import './ProductForm.css';
 
-// Cada fila de "Detalles de fabricación" tiene una clave propia para que React
-// no mezcle los inputs cuando se borra una fila del medio.
 let siguienteClave = 0;
-const nuevaFila = (label = '', value = '') => ({ clave: siguienteClave++, label, value });
 
-// Pasa un producto de la API a los valores del formulario (los inputs trabajan con strings)
+const nuevaFila = (label = '', value = '') => ({
+    clave: siguienteClave++,
+    label,
+    value
+});
+
+// Obtiene el nombre de la categoría independientemente
+// de si viene como objeto o como string.
+function obtenerNombreCategoria(categoria) {
+    if (typeof categoria === 'string') {
+        return categoria;
+    }
+
+    if (categoria && typeof categoria === 'object') {
+        return categoria.nombre ?? '';
+    }
+
+    return '';
+}
+
 function valoresDesdeProducto(producto) {
     const fabricacion = producto?.fabricacion?.length
         ? producto.fabricacion.map((item) => nuevaFila(item.label, item.value))
@@ -15,10 +31,9 @@ function valoresDesdeProducto(producto) {
 
     return {
         nombre: producto?.nombre ?? '',
-        categoria: producto?.categoria ?? '',
+        categoria: obtenerNombreCategoria(producto?.categoria),
         precio: producto?.precio != null ? String(producto.precio) : '',
         stock: producto?.stock != null ? String(producto.stock) : '',
-        // imagenUrl es el valor crudo de Mongo; "imagen" es el del backend viejo
         imagenUrl: producto?.imagenUrl ?? producto?.imagen ?? '',
         descripcion: producto?.descripcion ?? '',
         destacado: Boolean(producto?.destacado),
@@ -28,8 +43,14 @@ function valoresDesdeProducto(producto) {
 
 function validar(valores) {
     const errores = {};
-    if (!valores.nombre.trim()) errores.nombre = 'El nombre es obligatorio.';
-    if (!valores.categoria.trim()) errores.categoria = 'La categoría es obligatoria.';
+
+    if (!valores.nombre.trim()) {
+        errores.nombre = 'El nombre es obligatorio.';
+    }
+
+    if (!valores.categoria.trim()) {
+        errores.categoria = 'La categoría es obligatoria.';
+    }
 
     if (valores.precio.trim() === '') {
         errores.precio = 'El precio es obligatorio.';
@@ -37,23 +58,36 @@ function validar(valores) {
         errores.precio = 'Ingresá un precio válido (0 o más).';
     }
 
-    if (valores.stock.trim() !== '' && !(Number.isInteger(Number(valores.stock)) && Number(valores.stock) >= 0)) {
+    if (
+        valores.stock.trim() !== '' &&
+        !(
+            Number.isInteger(Number(valores.stock)) &&
+            Number(valores.stock) >= 0
+        )
+    ) {
         errores.stock = 'El stock tiene que ser un número entero (0 o más).';
     }
 
-    // Una fila con nombre pero sin valor (o al revés) está incompleta; una fila vacía se ignora
     const filasIncompletas = valores.fabricacion
-        .filter((fila) => Boolean(fila.label.trim()) !== Boolean(fila.value.trim()))
+        .filter((fila) =>
+            Boolean(fila.label.trim()) !== Boolean(fila.value.trim())
+        )
         .map((fila) => fila.clave);
-    if (filasIncompletas.length > 0) errores.fabricacion = filasIncompletas;
+
+    if (filasIncompletas.length > 0) {
+        errores.fabricacion = filasIncompletas;
+    }
 
     return errores;
 }
 
-// Formulario controlado para crear y editar productos.
-// onSubmit recibe los datos listos para mandar a la API y tiene que devolver una promesa:
-// si la promesa falla, se muestra el mensaje de error del servidor.
-export default function ProductForm({ producto, categorias = [], textoBoton, onSubmit, onCancelar }) {
+export default function ProductForm({
+    producto,
+    categorias = [],
+    textoBoton,
+    onSubmit,
+    onCancelar
+}) {
     const [valores, setValores] = useState(() => valoresDesdeProducto(producto));
     const [errores, setErrores] = useState({});
     const [enviando, setEnviando] = useState(false);
@@ -61,26 +95,53 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setValores((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-        // Se limpia el error del campo mientras se escribe
-        setErrores((prev) => ({ ...prev, [name]: undefined }));
+
+        setValores((prev) => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+
+        setErrores((prev) => ({
+            ...prev,
+            [name]: undefined
+        }));
     };
 
     const cambiarDetalle = (clave, campo, valor) => {
         setValores((prev) => ({
             ...prev,
-            fabricacion: prev.fabricacion.map((fila) => (fila.clave === clave ? { ...fila, [campo]: valor } : fila))
+            fabricacion: prev.fabricacion.map((fila) =>
+                fila.clave === clave
+                    ? { ...fila, [campo]: valor }
+                    : fila
+            )
         }));
-        setErrores((prev) => ({ ...prev, fabricacion: undefined }));
+
+        setErrores((prev) => ({
+            ...prev,
+            fabricacion: undefined
+        }));
     };
 
     const agregarDetalle = () => {
-        setValores((prev) => ({ ...prev, fabricacion: [...prev.fabricacion, nuevaFila()] }));
+        setValores((prev) => ({
+            ...prev,
+            fabricacion: [...prev.fabricacion, nuevaFila()]
+        }));
     };
 
     const quitarDetalle = (clave) => {
-        setValores((prev) => ({ ...prev, fabricacion: prev.fabricacion.filter((fila) => fila.clave !== clave) }));
-        setErrores((prev) => ({ ...prev, fabricacion: undefined }));
+        setValores((prev) => ({
+            ...prev,
+            fabricacion: prev.fabricacion.filter(
+                (fila) => fila.clave !== clave
+            )
+        }));
+
+        setErrores((prev) => ({
+            ...prev,
+            fabricacion: undefined
+        }));
     };
 
     const handleSubmit = async (e) => {
@@ -88,32 +149,48 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
 
         const nuevosErrores = validar(valores);
         setErrores(nuevosErrores);
+
         if (Object.keys(nuevosErrores).length > 0) return;
 
         setEnviando(true);
         setErrorServidor(null);
+
         try {
             await onSubmit({
                 nombre: valores.nombre.trim(),
+
+                // Se envía el nombre como string.
                 categoria: valores.categoria.trim(),
+
                 precio: Number(valores.precio),
-                stock: valores.stock.trim() === '' ? 0 : Number(valores.stock),
+
+                stock: valores.stock.trim() === ''
+                    ? 0
+                    : Number(valores.stock),
+
                 imagenUrl: valores.imagenUrl.trim(),
                 descripcion: valores.descripcion.trim(),
                 destacado: valores.destacado,
-                // Solo se mandan las filas completas (nombre + valor)
+
                 fabricacion: valores.fabricacion
                     .filter((fila) => fila.label.trim() && fila.value.trim())
-                    .map((fila) => ({ label: fila.label.trim(), value: fila.value.trim() }))
+                    .map((fila) => ({
+                        label: fila.label.trim(),
+                        value: fila.value.trim()
+                    }))
             });
-            // Si salió bien, la página que usa el form navega a otra ruta
         } catch (err) {
-            setErrorServidor(err.message || 'No se pudo guardar el producto.');
+            setErrorServidor(
+                err.message || 'No se pudo guardar el producto.'
+            );
             setEnviando(false);
         }
     };
 
-    const claseCampo = (campo) => `form-producto__campo ${errores[campo] ? 'form-producto__campo--error' : ''}`;
+    const claseCampo = (campo) =>
+        `form-producto__campo ${
+            errores[campo] ? 'form-producto__campo--error' : ''
+        }`;
 
     return (
         <form className="form-producto" onSubmit={handleSubmit} noValidate>
@@ -123,8 +200,10 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
                 </p>
             )}
 
+            {/* Nombre */}
             <div className={claseCampo('nombre')}>
                 <label htmlFor="producto-nombre">Nombre *</label>
+
                 <input
                     id="producto-nombre"
                     name="nombre"
@@ -134,33 +213,56 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
                     onChange={handleChange}
                     aria-invalid={Boolean(errores.nombre)}
                 />
-                {errores.nombre && <span className="form-producto__error">{errores.nombre}</span>}
+
+                {errores.nombre && (
+                    <span className="form-producto__error">
+                        {errores.nombre}
+                    </span>
+                )}
             </div>
 
-            <div className={claseCampo('categoria')}>
-                <label htmlFor="producto-categoria">Categoría *</label>
-                <input
-                    id="producto-categoria"
-                    name="categoria"
-                    type="text"
-                    list="categorias-existentes"
-                    placeholder="Ej: Living"
-                    value={valores.categoria}
-                    onChange={handleChange}
-                    aria-invalid={Boolean(errores.categoria)}
-                />
-                {/* Sugiere las categorías que ya existen, pero se puede escribir una nueva */}
-                <datalist id="categorias-existentes">
-                    {categorias.map((categoria) => (
-                        <option key={categoria} value={categoria} />
-                    ))}
-                </datalist>
-                {errores.categoria && <span className="form-producto__error">{errores.categoria}</span>}
-            </div>
+ {/* Categoría */}
+<div className={claseCampo('categoria')}>
+    <label htmlFor="producto-categoria">Categoría *</label>
 
+    <input
+        id="producto-categoria"
+        name="categoria"
+        type="text"
+        list="categorias-existentes"
+        placeholder="Ej: Living"
+        value={valores.categoria}
+        onChange={handleChange}
+        aria-invalid={Boolean(errores.categoria)}
+    />
+
+    <datalist id="categorias-existentes">
+        {categorias.map((categoria) => (
+            <option
+                key={categoria._id}
+                value={categoria.nombre}
+            />
+        ))}
+    </datalist>
+
+    {categorias.length === 0 && (
+        <span className="form-producto__ayuda">
+            No hay categorías disponibles. Podés ingresar una nueva.
+        </span>
+    )}
+
+    {errores.categoria && (
+        <span className="form-producto__error">
+            {errores.categoria}
+        </span>
+    )}
+</div>
+
+            {/* Precio y stock */}
             <div className="form-producto__fila">
                 <div className={claseCampo('precio')}>
                     <label htmlFor="producto-precio">Precio (ARS) *</label>
+
                     <input
                         id="producto-precio"
                         name="precio"
@@ -173,11 +275,17 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
                         onChange={handleChange}
                         aria-invalid={Boolean(errores.precio)}
                     />
-                    {errores.precio && <span className="form-producto__error">{errores.precio}</span>}
+
+                    {errores.precio && (
+                        <span className="form-producto__error">
+                            {errores.precio}
+                        </span>
+                    )}
                 </div>
 
                 <div className={claseCampo('stock')}>
                     <label htmlFor="producto-stock">Stock</label>
+
                     <input
                         id="producto-stock"
                         name="stock"
@@ -190,12 +298,19 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
                         onChange={handleChange}
                         aria-invalid={Boolean(errores.stock)}
                     />
-                    {errores.stock && <span className="form-producto__error">{errores.stock}</span>}
+
+                    {errores.stock && (
+                        <span className="form-producto__error">
+                            {errores.stock}
+                        </span>
+                    )}
                 </div>
             </div>
 
+            {/* Imagen */}
             <div className="form-producto__campo">
                 <label htmlFor="producto-imagen">URL de la imagen</label>
+
                 <div className="form-producto__imagen">
                     <input
                         id="producto-imagen"
@@ -205,6 +320,7 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
                         value={valores.imagenUrl}
                         onChange={handleChange}
                     />
+
                     <img
                         className="form-producto__preview"
                         src={rutaImagen(valores.imagenUrl)}
@@ -213,8 +329,10 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
                 </div>
             </div>
 
+            {/* Descripción */}
             <div className="form-producto__campo">
                 <label htmlFor="producto-descripcion">Descripción</label>
+
                 <textarea
                     id="producto-descripcion"
                     name="descripcion"
@@ -225,19 +343,23 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
                 />
             </div>
 
-            {/* Lista libre de pares nombre → valor: cada producto puede tener detalles distintos */}
+            {/* Detalles de fabricación */}
             <fieldset className="form-producto__fabricacion">
                 <legend>Detalles de fabricación</legend>
+
                 <p className="form-producto__ayuda">
                     Opcional. Por ejemplo: <strong>Medidas</strong> → 100 × 35 × 200 cm.
                 </p>
 
                 {valores.fabricacion.map((fila, indice) => {
                     const incompleta = errores.fabricacion?.includes(fila.clave);
+
                     return (
                         <div
                             key={fila.clave}
-                            className={`form-producto__detalle ${incompleta ? 'form-producto__detalle--error' : ''}`}
+                            className={`form-producto__detalle ${
+                                incompleta ? 'form-producto__detalle--error' : ''
+                            }`}
                         >
                             <input
                                 type="text"
@@ -245,18 +367,28 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
                                 aria-label={`Nombre del detalle ${indice + 1}`}
                                 placeholder="Ej: Medidas"
                                 value={fila.label}
-                                onChange={(e) => cambiarDetalle(fila.clave, 'label', e.target.value)}
-                                aria-invalid={Boolean(incompleta && !fila.label.trim())}
+                                onChange={(e) =>
+                                    cambiarDetalle(fila.clave, 'label', e.target.value)
+                                }
+                                aria-invalid={Boolean(
+                                    incompleta && !fila.label.trim()
+                                )}
                             />
+
                             <input
                                 type="text"
                                 className="form-producto__detalle-valor"
                                 aria-label={`Valor del detalle ${indice + 1}`}
                                 placeholder="Ej: 100 × 35 × 200 cm"
                                 value={fila.value}
-                                onChange={(e) => cambiarDetalle(fila.clave, 'value', e.target.value)}
-                                aria-invalid={Boolean(incompleta && !fila.value.trim())}
+                                onChange={(e) =>
+                                    cambiarDetalle(fila.clave, 'value', e.target.value)
+                                }
+                                aria-invalid={Boolean(
+                                    incompleta && !fila.value.trim()
+                                )}
                             />
+
                             <button
                                 type="button"
                                 className="form-producto__detalle-quitar"
@@ -275,11 +407,16 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
                     </span>
                 )}
 
-                <button type="button" className="form-producto__agregar" onClick={agregarDetalle}>
+                <button
+                    type="button"
+                    className="form-producto__agregar"
+                    onClick={agregarDetalle}
+                >
                     + Agregar detalle
                 </button>
             </fieldset>
 
+            {/* Producto destacado */}
             <label className="form-producto__check">
                 <input
                     type="checkbox"
@@ -287,9 +424,11 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
                     checked={valores.destacado}
                     onChange={handleChange}
                 />
+
                 Mostrar en "Piezas Destacadas" del inicio
             </label>
 
+            {/* Acciones */}
             <div className="form-producto__acciones">
                 {onCancelar && (
                     <button
@@ -301,7 +440,12 @@ export default function ProductForm({ producto, categorias = [], textoBoton, onS
                         Cancelar
                     </button>
                 )}
-                <button type="submit" className="form-producto__boton" disabled={enviando}>
+
+                <button
+                    type="submit"
+                    className="form-producto__boton"
+                    disabled={enviando || categorias.length === 0}
+                >
                     {enviando ? 'Guardando…' : textoBoton}
                 </button>
             </div>

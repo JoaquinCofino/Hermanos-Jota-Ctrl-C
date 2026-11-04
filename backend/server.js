@@ -5,6 +5,7 @@ const cors = require("cors");
 const logger = require("./middlewares/logger");
 const conectarDB = require("./utils/db");
 const productosRoutes = require("./routes/productos-routes");
+const categoriasRoutes = require("./routes/categorias");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -21,6 +22,7 @@ app.get("/api", (req, res) => {
 });
 
 app.use("/api/productos", productosRoutes);
+app.use("/api/categorias", categoriasRoutes);
 
 // Manejar error 404
 app.use((req, res, next) => {
@@ -31,11 +33,23 @@ app.use((req, res, next) => {
 
 // Manejador errores centralizado
 app.use((err, req, res, next) => {
+  if (err.name === "ValidationError") {
+    const mensaje = Object.values(err.errors).map((e) => e.message).join(", ");
+    return res.status(400).json({ error: mensaje || "Datos inválidos" });
+  }
+
+  if (err.name === "CastError") {
+    return res.status(400).json({ error: "Id mal formado" });
+  }
+
+  if (err.code === 11000) {
+    return res.status(409).json({ error: "Ya existe un registro con ese valor" });
+  }
+
   const statusCode = err.status || 500;
   console.error(err.message, err.stack);
   res.status(statusCode).json({
-    message: err.message || "Ha ocurrido un error en el servidor",
-    stack: process.env.NODE_ENV === "production" ? "🥞" : err.stack, //En desarrollo muestra el stack completo para debuguear, en desarrollo muestra el panqueque para no exponer nada
+    error: err.message || "Ha ocurrido un error en el servidor"
   });
 });
 

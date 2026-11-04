@@ -6,10 +6,9 @@ const productSchema = new mongoose.Schema({
     required: [true, "El nombre es obligatorio"],
     trim: true
   },
-  categoria:{
-    type: String,
-    required: [true, "La categoría es obligatoria"],
-    trim: true
+  categoria: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Categoria"
   },
   precio: {
     type: Number,
