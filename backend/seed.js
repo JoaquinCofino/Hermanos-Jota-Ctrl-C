@@ -19,7 +19,10 @@ console.log(`🌱 ${categorias.length} categorías cargadas en ${mongoose.connec
 const categoriasPorNombre = Object.fromEntries(
   categorias.map((c) => [c.nombre, c._id])
 );
+// El array no trae stock: se carga 10 por producto para que se pueda comprar
+// (POST /api/pedidos descuenta stock y rechaza la compra si no alcanza).
 const documentos = productos.map(({ id, imagen, categoria, ...resto }) => ({
+  stock: 10,
   ...resto,
   imagenUrl: imagen,
   categoria: categoriasPorNombre[categoria]
