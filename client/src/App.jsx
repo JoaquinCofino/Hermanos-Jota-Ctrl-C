@@ -16,6 +16,9 @@ import CrearProducto from './pages/AdminProducto/CrearProducto';
 import EditarProducto from './pages/AdminProducto/EditarProducto';
 import NoEncontrado from './pages/NoEncontrado/NoEncontrado';
 import Login from './pages/Login/Login';
+import Registro from './pages/Registro/Registro';
+import Perfil from './pages/Perfil/Perfil';
+import MisPedidos from './pages/MisPedidos/MisPedidos';
 
 import {
     obtenerProductos,
@@ -246,6 +249,25 @@ function App() {
                     />
 
                     <Route path="/login" element={<Login />} />
+                    <Route path="/registro" element={<Registro />} />
+
+                    <Route
+                        path="/perfil"
+                        element={
+                            <ProtectedRoute>
+                                <Perfil />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/mis-pedidos"
+                        element={
+                            <ProtectedRoute>
+                                <MisPedidos />
+                            </ProtectedRoute>
+                        }
+                    />
 
                     <Route
                         path="/contacto"

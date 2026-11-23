@@ -1,0 +1,18 @@
+.perfil {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--espacio-xs) var(--espacio-md);
+  max-width: 32rem;
+  padding: var(--espacio-sm);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-borde);
+  background: var(--color-blanco);
+}
+
+.perfil dt {
+  color: var(--color-texto-suave);
+}
+
+.perfil dd {
+  margin: 0;
+}
