@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import logo from '../../assets/logo.svg';
+import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import './Navbar.css';
 
 const LINKS = [
@@ -32,7 +34,9 @@ function ShoppingCart({ size = 20, className = 'lucide lucide-shopping-cart prev
     );
 }
 
-export default function Navbar({ cantidadCarrito = 0 }) {
+export default function Navbar() {
+    const { usuario, logout } = useAuth();
+    const { cantidadTotal: cantidadCarrito } = useCart();
     const [menuAbierto, setMenuAbierto] = useState(false);
     const { pathname } = useLocation();
 
@@ -91,6 +95,26 @@ export default function Navbar({ cantidadCarrito = 0 }) {
 
                     {/* El carrito queda siempre a la vista, también en mobile al lado de la hamburguesa */}
                     <div className="navbar__acciones">
+                        {usuario ? (
+                            <>
+                                <span className="navbar__link">Hola, {usuario.nombre}</span>
+                                <button
+                                    type="button"
+                                    className="navbar__link"
+                                    onClick={() => {
+                                        logout();
+                                        cerrarMenu();
+                                    }}
+                                >
+                                    Cerrar sesión
+                                </button>
+                            </>
+                        ) : (
+                            <NavLink to="/login" className="navbar__link" onClick={cerrarMenu}>
+                                Ingresar
+                            </NavLink>
+                        )}
+
                         <NavLink
                             to="/carrito"
                             className={({ isActive }) =>

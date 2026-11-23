@@ -1,6 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import ProductForm from '../../components/ProductForm/ProductForm';
 import { actualizarProducto } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import './AdminProducto.css';
 
 // Página de /admin/editar-producto/:id
@@ -11,6 +12,7 @@ export default function EditarProducto({
 }) {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { token } = useAuth();
 
     const producto = productos.find((p) => p.id === id);
 
@@ -27,7 +29,7 @@ export default function EditarProducto({
     }
 
     const handleSubmit = async (datos) => {
-        const actualizado = await actualizarProducto(producto.id, datos);
+        const actualizado = await actualizarProducto(producto.id, datos, token);
 
         onActualizado(actualizado);
 

@@ -444,7 +444,7 @@ export default function ProductForm({
                 <button
                     type="submit"
                     className="form-producto__boton"
-                    disabled={enviando || categorias.length === 0}
+                    disabled={enviando}
                 >
                     {enviando ? 'Guardando…' : textoBoton}
                 </button>

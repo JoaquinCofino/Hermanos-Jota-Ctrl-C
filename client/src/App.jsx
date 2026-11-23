@@ -7,6 +7,7 @@ import ContactForm from './components/ContactForm/ContactForm';
 import Footer from './components/Footer/Footer';
 import EstadoPeticion from './components/EstadoPeticion/EstadoPeticion';
 import Aviso from './components/Aviso/Aviso';
+import ProtectedRoute from './ProtectedRoute/ProtectedRoute';
 
 import Catalogo from './pages/Catalogo/Catalogo';
 import DetalleProducto from './pages/DetalleProducto/DetalleProducto';
@@ -14,6 +15,7 @@ import Carrito from './pages/Carrito/Carrito';
 import CrearProducto from './pages/AdminProducto/CrearProducto';
 import EditarProducto from './pages/AdminProducto/EditarProducto';
 import NoEncontrado from './pages/NoEncontrado/NoEncontrado';
+import Login from './pages/Login/Login';
 
 import {
     obtenerProductos,
@@ -23,7 +25,6 @@ import {
 import './App.css';
 import './index.css';
 
-const CARRITO_KEY = 'hj_carrito';
 const PRODUCTOS_KEY = 'hj_productos_v1';
 
 function leerGuardado(clave) {
@@ -50,14 +51,7 @@ function App() {
     const [error, setError] = useState(null);
     const [intento, setIntento] = useState(0);
 
-    const [carrito, setCarrito] = useState(() => leerGuardado(CARRITO_KEY));
-
     const { pathname } = useLocation();
-
-    // Guardar carrito.
-    useEffect(() => {
-        guardar(CARRITO_KEY, carrito);
-    }, [carrito]);
 
     // Guardar productos.
     useEffect(() => {
@@ -81,29 +75,6 @@ function App() {
         return () => controller.abort();
     }, []);
 
-    // Funciones del carrito.
-    const sumarUnidad = (id) => {
-        setCarrito((prev) => [...prev, id]);
-    };
-
-    const restarUnidad = (id) => {
-        setCarrito((prev) => {
-            const indice = prev.indexOf(id);
-
-            return indice === -1
-                ? prev
-                : [...prev.slice(0, indice), ...prev.slice(indice + 1)];
-        });
-    };
-
-    const quitarProducto = (id) => {
-        setCarrito((prev) => prev.filter((idCarrito) => idCarrito !== id));
-    };
-
-    const vaciarCarrito = () => {
-        setCarrito([]);
-    };
-
     // CRUD de productos.
     const agregarProducto = (nuevo) => {
         setProductos((prev) => [...prev, nuevo]);
@@ -117,7 +88,6 @@ function App() {
 
     const borrarProducto = (id) => {
         setProductos((prev) => prev.filter((p) => p.id !== id));
-        quitarProducto(id);
     };
 
     // Cargar productos desde el backend.
@@ -168,7 +138,7 @@ function App() {
 
     return (
         <>
-            <Navbar cantidadCarrito={carrito.length} />
+            <Navbar />
 
             <main className="contenedor">
                 <Aviso key={pathname} />
@@ -233,12 +203,6 @@ function App() {
                             <EstadoPeticion {...peticion}>
                                 <DetalleProducto
                                     productos={productos}
-                                    carrito={carrito}
-                                    onAgregarAlCarrito={(producto) =>
-                                        sumarUnidad(producto.id)
-                                    }
-                                    onSumar={sumarUnidad}
-                                    onRestar={restarUnidad}
                                     onEliminado={borrarProducto}
                                 />
                             </EstadoPeticion>
@@ -248,23 +212,27 @@ function App() {
                     <Route
                         path="/admin/crear-producto"
                         element={
-                            <CrearProducto
-                                categorias={categorias}
-                                onCreado={agregarProducto}
-                            />
+                            <ProtectedRoute soloAdmin>
+                                <CrearProducto
+                                    categorias={categorias}
+                                    onCreado={agregarProducto}
+                                />
+                            </ProtectedRoute>
                         }
                     />
 
                     <Route
                         path="/admin/editar-producto/:id"
                         element={
-                            <EstadoPeticion {...peticion}>
-                                <EditarProducto
-                                    productos={productos}
-                                    categorias={categorias}
-                                    onActualizado={reemplazarProducto}
-                                />
-                            </EstadoPeticion>
+                            <ProtectedRoute soloAdmin>
+                                <EstadoPeticion {...peticion}>
+                                    <EditarProducto
+                                        productos={productos}
+                                        categorias={categorias}
+                                        onActualizado={reemplazarProducto}
+                                    />
+                                </EstadoPeticion>
+                            </ProtectedRoute>
                         }
                     />
 
@@ -272,17 +240,12 @@ function App() {
                         path="/carrito"
                         element={
                             <EstadoPeticion {...peticion}>
-                                <Carrito
-                                    carrito={carrito}
-                                    productos={productos}
-                                    onSumar={sumarUnidad}
-                                    onRestar={restarUnidad}
-                                    onQuitar={quitarProducto}
-                                    onVaciar={vaciarCarrito}
-                                />
+                                <Carrito />
                             </EstadoPeticion>
                         }
                     />
+
+                    <Route path="/login" element={<Login />} />
 
                     <Route
                         path="/contacto"

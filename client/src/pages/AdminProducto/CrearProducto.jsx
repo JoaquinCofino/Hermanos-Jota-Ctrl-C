@@ -1,14 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import ProductForm from '../../components/ProductForm/ProductForm';
 import { crearProducto } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 import './AdminProducto.css';
 
 // Página de /admin/crear-producto
 export default function CrearProducto({ categorias, onCreado }) {
     const navigate = useNavigate();
+    const { token } = useAuth();
 
     const handleSubmit = async (datos) => {
-        const nuevo = await crearProducto(datos);
+        const nuevo = await crearProducto(datos, token);
 
         onCreado(nuevo);
 
@@ -36,3 +38,4 @@ export default function CrearProducto({ categorias, onCreado }) {
         </section>
     );
 }
+

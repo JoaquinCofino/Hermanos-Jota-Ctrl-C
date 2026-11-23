@@ -6,12 +6,16 @@ const API_URL = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
 const IMAGEN_POR_DEFECTO = '/assets/img/productos/sin-imagen.png';
 
 // Hace la petición y devuelve el JSON.
-async function pedir(ruta, { body, ...opciones } = {}) {
+// Si recibe "token", manda el header Authorization: Bearer <token>.
+async function pedir(ruta, { body, token, ...opciones } = {}) {
+    const headers = {};
+
+    if (body) headers['Content-Type'] = 'application/json';
+    if (token) headers.Authorization = `Bearer ${token}`;
+
     const respuesta = await fetch(`${API_URL}${ruta}`, {
         ...opciones,
-        headers: body
-            ? { 'Content-Type': 'application/json' }
-            : undefined,
+        headers,
         body: body ? JSON.stringify(body) : undefined
     });
 
@@ -29,6 +33,14 @@ async function pedir(ruta, { body, ...opciones } = {}) {
     return datos;
 }
 
+// POST /api/usuarios/login -> { token, usuario }
+export function iniciarSesion(email, password) {
+    return pedir('/api/usuarios/login', {
+        method: 'POST',
+        body: { email, password }
+    });
+}
+
 // GET /api/productos
 export async function obtenerProductos(signal) {
     const productos = await pedir('/api/productos', { signal });
@@ -41,8 +53,8 @@ export async function obtenerCategorias(signal) {
     return Array.isArray(categorias) ? categorias : [];
 }
 
-// POST /api/productos
-export async function crearProducto(datos) {
+// POST /api/productos (requiere token de admin)
+export async function crearProducto(datos, token) {
     const datosProducto = {
         ...datos,
         imagenUrl: datos.imagenUrl?.trim() || IMAGEN_POR_DEFECTO
@@ -50,30 +62,32 @@ export async function crearProducto(datos) {
 
     const creado = await pedir('/api/productos', {
         method: 'POST',
-        body: datosProducto
+        body: datosProducto,
+        token
     });
 
     return normalizarProducto(creado);
 }
 
-// PUT /api/productos/:id
-export async function actualizarProducto(id, datos) {
+// PUT /api/productos/:id (requiere token de admin)
+export async function actualizarProducto(id, datos, token) {
     const actualizado = await pedir(
         `/api/productos/${encodeURIComponent(id)}`,
         {
             method: 'PUT',
-            body: datos
+            body: datos,
+            token
         }
     );
 
     return normalizarProducto(actualizado);
 }
 
-// DELETE /api/productos/:id
-export async function eliminarProducto(id) {
+// DELETE /api/productos/:id (requiere token de admin)
+export async function eliminarProducto(id, token) {
     await pedir(
         `/api/productos/${encodeURIComponent(id)}`,
-        { method: 'DELETE' }
+        { method: 'DELETE', token }
     );
 }
 

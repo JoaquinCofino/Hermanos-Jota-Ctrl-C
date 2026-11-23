@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './Catalogo.css';
 import '../AdminProducto/AdminProducto.css';
 
@@ -30,6 +31,7 @@ function coincide(producto, termino) {
 }
 
 export default function Catalogo({ productos, renderProductos }) {
+    const { usuario } = useAuth();
     const [busqueda, setBusqueda] = useState('');
 
     const termino = normalizar(busqueda.trim());
@@ -57,12 +59,14 @@ export default function Catalogo({ productos, renderProductos }) {
                     />
                 </div>
 
-                <Link
-                    className="admin-boton catalogo-nuevo"
-                    to="/admin/crear-producto"
-                >
-                    + Nuevo producto
-                </Link>
+                {usuario?.rol === 'admin' && (
+                    <Link
+                        className="admin-boton catalogo-nuevo"
+                        to="/admin/crear-producto"
+                    >
+                        + Nuevo producto
+                    </Link>
+                )}
             </header>
 
             {renderProductos(filtrados)}

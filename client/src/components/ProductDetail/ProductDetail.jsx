@@ -1,15 +1,10 @@
 import { useState, useEffect, Fragment } from 'react';
 import { rutaImagen } from '../../services/api';
+import { useCart } from '../../context/CartContext';
 import './ProductDetail.css';
 
-export default function ProductDetail({
-    producto,
-    cantidad = 0,
-    onVolver,
-    onAgregarAlCarrito,
-    onSumar,
-    onRestar
-}) {
+export default function ProductDetail({ producto }) {
+    const { carrito, agregar, restar } = useCart();
     const [mensajeExito, setMensajeExito] = useState(false);
 
     useEffect(() => {
@@ -24,27 +19,20 @@ export default function ProductDetail({
 
     if (!producto) return null;
 
-    const handleAgregar = () => {
-        if (onSumar) {
-            onSumar(producto.id);
-        } else {
-            onAgregarAlCarrito?.(producto);
-        }
+    const cantidad = carrito.find((item) => item.id === producto.id)?.cantidad || 0;
 
+    const handleAgregar = () => {
+        agregar(producto);
         setMensajeExito(true);
     };
 
     const handleSumar = () => {
-        if (onSumar) {
-            onSumar(producto.id);
-        } else {
-            onAgregarAlCarrito?.(producto);
-        }
+        agregar(producto);
     };
 
     const handleRestar = () => {
         if (cantidad > 0) {
-            onRestar?.(producto.id);
+            restar(producto.id);
         }
     };
 
