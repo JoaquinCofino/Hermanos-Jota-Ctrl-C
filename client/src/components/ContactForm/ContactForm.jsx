@@ -1,59 +1,39 @@
 import { useState } from "react";
+import useFormulario from "../../hooks/useFormulario";
+import {
+  validarEmail,
+  validarMensaje,
+  validarNombre,
+} from "../../utils/validaciones";
 import "./ContactForm.css";
 
-function ContactForm() {
-  const [formData, setFormData] = useState({
-    nombre: "",
-    email: "",
-    mensaje: "",
-  });
+// El orden de las claves define qué campo recibe el foco primero cuando hay errores.
+const REGLAS = {
+  nombre: validarNombre,
+  email: validarEmail,
+  mensaje: validarMensaje,
+};
 
-  const [errores, setErrores] = useState({
-    nombre: false,
-    email: false,
-    mensaje: false,
-  });
+function ContactForm() {
+  const { valores, errores, handleChange, validar } = useFormulario(
+    { nombre: "", email: "", mensaje: "" },
+    REGLAS
+  );
 
   const [enviado, setEnviado] = useState(false);
-
-  const validarEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // Limpiar el error del campo mientras escribe
-    setErrores((prev) => ({
-      ...prev,
-      [name]: false,
-    }));
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const nuevosErrores = {
-      nombre: formData.nombre.trim() === "",
-      email:
-        formData.email.trim() === "" ||
-        !validarEmail(formData.email.trim()),
-      mensaje: formData.mensaje.trim() === "",
-    };
+    const erroresNuevos = validar();
+    const primerCampo = Object.keys(erroresNuevos)[0];
 
-    setErrores(nuevosErrores);
-
-    const hayErrores = Object.values(nuevosErrores).some(Boolean);
-
-    if (!hayErrores) {
-      setEnviado(true);
+    if (primerCampo) {
+      e.currentTarget.elements[primerCampo]?.focus();
+      return;
     }
+
+    setEnviado(true);
   };
 
   return (
@@ -68,70 +48,91 @@ function ContactForm() {
             onSubmit={handleSubmit}
             noValidate
           >
+            <p className="nota-obligatorios">
+              Los campos marcados con * son obligatorios.
+            </p>
+
             {/* Nombre */}
-            <div
-              className={`form-grupo ${
-                errores.nombre ? "has-error" : ""
-              }`}
-            >
-              <label htmlFor="nombre">Nombre</label>
+            <div className={`form-grupo ${errores.nombre ? "has-error" : ""}`}>
+              <label htmlFor="nombre">
+                Nombre
+                <span className="obligatorio" aria-hidden="true"> *</span>
+              </label>
 
               <input
                 type="text"
                 id="nombre"
                 name="nombre"
                 placeholder="Tu nombre completo"
-                value={formData.nombre}
+                value={valores.nombre}
                 onChange={handleChange}
+                autoComplete="name"
+                required
+                aria-invalid={errores.nombre ? "true" : "false"}
+                aria-describedby={errores.nombre ? "nombre-error" : undefined}
               />
 
-              <span className="error-mensaje">
-                Este campo es obligatorio.
-              </span>
+              {errores.nombre && (
+                <span id="nombre-error" className="error-mensaje">
+                  {errores.nombre}
+                </span>
+              )}
             </div>
 
             {/* Email */}
-            <div
-              className={`form-grupo ${
-                errores.email ? "has-error" : ""
-              }`}
-            >
-              <label htmlFor="email">Email</label>
+            <div className={`form-grupo ${errores.email ? "has-error" : ""}`}>
+              <label htmlFor="email">
+                Email
+                <span className="obligatorio" aria-hidden="true"> *</span>
+              </label>
 
               <input
                 type="email"
                 id="email"
                 name="email"
                 placeholder="tu@email.com"
-                value={formData.email}
+                value={valores.email}
                 onChange={handleChange}
+                autoComplete="email"
+                autoCapitalize="none"
+                inputMode="email"
+                spellCheck={false}
+                required
+                aria-invalid={errores.email ? "true" : "false"}
+                aria-describedby={errores.email ? "email-error" : undefined}
               />
 
-              <span className="error-mensaje">
-                Ingresa un email válido.
-              </span>
+              {errores.email && (
+                <span id="email-error" className="error-mensaje">
+                  {errores.email}
+                </span>
+              )}
             </div>
 
             {/* Mensaje */}
-            <div
-              className={`form-grupo ${
-                errores.mensaje ? "has-error" : ""
-              }`}
-            >
-              <label htmlFor="mensaje">Mensaje</label>
+            <div className={`form-grupo ${errores.mensaje ? "has-error" : ""}`}>
+              <label htmlFor="mensaje">
+                Mensaje
+                <span className="obligatorio" aria-hidden="true"> *</span>
+              </label>
 
               <textarea
                 id="mensaje"
                 name="mensaje"
                 rows="5"
                 placeholder="¿En qué podemos ayudarte?"
-                value={formData.mensaje}
+                value={valores.mensaje}
                 onChange={handleChange}
+                required
+                aria-invalid={errores.mensaje ? "true" : "false"}
+                aria-describedby={errores.mensaje ? "mensaje-error" : undefined}
               />
 
-              <span className="error-mensaje">
-                El mensaje no puede estar vacío.
-              </span>
+              {errores.mensaje && (
+                <span id="mensaje-error" className="error-mensaje">
+                  {errores.mensaje}
+                </span>
+              )}
             </div>
 
             <button type="submit" className="btn-enviar">
@@ -144,6 +145,7 @@ function ContactForm() {
           <div
             id="feedback-mensaje"
             className="feedback-mensaje"
+            role="status"
           >
             ¡Gracias por contactarnos! Tu mensaje ha sido enviado con
             éxito.

@@ -7,7 +7,7 @@ import ContactForm from './components/ContactForm/ContactForm';
 import Footer from './components/Footer/Footer';
 import EstadoPeticion from './components/EstadoPeticion/EstadoPeticion';
 import Aviso from './components/Aviso/Aviso';
-import ProtectedRoute from './ProtectedRoute/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 
 import Catalogo from './pages/Catalogo/Catalogo';
 import DetalleProducto from './pages/DetalleProducto/DetalleProducto';

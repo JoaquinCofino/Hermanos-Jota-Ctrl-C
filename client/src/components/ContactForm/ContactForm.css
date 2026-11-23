@@ -73,6 +73,18 @@
   box-shadow: 0 0 0 3px rgba(160, 82, 45, 0.15), inset 0 1px 2px rgba(43, 33, 24, 0.02);
 }
 
+/* Marca de campo obligatorio y nota explicativa (mismo estilo en Login y Registro) */
+.form-grupo .obligatorio {
+  color: var(--color-siena);
+  font-weight: 700;
+}
+
+.nota-obligatorios {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-texto-suave);
+}
+
 .error-mensaje {
   color: #d32f2f;
   font-size: 0.875rem;

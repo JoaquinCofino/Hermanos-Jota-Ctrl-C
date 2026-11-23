@@ -1,72 +1,115 @@
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import '../AdminProducto/AdminProducto.css';
+import useFormulario from '../../hooks/useFormulario';
+import CampoAuth from '../../components/AuthForm/CampoAuth';
+import {
+    mensajeErrorLogin,
+    validarEmail,
+    validarPasswordLogin,
+} from '../../utils/validaciones';
+import '../../components/AuthForm/AuthForm.css';
+
+const REGLAS = {
+    email: validarEmail,
+    password: validarPasswordLogin,
+};
 
 export default function Login() {
     const { login } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState(null);
+
+    const { valores, errores, handleChange, validar } = useFormulario(
+        { email: '', password: '' },
+        REGLAS
+    );
+    const [errorServidor, setErrorServidor] = useState(null);
     const [enviando, setEnviando] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null);
+        const formulario = e.currentTarget;
+        setErrorServidor(null);
+
+        const erroresNuevos = validar();
+        const primerCampo = Object.keys(erroresNuevos)[0];
+
+        if (primerCampo) {
+            formulario.elements[primerCampo]?.focus();
+            return;
+        }
         setEnviando(true);
 
         try {
-            await login(email, password);
+            await login(valores.email.trim(), valores.password);
             navigate(location.state?.desde || '/productos', { replace: true });
         } catch (err) {
-            setError(err.message);
+            setErrorServidor(mensajeErrorLogin(err));
             setEnviando(false);
         }
     };
 
     return (
-        <section className="admin-producto">
+        <section className="auth">
             <header className="seccion-encabezado">
                 <h1>Ingresar</h1>
+                <p className="seccion-subtitulo">
+                    Accedé a tu cuenta para ver tus pedidos y comprar.
+                </p>
             </header>
 
-            <form className="form-producto" onSubmit={handleSubmit}>
-                {error && (
-                    <p className="form-producto__alerta" role="alert">
-                        {error}
+            <div className="auth-card">
+                <form
+                    className="auth-form"
+                    onSubmit={handleSubmit}
+                    noValidate
+                    aria-busy={enviando}
+                >
+                    {errorServidor && (
+                        <p className="auth-alerta" role="alert">
+                            {errorServidor}
+                        </p>
+                    )}
+
+                    <p className="auth-nota">
+                        Los campos marcados con * son obligatorios.
                     </p>
-                )}
 
-                <div className="form-producto__campo">
-                    <label htmlFor="login-email">Email</label>
-                    <input
+                    <CampoAuth
                         id="login-email"
+                        name="email"
+                        label="Email"
                         type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={valores.email}
+                        onChange={handleChange}
+                        error={errores.email}
                         autoComplete="email"
-                        required
                     />
-                </div>
 
-                <div className="form-producto__campo">
-                    <label htmlFor="login-password">Contraseña</label>
-                    <input
+                    <CampoAuth
                         id="login-password"
+                        name="password"
+                        label="Contraseña"
                         type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={valores.password}
+                        onChange={handleChange}
+                        error={errores.password}
                         autoComplete="current-password"
-                        required
                     />
-                </div>
 
-                <button type="submit" disabled={enviando}>
-                    {enviando ? 'Ingresando…' : 'Ingresar'}
-                </button>
-            </form>
+                    <button type="submit" className="auth-boton" disabled={enviando}>
+                        {enviando ? 'Ingresando…' : 'Ingresar'}
+                    </button>
+
+                    <p className="auth-pie">
+                        ¿No tenés cuenta?{' '}
+                        <Link to="/registro" state={location.state}>
+                            Creá una
+                        </Link>
+                    </p>
+                </form>
+            </div>
         </section>
     );
 }
