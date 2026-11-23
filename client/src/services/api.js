@@ -22,12 +22,15 @@ async function pedir(ruta, { body, token, ...opciones } = {}) {
     const datos = await respuesta.json().catch(() => null);
 
     if (!respuesta.ok) {
-        throw new Error(
+        const error = new Error(
             datos?.error ||
             datos?.mensaje ||
             datos?.message ||
             `Error ${respuesta.status}`
         );
+        // El status permite distinguir, por ejemplo, un 401 (sesión inválida) de otros errores.
+        error.status = respuesta.status;
+        throw error;
     }
 
     return datos;
@@ -39,6 +42,34 @@ export function iniciarSesion(email, password) {
         method: 'POST',
         body: { email, password }
     });
+}
+
+// POST /api/usuarios/registro -> { _id, nombre, email, rol }
+export function registrarUsuario(nombre, email, password) {
+    return pedir('/api/usuarios/registro', {
+        method: 'POST',
+        body: { nombre, email, password }
+    });
+}
+
+// GET /api/usuarios/perfil (requiere token) -> { _id, nombre, email, rol }
+export function obtenerPerfil(token, signal) {
+    return pedir('/api/usuarios/perfil', { token, signal });
+}
+
+// POST /api/pedidos (requiere token). items: [{ id, cantidad }]
+// El backend calcula precios y total con los datos de la base.
+export function crearPedido(items, token) {
+    return pedir('/api/pedidos', {
+        method: 'POST',
+        body: { items },
+        token
+    });
+}
+
+// GET /api/pedidos (requiere token) -> pedidos del usuario autenticado
+export function obtenerPedidos(token, signal) {
+    return pedir('/api/pedidos', { token, signal });
 }
 
 // GET /api/productos

@@ -2,8 +2,13 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function ProtectedRoute({ children, soloAdmin = false }) {
-    const { usuario } = useAuth();
+    const { usuario, cargando } = useAuth();
     const location = useLocation();
+
+    // Mientras se verifica el token guardado, no decidir todavía (evita redirigir a /login al recargar).
+    if (cargando) {
+        return <p className="estado">Verificando sesión…</p>;
+    }
 
     if (!usuario) {
         return <Navigate to="/login" replace state={{ desde: location.pathname }} />;
