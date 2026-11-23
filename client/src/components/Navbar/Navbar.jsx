@@ -11,6 +11,15 @@ const LINKS = [
     { to: '/contacto', texto: 'Contacto' }
 ];
 
+const LINKS_USUARIO = [
+    { to: '/perfil', texto: 'Mi perfil' },
+    { to: '/mis-pedidos', texto: 'Mis pedidos' }
+];
+
+const LINKS_VISITANTE = [
+    { to: '/registro', texto: 'Registrarse' }
+];
+
 function ShoppingCart({ size = 20, className = 'lucide lucide-shopping-cart preview-icon', ...props }) {
     return (
         <svg
@@ -41,6 +50,11 @@ export default function Navbar() {
     const { pathname } = useLocation();
 
     const cerrarMenu = () => setMenuAbierto(false);
+
+    // Links según haya sesión o no: logueado ve su cuenta, visitante puede registrarse.
+    const links = usuario
+        ? [...LINKS, ...LINKS_USUARIO]
+        : [...LINKS, ...LINKS_VISITANTE];
 
     // Al cambiar de página el menú se cierra solo
     useEffect(() => {
@@ -75,7 +89,7 @@ export default function Navbar() {
                     {/* En mobile es un panel desplegable; desde tablet, la fila de links de siempre */}
                     <nav id="menu-principal" className="navbar__menu" aria-label="Principal">
                         <ul className="navbar__links">
-                            {LINKS.map((link) => (
+                            {links.map((link) => (
                                 <li key={link.to}>
                                     {/* "end" evita que "/" quede activo en todas las rutas */}
                                     <NavLink
