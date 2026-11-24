@@ -174,6 +174,7 @@ backend/
 ├── controller/productsController.js # Controladores CRUD (GET, POST, PUT, DELETE)
 ├── routes/productos-routes.js       # express.Router de /api/productos
 ├── middlewares/logger.js            # Middleware global: loguea fecha, método y URL
+├── middlewares/auth.js              # verificarToken (JWT) y soloAdmin (rol admin)
 └── data/productos.js                # Array de objetos con los 11 productos del catálogo
 ```
 

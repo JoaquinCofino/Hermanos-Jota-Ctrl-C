@@ -75,11 +75,11 @@ Una fase por pedido al agente. Después de cada fase: leer el diff, aceptar y co
 **Al terminar pasan las pruebas 1 a 6.**
 
 ### Fase 3: middleware y ruta protegida
-`middleware/auth.js` con `verificarToken`: lee el header, verifica el token, guarda el payload en `req.usuario` y llama a `next()`. Ruta `GET /api/usuarios/perfil` protegida con ese middleware.
+`middlewares/auth.js` con `verificarToken`: lee el header, verifica el token, guarda el payload en `req.usuario` y llama a `next()`. Ruta `GET /api/usuarios/perfil` protegida con ese middleware.
 **Al terminar pasan las pruebas 1 a 9.**
 
 ### Fase 4: roles
-En el mismo `middleware/auth.js`, `soloAdmin`: si `req.usuario.rol` es `'admin'`, `next()`; si no, 403. Encadenar `verificarToken, soloAdmin` en `POST`, `PUT` y `DELETE` de productos.
+En el mismo `middlewares/auth.js`, `soloAdmin`: si `req.usuario.rol` es `'admin'`, `next()`; si no, 403. Encadenar `verificarToken, soloAdmin` en `POST`, `PUT` y `DELETE` de productos.
 **Al terminar pasan las 12.**
 
 ⚠️ Después de la Fase 4, el formulario de alta y edición del front va a recibir 401: todavía no manda el token. **Es lo esperado.** Lo arreglamos en clase el jueves.

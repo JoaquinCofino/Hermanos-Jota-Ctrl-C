@@ -8,7 +8,7 @@ const {
   updateProduct,
   deleteProduct
 } = require("../controller/productsController");
-const { verificarToken, soloAdmin } = require("../middleware/auth");
+const { verificarToken, soloAdmin } = require("../middlewares/auth");
 
 // Obtener todos los productos
 router.get("/", getProducts);
