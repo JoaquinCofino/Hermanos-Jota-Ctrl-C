@@ -1,4 +1,5 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import Button from '../../components/Button/Button';
 import ProductForm from '../../components/ProductForm/ProductForm';
 import { actualizarProducto } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
@@ -21,9 +22,9 @@ export default function EditarProducto({
             <div className="estado">
                 <p>Producto no encontrado.</p>
 
-                <Link className="boton-volver" to="/productos">
+                <Button to="/productos" variant="secondary" arrow="left">
                     Ver el catálogo
-                </Link>
+                </Button>
             </div>
         );
     }
@@ -40,9 +41,9 @@ export default function EditarProducto({
 
     return (
         <section className="admin-producto">
-            <Link className="boton-volver" to={`/productos/${producto.id}`}>
-                ← Volver al producto
-            </Link>
+            <Button to={`/productos/${producto.id}`} variant="ghost" size="sm" arrow="left">
+                Volver al producto
+            </Button>
 
             <header className="seccion-encabezado">
                 <h1>Editar producto</h1>

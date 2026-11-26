@@ -1,11 +1,11 @@
 /* Navbar — mobile-first
 
-   Barra superior:  logo ............ carrito + hamburguesa
-   Panel (hasta 1023px): links + bloque de cuenta (saludo y botón)
-   Desde 1024px: todo en una sola fila: logo | links | cuenta | carrito
+   Barra superior (hasta 1023px):  logo ............ carrito + hamburguesa
+   Panel (hasta 1023px): navegación de tienda + separador + sección de cuenta
+   Desde 1024px: logo | links de tienda | carrito + avatar con dropdown (o Ingresar)
 
    Escala de separaciones (siempre con los tokens de index.css):
-     --espacio-xs (0.5rem)  entre carrito y hamburguesa
+     --espacio-xs (0.5rem)  entre carrito y acciones
      --espacio-sm (1rem)    entre bloques de la barra y dentro de la cuenta
      --espacio-md (2rem)    entre links en escritorio y alrededor del divisor de cuenta
 */
@@ -38,7 +38,7 @@
     display: block;
 }
 
-/* Carrito + hamburguesa: siempre visibles */
+/* Carrito + avatar (desktop) / hamburguesa (mobile) */
 .navbar__acciones {
     display: flex;
     align-items: center;
@@ -94,6 +94,31 @@
     box-sizing: border-box;
     font-variant-numeric: tabular-nums;
     pointer-events: none;
+}
+
+/* ---------- Avatar circular de iniciales ---------- */
+.navbar__avatar {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 1px solid var(--color-borde);
+    background: var(--color-alabastro);
+    color: var(--color-siena);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-secundaria);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    user-select: none;
+}
+
+/* En móvil no hay dropdown anidado; el avatar de escritorio solo aparece desde 1024px */
+.navbar__avatar-menu {
+    display: none;
+    position: relative;
 }
 
 /* ---------- Botón hamburguesa: tres barras que se convierten en X ---------- */
@@ -248,8 +273,7 @@
     outline-offset: -2px;
 }
 
-/* ---------- Cuenta: saludo + Ingresar / Cerrar sesión ---------- */
-/* En el panel: bloque separado de los links por una línea, con botón a todo el ancho */
+/* ---------- Cuenta en móvil: saludo + Ingresar / Cerrar sesión ---------- */
 .navbar__cuenta {
     width: min(1100px, 92%);
     margin: 0.25rem auto 0;
@@ -345,18 +369,19 @@
     .navbar-fondo,
     .navbar__toggle-barra,
     .navbar__boton,
+    .navbar__dropdown,
     .navbar--abierto .navbar__links li {
         transition: none;
         animation: none;
     }
 }
 
-/* ---------- Escritorio (≥ 1024px): una sola fila, sin hamburguesa ----------
-   El corte está en 1024px (el mismo de ContactForm) y no en 700px: con sesión iniciada
-   hay 5 links + saludo + botón + carrito, y en 700px no entran. */
+/* ---------- Escritorio (≥ 1024px): una sola fila, sin hamburguesa ---------- */
 @media (min-width: 1024px) {
     .navbar__toggle,
-    .navbar-fondo {
+    .navbar-fondo,
+    .navbar__cuenta--mobile,
+    .navbar__item--solo-mobile {
         display: none;
     }
 
@@ -408,7 +433,7 @@
         border-bottom: 2px solid var(--color-siena);
     }
 
-    /* Cuenta en la fila: separada de los links por una línea vertical */
+    /* Botón Ingresar (visitante) separado de los links por una línea vertical */
     .navbar__cuenta {
         width: auto;
         margin: 0 0 0 var(--espacio-md);
@@ -419,18 +444,133 @@
         align-items: center;
     }
 
-    .navbar__saludo {
-        max-width: 11rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
     .navbar__boton {
         width: auto;
         min-height: 0;
         padding: 0.5rem 1rem;
         font-size: 0.75rem;
+    }
+
+    /* Separación sutil entre links y carrito/avatar */
+    .navbar__acciones {
+        margin-left: var(--espacio-sm);
+        padding-left: var(--espacio-sm);
+        border-left: 1px solid var(--color-borde);
+        gap: 0.65rem;
+    }
+
+    /* ---------- Avatar + Dropdown de cuenta en escritorio ---------- */
+    .navbar__avatar-menu {
+        display: block;
+    }
+
+    .navbar__avatar--boton {
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        transition: border-color var(--transicion), background-color var(--transicion), box-shadow var(--transicion);
+    }
+
+    .navbar__avatar--boton:hover,
+    .navbar__avatar--boton[aria-expanded="true"] {
+        border-color: var(--color-siena);
+        box-shadow: 0 0 0 3px rgba(160, 82, 45, 0.12);
+    }
+
+    .navbar__avatar--boton:focus-visible {
+        outline: 2px solid var(--color-siena);
+        outline-offset: 2px;
+    }
+
+    .navbar__dropdown {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        min-width: 220px;
+        padding: 0.4rem 0;
+        background: #fcfaf7;
+        border: 1px solid var(--color-borde);
+        border-radius: var(--radio-borde);
+        box-shadow: 0 12px 28px rgba(43, 33, 24, 0.12);
+        z-index: 60;
+        animation: navbar-dropdown 0.16s ease both;
+    }
+
+    @keyframes navbar-dropdown {
+        from {
+            opacity: 0;
+            transform: translateY(-6px);
+        }
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    .navbar__dropdown-cabecera {
+        padding: 0.65rem 1rem 0.6rem;
+        border-bottom: 1px solid rgba(228, 213, 192, 0.75);
+        user-select: none;
+    }
+
+    .navbar__dropdown-nombre {
+        display: block;
+        font-family: var(--font-secundaria);
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--color-texto);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .navbar__dropdown-grupo {
+        padding: 0.3rem 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .navbar__dropdown-item {
+        display: block;
+        width: 100%;
+        padding: 0.6rem 1rem;
+        background: none;
+        border: 0;
+        text-align: left;
+        font-family: var(--font-primaria);
+        font-size: 0.8rem;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--color-texto);
+        cursor: pointer;
+        transition: background-color var(--transicion), color var(--transicion);
+    }
+
+    .navbar__dropdown-item:hover,
+    .navbar__dropdown-item--activo {
+        background: rgba(245, 230, 211, 0.65);
+        color: var(--color-siena);
+    }
+
+    .navbar__dropdown-item--activo {
+        font-weight: 700;
+    }
+
+    .navbar__dropdown-item:focus-visible {
+        outline: 2px solid var(--color-siena);
+        outline-offset: -2px;
+    }
+
+    .navbar__dropdown-divisor {
+        height: 1px;
+        margin: 0.25rem 0;
+        background: rgba(228, 213, 192, 0.75);
+    }
+
+    .navbar__dropdown-item--salir {
+        color: var(--color-siena);
     }
 }
 

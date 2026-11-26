@@ -206,6 +206,7 @@ function App() {
                             <EstadoPeticion {...peticion}>
                                 <DetalleProducto
                                     productos={productos}
+                                    cargando={cargando}
                                     onEliminado={borrarProducto}
                                 />
                             </EstadoPeticion>
@@ -264,7 +265,7 @@ function App() {
                         path="/mis-pedidos"
                         element={
                             <ProtectedRoute>
-                                <MisPedidos />
+                                <MisPedidos productos={productos} />
                             </ProtectedRoute>
                         }
                     />

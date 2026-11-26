@@ -1,0 +1,125 @@
+/* Página 404 — composición tipográfica con marca de agua (mobile-first) */
+
+.no-encontrado {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  width: 100%;
+  padding: 3.5rem 0 4.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.no-encontrado__encabezado {
+  position: relative;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.no-encontrado__marca-agua {
+  grid-area: 1 / 1;
+  z-index: 0;
+  font-family: var(--font-secundaria);
+  font-size: clamp(7rem, 32vw, 15rem);
+  font-weight: 700;
+  font-variant-numeric: lining-nums;
+  line-height: 0.85;
+  letter-spacing: 0.04em;
+  color: rgba(228, 213, 192, 0.55);
+  user-select: none;
+  pointer-events: none;
+}
+
+.no-encontrado__titulo {
+  grid-area: 1 / 1;
+  z-index: 1;
+  align-self: end;
+  margin: 0 0 0.35rem;
+  padding-inline: 0.5rem;
+  font-family: var(--font-secundaria);
+  font-size: clamp(1.35rem, 5vw, 2.25rem);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-titulo);
+  line-height: 1.25;
+  color: var(--color-siena);
+}
+
+.no-encontrado__texto {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 2rem;
+  max-width: 40ch;
+  text-align: center;
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: var(--color-texto-suave);
+}
+
+.no-encontrado__acciones {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.no-encontrado__btn {
+  width: 100%;
+}
+
+.no-encontrado__ayuda {
+  position: relative;
+  z-index: 1;
+  margin: 1.75rem 0 0;
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 300;
+  letter-spacing: var(--tracking-leyenda);
+  color: var(--color-texto-suave);
+}
+
+.no-encontrado__ayuda-link {
+  color: var(--color-siena);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--transicion);
+}
+
+.no-encontrado__ayuda-link:hover {
+  color: var(--color-siena-oscuro);
+}
+
+.no-encontrado__ayuda-link:focus-visible {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ---------- Mejoras progresivas: Tablet / Escritorio (≥ 640px) ---------- */
+@media (min-width: 640px) {
+  .no-encontrado {
+    padding: 5rem 0 6rem;
+  }
+
+  .no-encontrado__titulo {
+    margin-bottom: 0.75rem;
+  }
+
+  .no-encontrado__acciones {
+    max-width: none;
+    width: auto;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .no-encontrado__btn {
+    width: auto;
+  }
+}
