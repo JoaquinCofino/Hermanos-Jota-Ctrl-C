@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Button from '../../components/Button/Button';
 import ProductDetail from '../../components/ProductDetail/ProductDetail';
+import NoEncontrado from '../NoEncontrado/NoEncontrado';
 import { eliminarProducto } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import '../AdminProducto/AdminProducto.css';
 
 // Página de /productos/:id — toma el id de la URL y busca el producto en la lista ya cargada.
-export default function DetalleProducto({ productos, onEliminado }) {
+export default function DetalleProducto({ productos, cargando = false, onEliminado }) {
     const { id } = useParams();
     const navigate = useNavigate();
     const { token, usuario } = useAuth();
@@ -22,15 +23,19 @@ export default function DetalleProducto({ productos, onEliminado }) {
     const producto = productos.find((p) => p.id === id);
 
     if (!producto) {
+        if (cargando) {
+            return <p className="estado">Cargando pieza…</p>;
+        }
+
         return (
-            <div className="estado">
-                <p>No encontramos la pieza que estás buscando.</p>
-                <div style={{ marginTop: '1rem' }}>
-                    <Button to="/productos" variant="primary" arrow="left">
-                        Volver al catálogo
-                    </Button>
-                </div>
-            </div>
+            <NoEncontrado
+                titulo="Esta pieza no está en el taller"
+                descripcion="El producto que buscás no existe, ya no está disponible o el enlace es incorrecto. Podés recorrer el catálogo para descubrir otras piezas."
+                accionPrimaria={{ to: '/productos', texto: 'Ver catálogo', arrow: 'right' }}
+                accionSecundaria={{ to: '/', texto: 'Ir al inicio' }}
+                ayudaTexto="¿Buscabas algo puntual?"
+                ayudaEnlace={{ to: '/contacto', texto: 'Contactanos' }}
+            />
         );
     }
 

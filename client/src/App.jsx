@@ -206,6 +206,7 @@ function App() {
                             <EstadoPeticion {...peticion}>
                                 <DetalleProducto
                                     productos={productos}
+                                    cargando={cargando}
                                     onEliminado={borrarProducto}
                                 />
                             </EstadoPeticion>
