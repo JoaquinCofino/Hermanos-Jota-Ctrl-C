@@ -3,21 +3,35 @@
  * Extraídos del Manual de Marca (paleta de colores y tipografía).
  */
 :root {
-  /* Paleta */
-  --color-siena: #a0522d; /* Color principal, títulos */
+  /* Paleta oficial */
+  --color-siena: #a0522d; /* Color principal, títulos, botón primario */
   --color-verde-salvia: #87a96b; /* Acento secundario, sustentabilidad */
   --color-alabastro: #f5e6d3; /* Fondo principal */
-  --color-vara-oro: #d4a437; /* Detalles premium */
+  --color-vara-oro: #d4a437; /* Detalles premium, acentos */
   --color-rosa: #c47a6d; /* Acentos suaves */
 
+  /* Texto y neutros existentes del sitio */
   --color-texto: #2b2118;
   --color-texto-suave: #6b5d4f;
   --color-borde: #e4d5c0;
   --color-blanco: #ffffff;
 
+  /* Tonos derivados de la paleta oficial */
+  --color-siena-oscuro: #834122;
+  --color-superficie: #fcfaf7;
+  --color-superficie-calida: rgba(245, 230, 211, 0.45);
+  --color-fondo-oscuro: #2b2118;
+  --color-salvia-suave: rgba(135, 169, 107, 0.24);
+  --color-oro-suave: rgba(212, 164, 55, 0.24);
+  --color-rosa-suave: rgba(196, 122, 109, 0.24);
+  --color-foco: var(--color-vara-oro);
+
   /* Tipografía */
   --font-primaria: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-secundaria: "Playfair Display", Georgia, serif;
+  --tracking-titulo: 0.1em;
+  --tracking-cta: 0.08em;
+  --tracking-leyenda: 0.02em;
 
   /* Espaciado */
   --espacio-xs: 0.5rem;
@@ -25,5 +39,9 @@
   --espacio-md: 2rem;
   --espacio-lg: 4rem;
 
+  /* Forma y movimiento */
   --radio-borde: 4px;
+  --sombra-card: 0 2px 12px rgba(43, 33, 24, 0.05);
+  --sombra-hover: 0 8px 24px rgba(160, 82, 45, 0.12);
+  --transicion: 0.22s ease;
 }
