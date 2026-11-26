@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useFormulario from '../../hooks/useFormulario';
 import CampoAuth from '../../components/AuthForm/CampoAuth';
@@ -19,7 +19,7 @@ const REGLAS = {
 };
 
 export default function Registro() {
-    const { registrar } = useAuth();
+    const { registrar, usuario, cargando } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -29,6 +29,14 @@ export default function Registro() {
     );
     const [errorServidor, setErrorServidor] = useState(null);
     const [enviando, setEnviando] = useState(false);
+
+    if (cargando) {
+        return <p className="estado">Verificando sesión…</p>;
+    }
+
+    if (usuario) {
+        return <Navigate to={location.state?.desde || '/productos'} replace />;
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
