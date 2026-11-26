@@ -10,11 +10,13 @@ import '../AdminProducto/AdminProducto.css';
 export default function DetalleProducto({ productos, onEliminado }) {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { token } = useAuth();
+    const { token, usuario } = useAuth();
     const { quitar } = useCart();
     const [confirmando, setConfirmando] = useState(false);
     const [eliminando, setEliminando] = useState(false);
     const [errorEliminar, setErrorEliminar] = useState(null);
+
+    const esAdmin = usuario?.rol === 'admin';
 
     const producto = productos.find((p) => p.id === id);
 
@@ -51,22 +53,24 @@ export default function DetalleProducto({ productos, onEliminado }) {
                 <Link className="boton-volver" to="/productos">
                     ← Volver al catálogo
                 </Link>
-                <div className="admin-acciones__botones">
-                    <Link className="admin-boton" to={`/admin/editar-producto/${producto.id}`}>
-                        Editar
-                    </Link>
-                    <button
-                        type="button"
-                        className="admin-boton admin-boton--peligro"
-                        onClick={() => setConfirmando(true)}
-                        disabled={eliminando}
-                    >
-                        Eliminar
-                    </button>
-                </div>
+                {esAdmin && (
+                    <div className="admin-acciones__botones">
+                        <Link className="admin-boton" to={`/admin/editar-producto/${producto.id}`}>
+                            Editar
+                        </Link>
+                        <button
+                            type="button"
+                            className="admin-boton admin-boton--peligro"
+                            onClick={() => setConfirmando(true)}
+                            disabled={eliminando}
+                        >
+                            Eliminar
+                        </button>
+                    </div>
+                )}
             </div>
 
-            {confirmando && (
+            {esAdmin && confirmando && (
                 <div className="admin-confirmacion" role="alert">
                     <p>
                         ¿Eliminar <strong>"{producto.nombre}"</strong>? Esta acción no se puede deshacer.
@@ -92,7 +96,7 @@ export default function DetalleProducto({ productos, onEliminado }) {
                 </div>
             )}
 
-            {errorEliminar && (
+            {esAdmin && errorEliminar && (
                 <p className="admin-error" role="alert">
                     {errorEliminar}
                 </p>
