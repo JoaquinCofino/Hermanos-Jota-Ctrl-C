@@ -1,0 +1,143 @@
+/* Button — componente CTA reutilizable (Manual de Marca Hermanos Jota)
+   Tipografía: Inter Medium 500, MAYÚSCULAS, letter-spacing 0.08em.
+   Animaciones: 180–220ms, solo transform y opacity. */
+
+.hj-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--radio-borde);
+  border: 1px solid transparent;
+  font-family: var(--font-primaria);
+  font-size: 0.84rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-cta);
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.hj-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.22s ease;
+}
+
+.hj-btn__contenido {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.hj-btn__flecha {
+  display: inline-flex;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+/* Hover y active */
+.hj-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.hj-btn:hover:not(:disabled)::before {
+  transform: scaleX(1);
+}
+
+.hj-btn:hover:not(:disabled) .hj-btn__flecha--right {
+  transform: translateX(4px);
+}
+
+.hj-btn:hover:not(:disabled) .hj-btn__flecha--left {
+  transform: translateX(-4px);
+}
+
+.hj-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.hj-btn:focus-visible {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 2px;
+}
+
+.hj-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Variantes ---------- */
+
+/* Primary: fondo Siena, texto blanco, relleno Siena oscuro desde la izquierda */
+.hj-btn--primary {
+  background: var(--color-siena);
+  border-color: var(--color-siena);
+  color: var(--color-blanco);
+}
+
+.hj-btn--primary::before {
+  background: var(--color-siena-oscuro);
+}
+
+/* Secondary: borde Siena, fondo transparente, relleno Alabastro cálido desde la izquierda */
+.hj-btn--secondary {
+  background: transparent;
+  border-color: var(--color-siena);
+  color: var(--color-siena);
+}
+
+.hj-btn--secondary::before {
+  background: var(--color-alabastro);
+}
+
+/* Ghost: sin borde, texto Siena, relleno sutil desde la izquierda */
+.hj-btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--color-siena);
+  padding-inline: 0.85rem;
+}
+
+.hj-btn--ghost::before {
+  background: var(--color-superficie-calida);
+}
+
+/* ---------- Tamaños ---------- */
+.hj-btn--sm {
+  min-height: 44px;
+  padding: 0.55rem 1.05rem;
+  font-size: 0.78rem;
+}
+
+.hj-btn--full {
+  width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hj-btn,
+  .hj-btn::before,
+  .hj-btn__flecha {
+    transition: none;
+  }
+
+  .hj-btn:hover:not(:disabled),
+  .hj-btn:active:not(:disabled),
+  .hj-btn:hover:not(:disabled) .hj-btn__flecha--right,
+  .hj-btn:hover:not(:disabled) .hj-btn__flecha--left {
+    transform: none;
+  }
+}

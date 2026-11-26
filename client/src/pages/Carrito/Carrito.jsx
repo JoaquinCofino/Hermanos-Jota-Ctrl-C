@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Button from '../../components/Button/Button';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { crearPedido } from '../../services/api';
@@ -63,17 +64,30 @@ export default function Carrito() {
                         Revisá tu selección de piezas artesanales antes de finalizar tu compra.
                     </p>
                 </header>
-                <p className="estado">
+                <div className="estado">
                     {compraRealizada ? (
                         <>
-                            ¡Tu pedido fue registrado! Muchas gracias por elegirnos.{' '}
-                            <Link to="/mis-pedidos">Ver mis pedidos →</Link>{' '}
-                            <Link to="/productos">Seguir explorando el catálogo →</Link>
+                            <p>¡Tu pedido fue registrado! Muchas gracias por elegirnos.</p>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.75rem', marginTop: '1rem' }}>
+                                <Button to="/mis-pedidos" variant="primary" arrow="right">
+                                    Ver mis pedidos
+                                </Button>
+                                <Button to="/productos" variant="secondary" arrow="right">
+                                    Volver al catálogo
+                                </Button>
+                            </div>
                         </>
                     ) : (
-                        <>Tu carrito está vacío. <Link to="/productos">Ver catálogo →</Link></>
+                        <>
+                            <p>Todavía no sumaste piezas a tu carrito.</p>
+                            <div style={{ marginTop: '1rem' }}>
+                                <Button to="/productos" variant="primary" arrow="right">
+                                    Ver catálogo
+                                </Button>
+                            </div>
+                        </>
                     )}
-                </p>
+                </div>
             </section>
         );
     }
