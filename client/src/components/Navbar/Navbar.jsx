@@ -1,23 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import logo from '../../assets/logo.svg';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import obtenerIniciales from '../../utils/obtenerIniciales';
 import './Navbar.css';
 
-const LINKS = [
+const LINKS_TIENDA = [
     { to: '/', texto: 'Inicio' },
     { to: '/productos', texto: 'Catálogo' },
     { to: '/contacto', texto: 'Contacto' }
 ];
 
-const LINKS_USUARIO = [
+const LINKS_CUENTA = [
     { to: '/perfil', texto: 'Mi perfil' },
     { to: '/mis-pedidos', texto: 'Mis pedidos' }
-];
-
-const LINKS_VISITANTE = [
-    { to: '/registro', texto: 'Registrarse' }
 ];
 
 function ShoppingCart({ size = 20, ...props }) {
@@ -47,18 +44,22 @@ export default function Navbar() {
     const { usuario, logout } = useAuth();
     const { cantidadTotal: cantidadCarrito } = useCart();
     const [menuAbierto, setMenuAbierto] = useState(false);
+    const [dropdownAbierto, setDropdownAbierto] = useState(false);
+    const dropdownRef = useRef(null);
     const { pathname } = useLocation();
 
     const cerrarMenu = () => setMenuAbierto(false);
+    const cerrarDropdown = () => setDropdownAbierto(false);
 
-    const links = usuario
-        ? [...LINKS, ...LINKS_USUARIO]
-        : [...LINKS, ...LINKS_VISITANTE];
+    const iniciales = usuario ? obtenerIniciales(usuario.nombre) : '';
 
+    // Cerrar menús al cambiar de ruta
     useEffect(() => {
         setMenuAbierto(false);
+        setDropdownAbierto(false);
     }, [pathname]);
 
+    // Menú móvil: Escape y bloqueo de scroll del body
     useEffect(() => {
         if (!menuAbierto) return;
 
@@ -75,6 +76,35 @@ export default function Navbar() {
         };
     }, [menuAbierto]);
 
+    // Dropdown de cuenta en escritorio: clic fuera o Escape
+    useEffect(() => {
+        if (!dropdownAbierto) return;
+
+        const alHacerClicFuera = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setDropdownAbierto(false);
+            }
+        };
+
+        const alPresionarTecla = (e) => {
+            if (e.key === 'Escape') setDropdownAbierto(false);
+        };
+
+        document.addEventListener('mousedown', alHacerClicFuera);
+        document.addEventListener('keydown', alPresionarTecla);
+
+        return () => {
+            document.removeEventListener('mousedown', alHacerClicFuera);
+            document.removeEventListener('keydown', alPresionarTecla);
+        };
+    }, [dropdownAbierto]);
+
+    const handleLogout = () => {
+        logout();
+        cerrarMenu();
+        cerrarDropdown();
+    };
+
     return (
         <>
             <header className={`navbar ${menuAbierto ? 'navbar--abierto' : ''}`}>
@@ -85,7 +115,7 @@ export default function Navbar() {
 
                     <nav id="menu-principal" className="navbar__menu" aria-label="Principal">
                         <ul className="navbar__links">
-                            {links.map((link, indice) => (
+                            {LINKS_TIENDA.map((link, indice) => (
                                 <li key={link.to} style={{ '--i': indice }}>
                                     {/* "end" evita que "/" quede activo en todas las rutas */}
                                     <NavLink
@@ -100,26 +130,42 @@ export default function Navbar() {
                                     </NavLink>
                                 </li>
                             ))}
+
+                            {usuario &&
+                                LINKS_CUENTA.map((link, indice) => (
+                                    <li
+                                        key={link.to}
+                                        className="navbar__item--solo-mobile"
+                                        style={{ '--i': LINKS_TIENDA.length + indice }}
+                                    >
+                                        <NavLink
+                                            to={link.to}
+                                            className={({ isActive }) =>
+                                                `navbar__link ${isActive ? 'navbar__link--activo' : ''}`
+                                            }
+                                            onClick={cerrarMenu}
+                                        >
+                                            {link.texto}
+                                        </NavLink>
+                                    </li>
+                                ))}
                         </ul>
 
-                        <div className="navbar__cuenta">
-                            {usuario ? (
-                                <>
-                                    <p className="navbar__saludo" title={usuario.nombre}>
-                                        Hola, <strong>{usuario.nombre}</strong>
-                                    </p>
-                                    <button
-                                        type="button"
-                                        className="navbar__boton navbar__boton--secundario"
-                                        onClick={() => {
-                                            logout();
-                                            cerrarMenu();
-                                        }}
-                                    >
-                                        Cerrar sesión
-                                    </button>
-                                </>
-                            ) : (
+                        {usuario ? (
+                            <div className="navbar__cuenta navbar__cuenta--mobile">
+                                <p className="navbar__saludo" title={usuario.nombre}>
+                                    Hola, <strong>{usuario.nombre}</strong>
+                                </p>
+                                <button
+                                    type="button"
+                                    className="navbar__boton navbar__boton--secundario"
+                                    onClick={handleLogout}
+                                >
+                                    Cerrar sesión
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="navbar__cuenta">
                                 <NavLink
                                     to="/login"
                                     className="navbar__boton navbar__boton--primario"
@@ -127,8 +173,8 @@ export default function Navbar() {
                                 >
                                     Ingresar
                                 </NavLink>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </nav>
 
                     <div className="navbar__acciones">
@@ -145,6 +191,64 @@ export default function Navbar() {
                             <ShoppingCart size={20} />
                             <span className="navbar__contador">{cantidadCarrito}</span>
                         </NavLink>
+
+                        {usuario && (
+                            <div className="navbar__avatar-menu" ref={dropdownRef}>
+                                <button
+                                    type="button"
+                                    className="navbar__avatar navbar__avatar--boton"
+                                    aria-haspopup="menu"
+                                    aria-expanded={dropdownAbierto}
+                                    aria-label={`Menú de cuenta de ${usuario.nombre}`}
+                                    onClick={() => setDropdownAbierto((abierto) => !abierto)}
+                                >
+                                    {iniciales}
+                                </button>
+
+                                {dropdownAbierto && (
+                                    <div
+                                        className="navbar__dropdown"
+                                        role="menu"
+                                        aria-label="Opciones de cuenta"
+                                    >
+                                        <div className="navbar__dropdown-cabecera">
+                                            <span className="navbar__dropdown-nombre" title={usuario.nombre}>
+                                                {usuario.nombre}
+                                            </span>
+                                        </div>
+
+                                        <div className="navbar__dropdown-grupo">
+                                            {LINKS_CUENTA.map((link) => (
+                                                <NavLink
+                                                    key={link.to}
+                                                    to={link.to}
+                                                    role="menuitem"
+                                                    className={({ isActive }) =>
+                                                        `navbar__dropdown-item ${
+                                                            isActive ? 'navbar__dropdown-item--activo' : ''
+                                                        }`
+                                                    }
+                                                    onClick={cerrarDropdown}
+                                                >
+                                                    {link.texto}
+                                                </NavLink>
+                                            ))}
+                                        </div>
+
+                                        <div className="navbar__dropdown-divisor" role="separator" />
+
+                                        <button
+                                            type="button"
+                                            role="menuitem"
+                                            className="navbar__dropdown-item navbar__dropdown-item--salir"
+                                            onClick={handleLogout}
+                                        >
+                                            Cerrar sesión
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         <button
                             type="button"
