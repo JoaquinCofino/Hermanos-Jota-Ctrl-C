@@ -264,7 +264,7 @@ function App() {
                         path="/mis-pedidos"
                         element={
                             <ProtectedRoute>
-                                <MisPedidos />
+                                <MisPedidos productos={productos} />
                             </ProtectedRoute>
                         }
                     />
