@@ -1,5 +1,5 @@
 function logger(req, res, next){
-    // Componemos la fecha y hora en formato UTC-3
+    
     const fecha = new Date().toLocaleString('es-AR', { 
         timeZone: 'America/Argentina/Buenos_Aires',
         day: '2-digit',
