@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Product = require('./models/Products');
 const Categoria = require('./models/Categoria');
+const Usuario = require('./models/Usuario');
+const bcrypt = require('bcrypt');
 const productos = require('./data/productos');
 
 async function seed() {
@@ -17,7 +19,10 @@ console.log(`🌱 ${categorias.length} categorías cargadas en ${mongoose.connec
 const categoriasPorNombre = Object.fromEntries(
   categorias.map((c) => [c.nombre, c._id])
 );
+// El array no trae stock: se carga 10 por producto para que se pueda comprar
+// (POST /api/pedidos descuenta stock y rechaza la compra si no alcanza).
 const documentos = productos.map(({ id, imagen, categoria, ...resto }) => ({
+  stock: 10,
   ...resto,
   imagenUrl: imagen,
   categoria: categoriasPorNombre[categoria]
@@ -26,6 +31,14 @@ const documentos = productos.map(({ id, imagen, categoria, ...resto }) => ({
 await Product.deleteMany({});
 const creados = await Product.insertMany(documentos);
 console.log(`🌱 ${creados.length} productos cargados en ${mongoose.connection.name}`);
+
+// Usuarios de prueba para el login (el modelo no hashea solo: se hashea acá).
+await Usuario.deleteMany({});
+await Usuario.create([
+  { nombre: 'Admin Jota', email: 'admin@jota.com', password: await bcrypt.hash('admin123', 10), rol: 'admin' },
+  { nombre: 'Cliente Demo', email: 'cliente@jota.com', password: await bcrypt.hash('cliente123', 10), rol: 'cliente' }
+]);
+console.log(`Usuarios de prueba cargados en ${mongoose.connection.name}: admin@jota.com y cliente@jota.com`);
 
 await mongoose.disconnect();
 }

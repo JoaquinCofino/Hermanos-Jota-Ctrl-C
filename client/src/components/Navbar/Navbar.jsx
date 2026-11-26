@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import logo from '../../assets/logo.svg';
+import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import './Navbar.css';
 
 const LINKS = [
@@ -9,7 +11,16 @@ const LINKS = [
     { to: '/contacto', texto: 'Contacto' }
 ];
 
-function ShoppingCart({ size = 20, className = 'lucide lucide-shopping-cart preview-icon', ...props }) {
+const LINKS_USUARIO = [
+    { to: '/perfil', texto: 'Mi perfil' },
+    { to: '/mis-pedidos', texto: 'Mis pedidos' }
+];
+
+const LINKS_VISITANTE = [
+    { to: '/registro', texto: 'Registrarse' }
+];
+
+function ShoppingCart({ size = 20, ...props }) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +32,7 @@ function ShoppingCart({ size = 20, className = 'lucide lucide-shopping-cart prev
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className={className}
+            aria-hidden="true"
             {...props}
         >
             <path d="m2.05 2.05 1.099-.028a1 1 0 0 1 1.008.815l2.69 14.347A1 1 0 0 0 7.83 18H18" />
@@ -32,18 +43,22 @@ function ShoppingCart({ size = 20, className = 'lucide lucide-shopping-cart prev
     );
 }
 
-export default function Navbar({ cantidadCarrito = 0 }) {
+export default function Navbar() {
+    const { usuario, logout } = useAuth();
+    const { cantidadTotal: cantidadCarrito } = useCart();
     const [menuAbierto, setMenuAbierto] = useState(false);
     const { pathname } = useLocation();
 
     const cerrarMenu = () => setMenuAbierto(false);
 
-    // Al cambiar de página el menú se cierra solo
+    const links = usuario
+        ? [...LINKS, ...LINKS_USUARIO]
+        : [...LINKS, ...LINKS_VISITANTE];
+
     useEffect(() => {
         setMenuAbierto(false);
     }, [pathname]);
 
-    // Con el menú abierto: Escape lo cierra y la página de atrás no scrollea (ver Navbar.css)
     useEffect(() => {
         if (!menuAbierto) return;
 
@@ -68,11 +83,10 @@ export default function Navbar({ cantidadCarrito = 0 }) {
                         <img className="navbar__logo" src={logo} alt="Hermanos Jota" />
                     </Link>
 
-                    {/* En mobile es un panel desplegable; desde tablet, la fila de links de siempre */}
                     <nav id="menu-principal" className="navbar__menu" aria-label="Principal">
                         <ul className="navbar__links">
-                            {LINKS.map((link) => (
-                                <li key={link.to}>
+                            {links.map((link, indice) => (
+                                <li key={link.to} style={{ '--i': indice }}>
                                     {/* "end" evita que "/" quede activo en todas las rutas */}
                                     <NavLink
                                         to={link.to}
@@ -87,16 +101,45 @@ export default function Navbar({ cantidadCarrito = 0 }) {
                                 </li>
                             ))}
                         </ul>
+
+                        <div className="navbar__cuenta">
+                            {usuario ? (
+                                <>
+                                    <p className="navbar__saludo" title={usuario.nombre}>
+                                        Hola, <strong>{usuario.nombre}</strong>
+                                    </p>
+                                    <button
+                                        type="button"
+                                        className="navbar__boton navbar__boton--secundario"
+                                        onClick={() => {
+                                            logout();
+                                            cerrarMenu();
+                                        }}
+                                    >
+                                        Cerrar sesión
+                                    </button>
+                                </>
+                            ) : (
+                                <NavLink
+                                    to="/login"
+                                    className="navbar__boton navbar__boton--primario"
+                                    onClick={cerrarMenu}
+                                >
+                                    Ingresar
+                                </NavLink>
+                            )}
+                        </div>
                     </nav>
 
-                    {/* El carrito queda siempre a la vista, también en mobile al lado de la hamburguesa */}
                     <div className="navbar__acciones">
                         <NavLink
                             to="/carrito"
                             className={({ isActive }) =>
-                                `navbar__carrito ${isActive ? 'navbar__link--activo' : ''}`
+                                `navbar__carrito ${isActive ? 'navbar__carrito--activo' : ''}`
                             }
-                            aria-label={`Carrito: ${cantidadCarrito} productos`}
+                            aria-label={`Carrito: ${cantidadCarrito} ${
+                                cantidadCarrito === 1 ? 'producto' : 'productos'
+                            }`}
                             onClick={cerrarMenu}
                         >
                             <ShoppingCart size={20} />
@@ -120,7 +163,6 @@ export default function Navbar({ cantidadCarrito = 0 }) {
                 </div>
             </header>
 
-            {/* Fondo oscuro detrás del menú mobile: tocarlo cierra el menú */}
             <div
                 className={`navbar-fondo ${menuAbierto ? 'navbar-fondo--visible' : ''}`}
                 onClick={cerrarMenu}

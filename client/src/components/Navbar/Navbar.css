@@ -1,4 +1,15 @@
-/* Mobile-first: logo + carrito + hamburguesa en una fila; los links en un panel desplegable */
+/* Navbar — mobile-first
+
+   Barra superior:  logo ............ carrito + hamburguesa
+   Panel (hasta 1023px): links + bloque de cuenta (saludo y botón)
+   Desde 1024px: todo en una sola fila: logo | links | cuenta | carrito
+
+   Escala de separaciones (siempre con los tokens de index.css):
+     --espacio-xs (0.5rem)  entre carrito y hamburguesa
+     --espacio-sm (1rem)    entre bloques de la barra y dentro de la cuenta
+     --espacio-md (2rem)    entre links en escritorio y alrededor del divisor de cuenta
+*/
+
 .navbar {
     position: relative;
     z-index: 50; /* por encima del fondo oscuro del menú */
@@ -13,11 +24,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--espacio-xs);
+    gap: var(--espacio-sm);
 }
 
 .navbar__marca {
     display: block;
+    flex-shrink: 0;
 }
 
 .navbar__logo {
@@ -26,10 +38,62 @@
     display: block;
 }
 
+/* Carrito + hamburguesa: siempre visibles */
 .navbar__acciones {
     display: flex;
     align-items: center;
-    gap: 1.25rem;
+    gap: var(--espacio-xs);
+    flex-shrink: 0;
+}
+
+/* ---------- Carrito ---------- */
+/* Área táctil de 44px; el contador queda dentro de esa caja (sin márgenes negativos) */
+.navbar__carrito {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    color: var(--color-texto);
+    text-decoration: none;
+    transition: color var(--transicion);
+}
+
+.navbar__carrito:hover,
+.navbar__carrito--activo {
+    color: var(--color-siena);
+}
+
+.navbar__carrito:focus-visible {
+    outline: 2px solid var(--color-siena);
+    outline-offset: 2px;
+    border-radius: 999px;
+}
+
+.navbar__carrito svg {
+    display: block;
+}
+
+.navbar__contador {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    background: var(--color-siena);
+    color: var(--color-blanco);
+    border-radius: 999px;
+    min-width: 1.15rem;
+    height: 1.15rem;
+    padding: 1.5px 0.25rem 0;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
 }
 
 /* ---------- Botón hamburguesa: tres barras que se convierten en X ---------- */
@@ -88,7 +152,7 @@
     transform: translateY(-7px) rotate(-45deg);
 }
 
-/* ---------- Panel desplegable (mobile) ---------- */
+/* ---------- Panel desplegable (mobile y tablet) ---------- */
 .navbar__menu {
     position: absolute;
     top: 100%;
@@ -114,7 +178,7 @@
 .navbar__links {
     width: min(1100px, 92%);
     margin: 0 auto;
-    padding: 0.25rem 0 1rem;
+    padding: 0.25rem 0 0;
     list-style: none;
     display: flex;
     flex-direction: column;
@@ -124,17 +188,11 @@
     border-top: 1px solid var(--color-borde);
 }
 
-/* Los links entran uno detrás del otro al abrir */
+/* Los links entran uno detrás del otro al abrir.
+   --i lo define Navbar.jsx (0, 1, 2…), así funciona con cualquier cantidad de links. */
 .navbar--abierto .navbar__links li {
     animation: navbar-item 0.35s ease both;
-}
-
-.navbar--abierto .navbar__links li:nth-child(2) {
-    animation-delay: 0.05s;
-}
-
-.navbar--abierto .navbar__links li:nth-child(3) {
-    animation-delay: 0.1s;
+    animation-delay: calc(var(--i, 0) * 0.05s);
 }
 
 @keyframes navbar-item {
@@ -148,6 +206,7 @@
     }
 }
 
+/* Solo para los links de navegación (las acciones de cuenta tienen su propio estilo) */
 .navbar__link {
     display: flex;
     align-items: center;
@@ -184,7 +243,80 @@
     font-weight: 700;
 }
 
-/* Fondo oscuro detrás del panel; tocarlo cierra el menú */
+.navbar__link:focus-visible {
+    outline: 2px solid var(--color-siena);
+    outline-offset: -2px;
+}
+
+/* ---------- Cuenta: saludo + Ingresar / Cerrar sesión ---------- */
+/* En el panel: bloque separado de los links por una línea, con botón a todo el ancho */
+.navbar__cuenta {
+    width: min(1100px, 92%);
+    margin: 0.25rem auto 0;
+    padding: var(--espacio-sm) 0 1.25rem;
+    border-top: 1px solid var(--color-borde);
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-sm);
+}
+
+.navbar__saludo {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-texto-suave);
+}
+
+.navbar__saludo strong {
+    font-weight: 600;
+    color: var(--color-texto);
+}
+
+/* Botones de cuenta: mismo lenguaje que .btn-enviar y los botones de los formularios */
+.navbar__boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    padding: 0.7rem 1.25rem;
+    border: 1px solid var(--color-siena);
+    border-radius: var(--radio-borde);
+    font-family: var(--font-primaria);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--transicion), color var(--transicion), border-color var(--transicion);
+}
+
+.navbar__boton--primario {
+    background: var(--color-siena);
+    color: var(--color-blanco);
+}
+
+.navbar__boton--primario:hover {
+    background: #8c4524;
+    border-color: #8c4524;
+}
+
+.navbar__boton--secundario {
+    background: none;
+    color: var(--color-siena);
+}
+
+.navbar__boton--secundario:hover {
+    background: var(--color-alabastro);
+}
+
+.navbar__boton:focus-visible {
+    outline: 2px solid var(--color-siena);
+    outline-offset: 2px;
+}
+
+/* ---------- Fondo oscuro detrás del panel; tocarlo cierra el menú ---------- */
 .navbar-fondo {
     position: fixed;
     inset: 0;
@@ -201,71 +333,28 @@
     transition: opacity 0.25s ease, visibility 0s;
 }
 
-/* Con el menú abierto la página de atrás no scrollea (solo en mobile) */
-@media (max-width: 699px) {
+/* Con el menú abierto la página de atrás no scrollea (mientras exista el panel) */
+@media (max-width: 1023px) {
     body.menu-mobile-abierto {
         overflow: hidden;
     }
-}
-
-/* ---------- Carrito ---------- */
-.navbar__carrito {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    width: fit-content;
-    margin-right: 0.8rem;
-    color: inherit;
-    text-decoration: none;
-    transition: color var(--transicion);
-}
-
-.navbar__carrito:hover,
-.navbar__carrito.navbar__link--activo {
-    color: var(--color-siena);
-}
-
-.navbar__carrito.navbar__link--activo {
-    border-bottom: 2px solid var(--color-siena);
-}
-
-.navbar__carrito svg {
-    display: block;
-}
-
-.navbar__contador {
-    position: absolute;
-    top: -0.45rem;
-    right: -1.5rem;
-    background: var(--color-siena);
-    color: var(--color-blanco);
-    border-radius: 999px;
-    min-width: 1.15rem;
-    height: 1.15rem;
-    padding: 1.5px 0.25rem 0;
-    font-size: 0.65rem;
-    font-weight: 700;
-    line-height: 1;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-    font-variant-numeric: tabular-nums;
-    pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
     .navbar__menu,
     .navbar-fondo,
     .navbar__toggle-barra,
+    .navbar__boton,
     .navbar--abierto .navbar__links li {
         transition: none;
         animation: none;
     }
 }
 
-/* ---------- Desde tablet: menú horizontal de siempre, sin hamburguesa ---------- */
-@media (min-width: 700px) {
+/* ---------- Escritorio (≥ 1024px): una sola fila, sin hamburguesa ----------
+   El corte está en 1024px (el mismo de ContactForm) y no en 700px: con sesión iniciada
+   hay 5 links + saludo + botón + carrito, y en 700px no entran. */
+@media (min-width: 1024px) {
     .navbar__toggle,
     .navbar-fondo {
         display: none;
@@ -274,6 +363,8 @@
     .navbar__menu {
         position: static;
         margin-left: auto;
+        display: flex;
+        align-items: center;
         background: none;
         border: 0;
         box-shadow: none;
@@ -289,7 +380,7 @@
         padding: 0;
         flex-direction: row;
         align-items: center;
-        gap: var(--espacio-md);
+        gap: var(--espacio-sm);
     }
 
     .navbar__links li + li {
@@ -302,9 +393,10 @@
 
     .navbar__link {
         display: inline;
-        padding: 0;
+        padding: 0.25rem 0;
         font-size: 0.85rem;
         letter-spacing: 0.08em;
+        white-space: nowrap;
     }
 
     .navbar__link::after {
@@ -316,7 +408,35 @@
         border-bottom: 2px solid var(--color-siena);
     }
 
-    .navbar__acciones {
-        margin-left: var(--espacio-md);
+    /* Cuenta en la fila: separada de los links por una línea vertical */
+    .navbar__cuenta {
+        width: auto;
+        margin: 0 0 0 var(--espacio-md);
+        padding: 0 0 0 var(--espacio-md);
+        border-top: 0;
+        border-left: 1px solid var(--color-borde);
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .navbar__saludo {
+        max-width: 11rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .navbar__boton {
+        width: auto;
+        min-height: 0;
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+    }
+}
+
+/* Pantallas anchas: más aire entre links */
+@media (min-width: 1200px) {
+    .navbar__links {
+        gap: var(--espacio-md);
     }
 }

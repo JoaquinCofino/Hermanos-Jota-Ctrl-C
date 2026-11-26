@@ -6,6 +6,8 @@ const logger = require("./middlewares/logger");
 const conectarDB = require("./utils/db");
 const productosRoutes = require("./routes/productos-routes");
 const categoriasRoutes = require("./routes/categorias");
+const usuariosRoutes = require("./routes/usuarios");
+const pedidosRoutes = require("./routes/pedidos");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -23,6 +25,8 @@ app.get("/api", (req, res) => {
 
 app.use("/api/productos", productosRoutes);
 app.use("/api/categorias", categoriasRoutes);
+app.use("/api/usuarios", usuariosRoutes);
+app.use("/api/pedidos", pedidosRoutes);
 
 // Manejar error 404
 app.use((req, res, next) => {

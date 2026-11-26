@@ -1,0 +1,197 @@
+/* Formularios de Login y Registro
+   Mismo lenguaje visual que el formulario de contacto (ContactForm.css):
+   tarjeta blanca con borde y sombra, inputs #faf7f2, foco siena, botón siena en mayúsculas.
+   Mobile-first: los estilos base son para celular; los media queries solo agrandan. */
+
+/* ---------- Contenedor ---------- */
+.auth {
+    width: 100%;
+    max-width: 500px;
+    margin-inline: auto;
+}
+
+/* ---------- Tarjeta (= .columna-formulario) ---------- */
+.auth-card {
+    width: 100%;
+    background-color: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 24px rgba(43, 33, 24, 0.07), 0 2px 6px rgba(43, 33, 24, 0.04);
+    transition: box-shadow 0.3s ease;
+}
+
+.auth-card:hover {
+    box-shadow: 0 12px 32px rgba(43, 33, 24, 0.1), 0 4px 10px rgba(43, 33, 24, 0.05);
+}
+
+/* ---------- Formulario (= .form-contacto) ---------- */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.auth-nota {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+}
+
+/* ---------- Campo (= .form-grupo) ---------- */
+.auth-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.auth-grupo label {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--color-texto);
+}
+
+.auth-obligatorio {
+    color: var(--color-siena);
+    font-weight: 700;
+}
+
+/* font-size 1rem (16px) evita el zoom automático de iOS al enfocar un input */
+.auth-grupo input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-borde);
+    font-family: var(--font-primaria);
+    font-size: 1rem;
+    color: var(--color-texto);
+    background-color: #faf7f2;
+    box-shadow: inset 0 1px 3px rgba(43, 33, 24, 0.05);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+.auth-grupo input::placeholder {
+    color: var(--color-texto-suave);
+    opacity: 0.7;
+}
+
+.auth-grupo input:focus {
+    outline: none;
+    background-color: var(--color-blanco);
+    border-color: var(--color-siena);
+    box-shadow: 0 0 0 3px rgba(160, 82, 45, 0.15), inset 0 1px 2px rgba(43, 33, 24, 0.02);
+}
+
+.auth-ayuda {
+    font-size: 0.85rem;
+    color: var(--color-texto-suave);
+}
+
+/* ---------- Errores (= .error-mensaje / .has-error) ---------- */
+.auth-error {
+    color: #d32f2f;
+    font-size: 0.875rem;
+}
+
+.auth-grupo--error input,
+.auth-grupo--error input:focus {
+    border-color: #d32f2f;
+    box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.15);
+}
+
+/* Error general (credenciales incorrectas, servidor caído, etc.) */
+.auth-alerta {
+    margin: 0;
+    padding: 0.8rem 1rem;
+    border-left: 4px solid #d32f2f;
+    border-radius: var(--radio-borde);
+    background: #fdecea;
+    color: #8a1c1c;
+    font-size: 0.95rem;
+}
+
+/* ---------- Botón (= .btn-enviar) ---------- */
+.auth-boton {
+    width: 100%;
+    padding: 0.9rem 1.5rem;
+    border: none;
+    border-radius: var(--radio-borde);
+    font-family: var(--font-primaria);
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background-color: var(--color-siena);
+    color: var(--color-blanco);
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(160, 82, 45, 0.28);
+    transition: background-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.auth-boton:hover:not(:disabled) {
+    background-color: #8c4524;
+    box-shadow: 0 6px 18px rgba(160, 82, 45, 0.38);
+    transform: translateY(-2px);
+}
+
+.auth-boton:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(160, 82, 45, 0.2);
+}
+
+.auth-boton:focus-visible {
+    outline: 3px solid rgba(160, 82, 45, 0.4);
+    outline-offset: 2px;
+}
+
+.auth-boton:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* ---------- Pie: enlace al otro formulario ---------- */
+.auth-pie {
+    margin: 0;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--color-texto-suave);
+}
+
+.auth-pie a {
+    color: var(--color-siena);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-pie a:hover,
+.auth-pie a:focus-visible {
+    text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .auth-boton,
+    .auth-card,
+    .auth-grupo input {
+        transition: none;
+    }
+
+    .auth-boton:hover:not(:disabled) {
+        transform: none;
+    }
+}
+
+/* ---------- Tablet (≥ 700px): mismo corte que ProductForm ---------- */
+@media (min-width: 700px) {
+    .auth-card {
+        padding: 2rem;
+    }
+}
+
+/* ---------- Escritorio (≥ 1024px): mismo corte que ContactForm ---------- */
+@media (min-width: 1024px) {
+    .auth {
+        margin-top: 1.5rem;
+    }
+}
