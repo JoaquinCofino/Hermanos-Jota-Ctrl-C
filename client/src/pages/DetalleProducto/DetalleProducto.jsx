@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import Button from '../../components/Button/Button';
 import ProductDetail from '../../components/ProductDetail/ProductDetail';
 import { eliminarProducto } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
@@ -23,10 +24,12 @@ export default function DetalleProducto({ productos, onEliminado }) {
     if (!producto) {
         return (
             <div className="estado">
-                <p>Producto no encontrado.</p>
-                <Link className="boton-volver" to="/productos">
-                    Ver el catálogo
-                </Link>
+                <p>No encontramos la pieza que estás buscando.</p>
+                <div style={{ marginTop: '1rem' }}>
+                    <Button to="/productos" variant="primary" arrow="left">
+                        Volver al catálogo
+                    </Button>
+                </div>
             </div>
         );
     }
@@ -50,9 +53,9 @@ export default function DetalleProducto({ productos, onEliminado }) {
     return (
         <>
             <div className="admin-acciones">
-                <Link className="boton-volver" to="/productos">
-                    ← Volver al catálogo
-                </Link>
+                <Button to="/productos" variant="ghost" size="sm" arrow="left">
+                    Volver al catálogo
+                </Button>
                 {esAdmin && (
                     <div className="admin-acciones__botones">
                         <Link className="admin-boton" to={`/admin/editar-producto/${producto.id}`}>
@@ -102,7 +105,7 @@ export default function DetalleProducto({ productos, onEliminado }) {
                 </p>
             )}
 
-            <ProductDetail producto={producto} />
+            <ProductDetail producto={producto} productos={productos} />
         </>
     );
 }
