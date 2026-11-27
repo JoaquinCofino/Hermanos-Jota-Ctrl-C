@@ -13,7 +13,7 @@ Esta entrega consolida el trabajo de los dos últimos sprints:
 | Recurso | URL |
 |---|---|
 | Frontend (Vercel) | [hermanos-jota-ctrl-c.vercel.app](https://hermanos-jota-ctrl-c.vercel.app/) |
-| Backend / API (Render) | [hermanos-jota-ctrl-c-v2.onrender.com/api/productos](https://hermanos-jota-ctrl-c-v2.onrender.com/api/productos) |
+| Backend / API (Render) | [hermanos-jota-ctrl-c.onrender.com/api/productos](https://hermanos-jota-ctrl-c.onrender.com/api/productos) |
 | Repositorio | [github.com/JoaquinCofino/Hermanos-Jota-Ctrl-C](https://github.com/JoaquinCofino/Hermanos-Jota-Ctrl-C) |
 
 > **Aviso:** El backend está en el plan gratis de Render: la primera carga puede tardar un minuto en despertar si el servicio estuvo suspendido por inactividad (más de 15 minutos). Las peticiones siguientes responden de forma inmediata.
