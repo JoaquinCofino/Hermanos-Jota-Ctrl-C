@@ -1,23 +1,22 @@
 # Hermanos Jota — E-commerce
 
-Proyecto final de Full Stack Developer — ITBA Educación Ejecutiva.
+**Entrega 4 (Sprints 7 y 8)** — Proyecto final de Full Stack Developer — ITBA Educación Ejecutiva.
 
-Aplicación cliente-servidor de la mueblería Hermanos Jota: un **frontend en React** que
-consume una **API REST propia hecha con Node.js y Express**, conectada a **MongoDB** con
-**Mongoose**. El frontend pide el catálogo al backend con `fetch` y permite listar, crear,
-editar y eliminar productos.
+Aplicación cliente-servidor de la mueblería Hermanos Jota: un **frontend en React** que consume una **API REST propia hecha con Node.js y Express**, conectada a **MongoDB Atlas** con **Mongoose**.
+
+Esta entrega consolida el trabajo de los dos últimos sprints:
+- **Sprint 7 (Autenticación, Roles y Pedidos):** Registro y login de usuarios con contraseñas encriptadas (`bcryptjs`), emisión y verificación de JSON Web Tokens (JWT), control de acceso por roles (`cliente` y `admin`), endpoints y persistencia de pedidos, y gestión global de sesión con `AuthContext` y rutas protegidas (`ProtectedRoute`).
+- **Sprint 8 (Despliegue a Producción):** Publicación del backend en **Render**, despliegue del frontend en **Vercel**, base de datos en la nube en **MongoDB Atlas**, orquestación mediante variables de entorno y documentación final del proyecto.
 
 ## Links
 
-| | URL |
+| Recurso | URL |
 |---|---|
 | Frontend (Vercel) | [hermanos-jota-ctrl-c.vercel.app](https://hermanos-jota-ctrl-c.vercel.app/) |
 | Backend / API (Render) | [hermanos-jota-ctrl-c.onrender.com/api/productos](https://hermanos-jota-ctrl-c.onrender.com/api/productos) |
 | Repositorio | [github.com/JoaquinCofino/Hermanos-Jota-Ctrl-C](https://github.com/JoaquinCofino/Hermanos-Jota-Ctrl-C) |
 
-> El backend está en el plan gratuito de Render, que apaga el servidor después de 15 minutos
-> sin uso. La primera visita después de ese tiempo puede tardar hasta un minuto en cargar los
-> productos; las siguientes son inmediatas.
+> **Aviso:** El backend está en el plan gratis de Render: la primera carga puede tardar un minuto en despertar si el servicio estuvo suspendido por inactividad (más de 15 minutos). Las peticiones siguientes responden de forma inmediata.
 
 ## Integrantes
 
@@ -25,46 +24,61 @@ editar y eliminar productos.
 |---|---|---|
 | Joaquín Cofiño | [@JoaquinCofino](https://github.com/JoaquinCofino) | Fetch y cliente de la API (`GET`, `POST`, `PUT`, `DELETE`) con estados de carga y error, formularios de alta y edición, eliminación desde el detalle, Navbar, ProductList, ProductCard, navegación con React Router, página de carrito y buscador del catálogo |
 | Lorenzo Fares | [@lorenzofares](https://github.com/lorenzofares) | Estructura base, datos y rutas del backend, adaptación de DetalleProducto por `_id`, Footer, assets, página de contacto con validación y mapa |
-| Juan Cruz Romero Huisi | [@juanrohu](https://github.com/juanrohu) | Conexión a MongoDB con Mongoose (`db.js` y `seed.js`), modelo `Product`, controlador CRUD (`productsController`), variables de entorno (`.env` / `.gitignore`), CORS, middleware de logging y mejoras visuales de UI |
+| Juan Cruz Romero Huisi | [@juanrohu](https://github.com/juanrohu) | Conexión a MongoDB con Mongoose (`db.js` y `seed.js`), modelos y controladores CRUD, variables de entorno (`.env` / `.gitignore`), CORS, middleware de logging y mejoras visuales de UI |
 | Gonzalo Daniele | [@GonzaloDaniele](https://github.com/GonzaloDaniele) | ProductDetail, manejador de 404 y de errores del backend, documentación (`README`) |
-| Fausto Tica | [@faustotica](https://github.com/faustotica) | ContactForm, estado del carrito en App y botón de efectuar compra |
+| Fausto Tica | [@faustotica](https://github.com/faustotica) | ContactForm, estado del carrito y `CartContext`, flujo de confirmación de compra y pedidos, página 404, configuración de despliegue y documentación final (`README`) |
+
+## Tecnologías usadas
+
+- **Frontend:** React 19, React Router DOM (v6), Context API (`AuthContext`, `CartContext`), CSS3, Fetch API.
+- **Backend:** Node.js, Express, CORS, JSON Web Tokens (`jsonwebtoken`), encriptación de contraseñas (`bcryptjs`).
+- **Base de datos:** MongoDB Atlas mediante ODM Mongoose.
+- **Despliegue:** Vercel (Frontend) y Render (Backend).
 
 ## Requisitos previos
 
-- [Node.js](https://nodejs.org/) 18 o superior (incluye npm)
+- [Node.js](https://nodejs.org/) 18 o superior (incluye npm).
 
-## Instalación y ejecución
+## Instalación y ejecución en local
 
-El proyecto tiene dos aplicaciones independientes. Hay que levantar **las dos**, cada una en
-su propia terminal.
+1. Clonar el repositorio:
+
+```bash
+git clone https://github.com/JoaquinCofino/Hermanos-Jota-Ctrl-C.git
+cd Hermanos-Jota-Ctrl-C
+```
+
+El proyecto tiene dos aplicaciones independientes. Hay que levantar **las dos**, cada una en su propia terminal.
 
 ### 1. Backend (API) — puerto 4000
 
-Crear un archivo `.env` en `backend/` (ignorado por Git mediante `.gitignore` para no exponer
-credenciales) con la cadena de conexión a MongoDB Atlas:
+Crear un archivo `.env` en `backend/` a partir de [`backend/.env.example`](backend/.env.example) (ignorado por Git mediante `.gitignore` para no exponer credenciales):
 
 ```env
 MONGO_URI=mongodb+srv://<usuario>:<password>@<cluster>.mongodb.net/<base>
+JWT_SECRET=<clave_secreta_para_firmar_tokens>
 PORT=4000
 ```
 
-Hay un ejemplo en [`backend/.env.example`](backend/.env.example).
+Instalar dependencias, sembrar la base de datos y levantar el servidor:
 
 ```bash
 cd backend
 npm install
-npm run seed     # solo la primera vez: carga los 11 productos del catálogo en la base
-npm run dev      # con nodemon (se reinicia al guardar)
-# o: npm start   # sin nodemon
+npm run seed     # solo la primera vez: carga categorías y catálogo inicial en MongoDB
+npm run dev      # con nodemon (recarga automática al guardar cambios)
+# o bien: npm start (ejecución directa con node)
 ```
 
-> **Ojo:** `npm run seed` borra la colección de productos y la vuelve a cargar desde
-> `backend/data/productos.js`, así que también borra los productos creados desde el frontend.
+> **Ojo:** `npm run seed` reinicia las colecciones cargadas desde `backend/data/productos.js`, por lo que reescribe modificaciones previas en los productos sembrados.
 
-La API queda en `http://localhost:4000/api/productos`. El puerto se puede cambiar con la
-variable de entorno `PORT`.
+La API queda disponible en `http://localhost:4000/api/productos`.
 
 ### 2. Frontend (React) — puerto 3000
+
+Crear opcionalmente un archivo `.env` en `client/` a partir de [`client/.env.example`](client/.env.example) si se desea apuntar a una URL externa. En desarrollo local por defecto no hace falta: el `"proxy"` de `client/package.json` redirige automáticamente `/api` a `http://localhost:4000`.
+
+Instalar dependencias e iniciar la aplicación:
 
 ```bash
 cd client
@@ -72,205 +86,177 @@ npm install
 npm start
 ```
 
-Se abre `http://localhost:3000`. En desarrollo no hace falta configurar nada: el `"proxy"` de
-`client/package.json` redirige `/api` al backend en `http://localhost:4000`. Si el backend no
-está corriendo, la app muestra un mensaje de error con un botón para reintentar.
+Se abrirá automáticamente el navegador en `http://localhost:3000`. Si el backend no está corriendo, la interfaz muestra un aviso con opción para reintentar.
 
-## Despliegue
+## Despliegue y variables de entorno
 
 ```
- Navegador ──▶ Vercel (frontend React) ──fetch──▶ Render (API Express) ──▶ MongoDB Atlas
+ Navegador ──▶ Vercel (Frontend React) ──fetch (JSON + JWT)──▶ Render (API Express) ──▶ MongoDB Atlas
 ```
 
-### Variables de entorno
+### Variables de entorno necesarias
 
-| Variable | Dónde se configura | Valor | Para qué sirve |
-|---|---|---|---|
-| `MONGO_URI` | Render (y `backend/.env` en local) | `mongodb+srv://<usuario>:<password>@<cluster>.mongodb.net/<base>` | Conexión del backend a MongoDB Atlas |
-| `PORT` | Opcional | `4000` en local; Render la define solo | Puerto del servidor Express |
-| `NODE_ENV` | Render | `production` | Oculta el `stack` de los errores en las respuestas de la API |
-| `REACT_APP_API_URL` | Vercel (Production y Preview) | `https://hermanos-jota-ctrl-c.onrender.com` | URL del backend que usa el frontend en `client/src/services/api.js` |
+| Variable | Dónde se configura | Para qué sirve |
+|---|---|---|
+| `MONGO_URI` | Render (y `backend/.env` en local) | Cadena de conexión a la base de datos en MongoDB Atlas |
+| `JWT_SECRET` | Render (y `backend/.env` en local) | Clave secreta para firmar y verificar tokens de autenticación JWT |
+| `PORT` | Opcional (`4000` en local) | Puerto donde escucha Express (en Render se asigna de forma automática) |
+| `NODE_ENV` | Render (`production`) | Oculta el stack trace de depuración en respuestas de error de la API |
+| `REACT_APP_API_URL` | Vercel (Production y Preview) | URL pública del backend en Render (sin barra al final) |
 
-`REACT_APP_API_URL` se incorpora al frontend cuando Vercel lo compila: si se cambia, hay que
-hacer **Redeploy** para que tome el valor nuevo.
+> **Nota sobre variables en Vercel:** Las variables que comienzan con `REACT_APP_` se incrustan en el bundle compilado de JavaScript al momento del build. Si se modifica `REACT_APP_API_URL` en Vercel, es necesario realizar un **Redeploy** para que impacte el cambio.
 
-### Backend en Render
+### Servicios de producción
 
-Web Service en [Render](https://render.com) conectado a este repositorio:
-
-- **Root Directory:** `backend`
-- **Build Command:** `npm install`
-- **Start Command:** `npm start`
-- **Variables de entorno:** `MONGO_URI` y `NODE_ENV=production`
-- En MongoDB Atlas, en **Network Access**, hay que permitir `0.0.0.0/0` para que Render se
-  pueda conectar a la base.
-
-### Frontend en Vercel
-
-Proyecto de [Vercel](https://vercel.com) conectado a este repositorio, con el *Root
-Directory* en la raíz:
-
-- `vercel.json` publica solo `client/` (create-react-app). Cualquier ruta devuelve
-  `index.html`, así React Router funciona al recargar o al entrar directo por un link (por
-  ejemplo, `/productos/:id`).
-- **Variable de entorno:** `REACT_APP_API_URL` con la URL del backend en Render.
-
-Cada push a `main` vuelve a publicar los dos servicios.
+- **MongoDB Atlas:** Se configura en *Network Access* con la regla `0.0.0.0/0` (*Allow access from anywhere*) para habilitar la conexión desde las IPs dinámicas de Render.
+- **Render (Backend):** Web Service apuntando al repositorio:
+  - **Root Directory:** `backend`
+  - **Build Command:** `npm install`
+  - **Start Command:** `npm start`
+- **Vercel (Frontend):** Conectado al repositorio con configuración en `vercel.json` para reescribir todas las rutas hacia `/index.html`, evitando errores 404 al recargar o ingresar de forma directa a rutas de React Router.
 
 ## API
 
-| Método | Ruta | Respuesta |
-|---|---|---|
-| `GET` | `/api` | Mensaje de bienvenida |
-| `GET` | `/api/productos` | Array con todos los productos (JSON) |
-| `GET` | `/api/productos/:id` | Un producto por `_id` de MongoDB. Si no existe: `404` con `{ "mensaje": "Producto no encontrado" }` |
-| `POST` | `/api/productos` | Crea un producto en MongoDB y devuelve el documento creado (`201`) |
-| `PUT` | `/api/productos/:id` | Actualiza un producto por `_id` y devuelve el documento actualizado (`200`) |
-| `DELETE` | `/api/productos/:id` | Elimina un producto por `_id` y devuelve `{ "mensaje": "Producto eliminado correctamente" }` |
-| cualquier otra | — | `404` con `{ "message": "Ruta no encontrada: ..." }` |
+### Productos y Categorías
 
-Cada request se registra en consola con fecha, método y URL, por ejemplo:
-`[01/10/2026, 14:05] [GET] /api/productos`.
+| Método | Ruta | Descripción | Acceso |
+|---|---|---|---|
+| `GET` | `/api` | Mensaje de estado y bienvenida de la API | Público |
+| `GET` | `/api/productos` | Obtiene el listado completo de productos (JSON) | Público |
+| `GET` | `/api/productos/:id` | Obtiene un producto individual por su `_id` de MongoDB | Público |
+| `POST` | `/api/productos` | Da de alta un nuevo producto (`201`) | Admin (JWT) |
+| `PUT` | `/api/productos/:id` | Modifica un producto existente por su `_id` (`200`) | Admin (JWT) |
+| `DELETE` | `/api/productos/:id` | Elimina un producto por su `_id` (`200`) | Admin (JWT) |
+| `GET` | `/api/categorias` | Lista las categorías disponibles | Público |
 
-El modelo `Product` (`backend/models/Products.js`) define el esquema en Mongoose con
-validaciones: `nombre` (`String`, obligatorio), `categoria` (`String`, obligatorio), `precio`
-(`Number`, obligatorio, `min: 0`), `stock` (`Number`, `default: 0`), `imagenUrl` (`String`),
-`descripcion` (`String`), `destacado` (`Boolean`) y `fabricacion` (`[{ label, value }]`).
+### Usuarios, Autenticación y Pedidos
 
-Los errores se resuelven en un **manejador centralizado**: responde en JSON con el status del
-error (o `500` si no tiene) y, fuera de producción, incluye el `stack` para depurar.
+| Método | Ruta | Descripción | Acceso |
+|---|---|---|---|
+| `POST` | `/api/usuarios/registro` | Registra un nuevo usuario con contraseña encriptada (`bcryptjs`) | Público |
+| `POST` | `/api/usuarios/login` | Autentica credenciales y devuelve token JWT con datos del usuario | Público |
+| `GET` | `/api/usuarios/perfil` | Retorna los datos del usuario logueado | Privado (JWT) |
+| `POST` | `/api/pedidos` | Genera un nuevo pedido asociado al usuario autenticado | Privado (JWT) |
+| `GET` | `/api/pedidos` | Obtiene el historial de pedidos del usuario logueado | Privado (JWT) |
+| cualquier otra | — | Retorna `404` con `{ "message": "Ruta no encontrada: ..." }` | Público |
+
+Cada petición recibida se registra en consola a través del middleware de logging:
+`[26/11/2026, 14:05] [GET] /api/productos`.
+
+### Modelos de datos (Mongoose)
+
+- **`Product` (`backend/models/Products.js`):** `nombre` (String, obligatorio), `categoria` (String / ref Categoria, obligatorio), `precio` (Number, obligatorio, `min: 0`), `stock` (Number, `default: 0`), `imagenUrl` (String), `descripcion` (String), `destacado` (Boolean) y `fabricacion` (`[{ label, value }]`).
+- **`Categoria` (`backend/models/Categoria.js`):** `nombre` (String, único, obligatorio) y `descripcion` (String).
+- **`Usuario` (`backend/models/Usuario.js`):** `nombre` (String, obligatorio), `email` (String, único, obligatorio), `password` (String, con hash seguro) y `rol` (String, enum `cliente` o `admin`).
+- **`Pedido` (`backend/models/Pedido.js`):** referencia a `usuario`, arreglo de `items` (producto, cantidad, precio unitario), `total` calculado en servidor, `fecha` y `estado`.
+
+Los errores se gestionan en un manejador centralizado que responde en formato JSON con el código de estado correspondiente (o `500` por defecto).
 
 ## Páginas del frontend
 
-| URL | Página |
-|---|---|
-| `/` | Inicio: presentación y productos destacados |
-| `/productos` | Catálogo completo con buscador (por nombre, categoría, descripción o material) |
-| `/productos/:id` | Detalle de un producto, con botones para editar y eliminar |
-| `/admin/crear-producto` | Formulario controlado para crear un producto nuevo |
-| `/admin/editar-producto/:id` | Formulario controlado para editar un producto existente |
-| `/carrito` | Carrito: cantidades, subtotales, total, quitar y vaciar |
-| `/contacto` | Formulario de contacto con validación, mapa, horarios y datos de contacto |
-| cualquier otra | Página "no encontrada" |
+| URL | Página | Acceso |
+|---|---|---|
+| `/` | Inicio: presentación de la mueblería y destacados | Público |
+| `/productos` | Catálogo completo con selector de categorías y buscador en tiempo real | Público |
+| `/productos/:id` | Detalle del producto (con botones de edición/eliminación para admin) | Público |
+| `/login` | Formulario de inicio de sesión | Público |
+| `/registro` | Formulario de registro de nuevas cuentas | Público |
+| `/perfil` | Información de perfil de la cuenta activa | Requiere autenticación |
+| `/mis-pedidos` | Historial de compras realizadas por el usuario | Requiere autenticación |
+| `/admin/crear-producto` | Formulario protegido para dar de alta productos | Requiere rol Admin |
+| `/admin/editar-producto/:id` | Formulario protegido para modificar productos existentes | Requiere rol Admin |
+| `/carrito` | Carrito de compras: cantidades, subtotales, vaciado y confirmación | Público |
+| `/contacto` | Formulario con validación en tiempo real, horarios y mapa interactivo | Público |
+| cualquier otra | Vista personalizada de error 404 con enlace al inicio | Público |
 
 ## Arquitectura
 
 ```
- ┌───────────────────────────┐   /api/productos       ┌───────────────────────────┐
- │  client/ (React, :3000)   │ ─────────────────────▶ │ backend/ (Express, :4000) │
- │                           │ ◀───────────────────── │                           │
- │  App.jsx guarda el estado │   JSON (productos)     │  logger → express.json()  │
- │  y define las rutas       │                        │  → router → MongoDB       │
- └───────────────────────────┘                        └───────────────────────────┘
+┌─────────────────────────────────┐      /api/... (JSON + JWT)     ┌─────────────────────────────────┐
+│     client/ (React, :3000)      │ ─────────────────────────────▶ │    backend/ (Express, :4000)    │
+│                                 │ ◀───────────────────────────── │                                 │
+│ AuthContext / CartContext / App │    Respuesta JSON y estados    │ logger ➔ express.json() ➔ cors  │
+│ gestión de estado, auth y rutas │       de carga y errores       │ ➔ authMiddleware ➔ Router ➔ DB  │
+└─────────────────────────────────┘                                └─────────────────────────────────┘
 ```
 
-### Backend (`/backend`)
+### Estructura del Backend (`backend/`)
 
 ```
 backend/
-├── server.js                        # Crea la app, conecta a la DB, registra rutas y errores
-├── utils/db.js                      # Conexión a MongoDB Atlas con Mongoose (MONGO_URI)
-├── models/Products.js               # Esquema y modelo Product de Mongoose
-├── controller/productsController.js # Controladores CRUD (GET, POST, PUT, DELETE)
-├── routes/productos-routes.js       # express.Router de /api/productos
-├── middlewares/logger.js            # Middleware global: loguea fecha, método y URL
-├── middlewares/auth.js              # verificarToken (JWT) y soloAdmin (rol admin)
-└── data/productos.js                # Array de objetos con los 11 productos del catálogo
+├── server.js                      # Configuración de Express, CORS, middlewares y montaje de rutas
+├── seed.js                        # Script para poblar categorías y productos iniciales
+├── imagenes-a-webp.js             # Utilidad para optimizar imágenes a formato .webp
+├── utils/
+│   └── db.js                      # Conexión a MongoDB Atlas vía Mongoose
+├── models/
+│   ├── Products.js                # Esquema y modelo Product
+│   ├── Categoria.js               # Esquema y modelo Categoria
+│   ├── Usuario.js                 # Esquema y modelo Usuario con hash de contraseñas
+│   └── Pedido.js                  # Esquema y modelo Pedido
+├── controller/
+│   └── productsController.js      # Controladores CRUD de productos (GET, POST, PUT, DELETE)
+├── routes/
+│   ├── productos-routes.js        # Rutas de /api/productos
+│   ├── categorias.js              # Rutas de /api/categorias
+│   ├── usuarios.js                # Rutas de /api/usuarios (registro, login, perfil)
+│   └── pedidos.js                 # Rutas de /api/pedidos
+├── middlewares/
+│   ├── logger.js                  # Registro de solicitudes en consola
+│   └── auth.js                    # Middlewares verificarToken y soloAdmin
+└── data/
+    └── productos.js               # Datos semilla iniciales
 ```
 
-Orden en `server.js`: `cors()` → `logger` → `express.json()` → rutas de `/api/productos` →
-manejador de 404 → manejador de errores centralizado.
-
-### Frontend (`/client`)
+### Estructura del Frontend (`client/`)
 
 ```
 client/src/
-├── index.js                  # Monta la app dentro de <BrowserRouter>
-├── App.jsx                   # Estado global (productos, carga, error, carrito) y <Routes>
-├── services/api.js           # obtenerProductos, crearProducto, actualizarProducto y eliminarProducto
-├── utils/formatearPrecio.js  # Formato de precios en pesos argentinos
+├── index.js                       # Punto de entrada de React con BrowserRouter
+├── App.jsx                        # Definición de rutas principales y carga de catálogo
+├── context/
+│   ├── AuthContext.jsx            # Sesión global: login, logout, token JWT y rol
+│   └── CartContext.jsx            # Carrito global: agregar, cantidades y persistencia
+├── hooks/
+│   └── useFormulario.js           # Custom hook reutilizable para formularios y validaciones
+├── services/
+│   └── api.js                     # Cliente HTTP centralizado (fetch con Bearer token)
+├── utils/
+│   ├── formatearPrecio.js         # Formateador monetario (pesos argentinos)
+│   └── validaciones.js            # Reglas de validación para campos
 ├── pages/
-│   ├── Catalogo/             # Catálogo con buscador (filtra la lista con useState) y botón "+ Nuevo producto"
-│   ├── DetalleProducto/      # Lee el :id con useParams, muestra ProductDetail y botones Editar / Eliminar
-│   ├── AdminProducto/        # CrearProducto (/admin/crear-producto) y EditarProducto (/admin/editar-producto/:id)
-│   ├── Carrito/              # Lista del carrito agrupada por producto, con total
-│   └── NoEncontrado/         # Página para rutas inexistentes
+│   ├── Catalogo/                  # Catálogo con filtrado por categoría y búsqueda
+│   ├── DetalleProducto/           # Vista por ID con acciones de carrito y administración
+│   ├── Login/                     # Vista de inicio de sesión
+│   ├── Registro/                  # Vista de creación de usuario
+│   ├── Perfil/                    # Perfil del usuario autenticado
+│   ├── MisPedidos/                # Historial de compras del usuario
+│   ├── AdminProducto/             # Creación y edición de productos (rutas protegidas)
+│   ├── Carrito/                   # Resumen del carrito y checkout
+│   └── NoEncontrado/              # Página personalizada para rutas no encontradas (404)
 └── components/
-    ├── Navbar/               # Links con NavLink y contador del carrito (por props)
-    ├── ProductList/          # Recorre los productos con .map() y key={producto.id}
-    ├── ProductCard/          # Tarjeta de un producto; es un Link a /productos/:id
-    ├── ProductDetail/        # Detalle de un producto con botón "Añadir al carrito"
-    ├── ProductForm/          # Formulario controlado reutilizable para crear y editar productos
-    ├── Aviso/                # Banner de confirmación tras crear, editar o eliminar un producto
-    ├── EstadoPeticion/       # Muestra "cargando" o el error del fetch con "Reintentar"
-    ├── ContactForm/          # Formulario controlado con useState y validación, mapa y datos
-    └── Footer/
+    ├── Navbar/                    # Barra de navegación con estado de auth y badge de carrito
+    ├── ProtectedRoute/            # Wrapper para restringir rutas privadas o de admin
+    ├── AuthForm/                  # Formularios compartidos de autenticación
+    ├── ProductList/               # Cuadrícula de productos
+    ├── ProductCard/               # Tarjeta individual de producto
+    ├── ProductDetail/             # Detalle y especificaciones con botón de compra
+    ├── ProductForm/               # Formulario controlado de alta y edición
+    ├── ContactForm/               # Formulario de contacto con validaciones y mapa
+    ├── EstadoPeticion/            # Estados de carga y error con reintento
+    ├── Aviso/                     # Cartel de confirmación temporal
+    └── Footer/                    # Pie de página institucional
 ```
-
-**Flujo de datos:**
-
-1. Al montarse, `App` llama a `obtenerProductos()` dentro de un `useEffect` y maneja los
-   tres estados de la petición: **cargando**, **éxito** (guarda los productos) y **error**.
-   `EstadoPeticion` muestra el mensaje que corresponde en cada página.
-2. `App` pasa los productos por props a `ProductList`, que renderiza un `ProductCard` por
-   producto. En `/productos`, `Catalogo` guarda el texto del buscador en un `useState` y le
-   pasa a la lista solo los productos que coinciden (sin distinguir mayúsculas ni tildes).
-3. Cada `ProductCard` es un `Link` a `/productos/:id`. En esa ruta, `DetalleProducto` toma el
-   id de la URL con `useParams`, busca el producto y muestra `ProductDetail`; si el id no
-   existe, muestra "Producto no encontrado" (renderizado condicional).
-4. El botón "Añadir al carrito" de `ProductDetail` llama a un callback de `App`, que suma el
-   producto al estado `carrito`. La `Navbar` recibe la cantidad por props y la muestra.
-5. La página `/carrito` recibe el carrito y los productos por props, agrupa las unidades y
-   usa callbacks de `App` para sumar, restar, quitar y vaciar.
-6. En `/admin/crear-producto` y `/admin/editar-producto/:id`, `ProductForm` envía los datos a
-   la API (`POST` o `PUT`), actualiza el estado en `App` y redirige con `useNavigate` al
-   detalle del producto. En `/productos/:id`, el botón "Eliminar" envía `DELETE` a la API,
-   quita el producto de `App` y redirige a `/productos`.
 
 ## Decisiones tomadas
 
-- **React Router para la navegación.** Cada página tiene su propia URL, así funcionan el
-  botón "atrás" del navegador, recargar la página y compartir el link de un producto. Se usa
-  la versión 6 porque funciona con create-react-app sin configuración extra.
-- **Proxy en desarrollo y CORS en producción.** `client/package.json` tiene
-  `"proxy": "http://localhost:4000"` para desarrollo local, y el backend habilita `cors()` para
-  aceptar peticiones cuando el frontend en Vercel consume la API publicada en Render.
-- **El fetch está aislado en `services/api.js`.** Los componentes no conocen la URL de la
-  API; si cambia, se modifica en un solo lugar.
-- **Se chequea `respuesta.ok`.** `fetch` solo falla ante errores de red, así que una
-  respuesta 404 o 500 se convierte explícitamente en error para mostrarla en la UI.
-- **`AbortController` en el `useEffect`.** Cancela la petición si el componente se desmonta
-  (o cuando `StrictMode` ejecuta el efecto dos veces en desarrollo), evitando actualizar
-  estado de un componente que ya no está.
-- **Los productos se piden una sola vez.** El fetch está en `App`, que no se desmonta al
-  cambiar de página; todas las rutas usan la misma lista sin volver a pedirla.
-- **Copia de los productos en `localStorage`.** Desde la segunda visita, el catálogo se
-  muestra al instante con la lista guardada y se actualiza solo cuando responde la API. Así
-  la espera del backend gratuito de Render solo se nota en la primera visita.
-- **El estado vive en `App` y baja por props.** Productos y carrito se guardan en el
-  componente padre; los hijos reciben datos y callbacks.
-- **El carrito guarda ids y se persiste en `localStorage`.** Cada id repetido es una unidad;
-  la página del carrito los agrupa y toma precio e imagen de los productos de la API. Al
-  guardarse en el navegador, el carrito no se pierde al recargar.
-- **Rutas de imagen absolutas.** La API devuelve `assets/img/...`; `services/api.js` las
-  convierte en `/assets/img/...` para que carguen también dentro de `/productos/:id`.
-- **Imágenes en `client/public/assets`.** Las sirve el propio servidor de React, así el
-  backend solo devuelve datos.
-- **Persistencia en MongoDB con Mongoose.** La conexión está abstraída en
-  `backend/utils/db.js` usando `process.env.MONGO_URI` (`.env`), el esquema y sus validaciones
-  en `backend/models/Products.js` y el CRUD en `backend/controller/productsController.js`.
-- **CRUD desde el frontend.** `services/api.js` agrega `crearProducto` (`POST`),
-  `actualizarProducto` (`PUT`) y `eliminarProducto` (`DELETE`), normalizando `_id` e
-  `imagenUrl` de MongoDB, y `App` actualiza la lista en memoria tras cada operación.
-- **Sobre eliminar desde el frontend.** Lo que borra de la base de datos es la ruta `DELETE`
-  del backend (`productsController.js`), no `services/api.js`, y la consigna la pide.
-  `api.js` solo hace el pedido HTTP. Pasarlo a una ruta separada de React no cambia nada,
-  porque igual tiene que llamar al backend. Lo que lo protege de verdad es un login en el
-  backend, que se implementa en el siguiente sprint.
+- **React Router para la navegación:** Cada vista tiene su propia URL, lo que permite utilizar el historial del navegador, recargar cualquier página y compartir enlaces directos.
+- **Autenticación con JWT y Context API:** Las contraseñas se almacenan con hash mediante `bcryptjs`. Los endpoints sensibles en el backend están protegidos por `verificarToken` y `soloAdmin`. En el frontend, `AuthContext` mantiene la sesión en memoria y `ProtectedRoute` protege las vistas privadas y de administrador.
+- **Carrito centralizado en `CartContext` con persistencia en `localStorage`:** Permite agregar productos, modificar unidades y calcular totales desde cualquier componente sin perder los ítems al recargar o navegar entre páginas.
+- **Proxy en desarrollo y CORS en producción:** `client/package.json` incluye `"proxy": "http://localhost:4000"` para omitir problemas de origen en local, mientras que el backend aplica `cors()` para autorizar peticiones desde el frontend alojado en Vercel.
+- **Cliente HTTP desacoplado en `services/api.js`:** Los componentes no manipulan URLs directas; todas las peticiones `fetch` se resuelven en un módulo centralizado que adjunta el encabezado `Authorization: Bearer <token>` cuando corresponde y maneja respuestas de error (401, 404, 500).
+- **Imágenes optimizadas en `.webp`:** El catálogo utiliza imágenes en formato `.webp` ubicadas en `client/public/assets` para optimizar los tiempos de carga en producción.
 
 ## Versión anterior (Sprint 1 y 2)
 
-Los archivos de la raíz (`index.html`, `productos.html`, `producto.html`, `carrito.html`,
-`contacto.html`, `css/` y `js/`) corresponden al sitio original en HTML, CSS y JavaScript
-sin frameworks. Se mantienen como referencia; la aplicación actual está en `/client` y
-`/backend`.
+Los archivos de la raíz (`index.html`, `productos.html`, `producto.html`, `carrito.html`, `contacto.html`, `css/` y `js/`) corresponden a la primera versión del proyecto desarrollada exclusivamente con HTML, CSS y JavaScript sin frameworks. Se conservan en el repositorio como referencia histórica de la evolución del proyecto.
