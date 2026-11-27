@@ -270,22 +270,6 @@ export default function ProductDetail({ producto, productos = [] }) {
                     </div>
                 </section>
             )}
-
-            {/* Barra fija inferior en mobile (< 768px) */}
-            <div className="detalle-barra-fija" aria-label="Compra rápida">
-                <div className="detalle-barra-fija__precio">
-                    <span className="detalle-barra-fija__label">Precio</span>
-                    <strong>{precioFormateado}</strong>
-                </div>
-                <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={handleAgregar}
-                    disabled={sinStock}
-                >
-                    {sinStock ? 'Sin stock' : 'Agregar al carrito'}
-                </Button>
-            </div>
         </div>
     );
 }
