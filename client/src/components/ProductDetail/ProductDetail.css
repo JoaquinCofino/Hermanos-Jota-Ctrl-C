@@ -1,7 +1,7 @@
 /* ProductDetail — mobile-first (Manual de Marca Hermanos Jota) */
 
 .detalle-pagina {
-  padding-bottom: 5rem; /* espacio para la barra fija inferior en mobile */
+  padding-bottom: 5rem; 
 }
 
 /* ---------- Breadcrumbs ---------- */
@@ -383,42 +383,6 @@
   gap: 1.25rem;
 }
 
-/* ---------- Barra fija inferior en mobile ---------- */
-.detalle-barra-fija {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 35;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--espacio-sm);
-  padding: 0.75rem 1rem;
-  background: var(--color-superficie);
-  border-top: 1px solid var(--color-borde);
-  box-shadow: 0 -4px 16px rgba(43, 33, 24, 0.08);
-}
-
-.detalle-barra-fija__precio {
-  display: flex;
-  flex-direction: column;
-}
-
-.detalle-barra-fija__label {
-  font-size: 0.7rem;
-  font-weight: 300;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-texto-suave);
-}
-
-.detalle-barra-fija__precio strong {
-  font-size: 1.05rem;
-  color: var(--color-siena);
-  font-variant-numeric: tabular-nums;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .detalle-galeria__skeleton,
   .detalle-producto__exito {
@@ -436,10 +400,6 @@
 @media (min-width: 768px) {
   .detalle-pagina {
     padding-bottom: 0;
-  }
-
-  .detalle-barra-fija {
-    display: none;
   }
 
   .detalle-producto {
