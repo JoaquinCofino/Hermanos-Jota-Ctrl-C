@@ -5,7 +5,7 @@
 Aplicación cliente-servidor de la mueblería Hermanos Jota: un **frontend en React** que consume una **API REST propia hecha con Node.js y Express**, conectada a **MongoDB Atlas** con **Mongoose**.
 
 Esta entrega consolida el trabajo de los dos últimos sprints:
-- **Sprint 7 (Autenticación, Roles y Pedidos):** Registro y login de usuarios con contraseñas encriptadas (`bcryptjs`), emisión y verificación de JSON Web Tokens (JWT), control de acceso por roles (`cliente` y `admin`), endpoints y persistencia de pedidos, y gestión global de sesión con `AuthContext` y rutas protegidas (`ProtectedRoute`).
+- **Sprint 7 (Autenticación, Roles y Pedidos):** Registro y login de usuarios con contraseñas encriptadas (`bcrypt`), emisión y verificación de JSON Web Tokens (JWT), control de acceso por roles (`cliente` y `admin`), endpoints y persistencia de pedidos, y gestión global de sesión con `AuthContext` y rutas protegidas (`ProtectedRoute`).
 - **Sprint 8 (Despliegue a Producción):** Publicación del backend en **Render**, despliegue del frontend en **Vercel**, base de datos en la nube en **MongoDB Atlas**, orquestación mediante variables de entorno y documentación final del proyecto.
 
 ## Links
@@ -31,7 +31,7 @@ Esta entrega consolida el trabajo de los dos últimos sprints:
 ## Tecnologías usadas
 
 - **Frontend:** React 19, React Router DOM (v6), Context API (`AuthContext`, `CartContext`), CSS3, Fetch API.
-- **Backend:** Node.js, Express, CORS, JSON Web Tokens (`jsonwebtoken`), encriptación de contraseñas (`bcryptjs`).
+- **Backend:** Node.js, Express, CORS, JSON Web Tokens (`jsonwebtoken`), encriptación de contraseñas (`bcrypt`).
 - **Base de datos:** MongoDB Atlas mediante ODM Mongoose.
 - **Despliegue:** Vercel (Frontend) y Render (Backend).
 
@@ -101,7 +101,6 @@ Se abrirá automáticamente el navegador en `http://localhost:3000`. Si el backe
 | `MONGO_URI` | Render (y `backend/.env` en local) | Cadena de conexión a la base de datos en MongoDB Atlas |
 | `JWT_SECRET` | Render (y `backend/.env` en local) | Clave secreta para firmar y verificar tokens de autenticación JWT |
 | `PORT` | Opcional (`4000` en local) | Puerto donde escucha Express (en Render se asigna de forma automática) |
-| `NODE_ENV` | Render (`production`) | Oculta el stack trace de depuración en respuestas de error de la API |
 | `REACT_APP_API_URL` | Vercel (Production y Preview) | URL pública del backend en Render (sin barra al final) |
 
 > **Nota sobre variables en Vercel:** Las variables que comienzan con `REACT_APP_` se incrustan en el bundle compilado de JavaScript al momento del build. Si se modifica `REACT_APP_API_URL` en Vercel, es necesario realizar un **Redeploy** para que impacte el cambio.
@@ -114,6 +113,30 @@ Se abrirá automáticamente el navegador en `http://localhost:3000`. Si el backe
   - **Build Command:** `npm install`
   - **Start Command:** `npm start`
 - **Vercel (Frontend):** Conectado al repositorio con configuración en `vercel.json` para reescribir todas las rutas hacia `/index.html`, evitando errores 404 al recargar o ingresar de forma directa a rutas de React Router.
+
+## Cumplimiento de la consigna
+
+| Requisito | Dónde se resuelve |
+|---|---|
+| Contraseñas hasheadas con bcrypt | `backend/routes/usuarios.js` (`bcrypt.hash(password, 10)` al registrar y `bcrypt.compare` al loguear); el modelo solo guarda el hash |
+| Autenticación con JWT | `POST /api/usuarios/login` firma un token `{ id, rol }` con `JWT_SECRET` y vencimiento de 1 hora |
+| Middleware de verificación de JWT | `backend/middlewares/auth.js` (`verificarToken` y `soloAdmin`), aplicado a `/api/pedidos`, `/api/usuarios/perfil` y a las escrituras de `/api/productos` |
+| Registro (`/registro`) y Login (`/login`) | `client/src/pages/Registro` y `client/src/pages/Login`, conectados a la API mediante `services/api.js` |
+| Persistencia de sesión | `AuthContext` guarda `{ token, usuario }` en `localStorage` y al recargar valida el token con `GET /api/usuarios/perfil` |
+| Auth y carrito en Context API | `client/src/context/AuthContext.jsx` y `CartContext.jsx`, montados en `index.js` |
+| UI condicional y logout | `Navbar` muestra login/registro o saludo, menú de cuenta y "Cerrar sesión" según el estado; `logout()` borra el token y limpia el estado global |
+| `<ProtectedRoute>` | `/perfil` y `/mis-pedidos` redirigen a `/login`; las rutas `/admin/*` exigen además rol `admin` |
+| Header `Authorization: Bearer <token>` | `services/api.js` lo adjunta en cada petición que recibe `token` |
+| "Finalizar Compra" solo con sesión | `Carrito.jsx` redirige a `/login` si no hay usuario; el `POST /api/pedidos` toma al usuario del JWT, nunca del body |
+| Carrito vacío tras el pedido | `vaciar()` se ejecuta solo cuando el backend confirma el pedido (si falla, el carrito se conserva) |
+| Despliegue | Backend en Render, frontend en Vercel (`vercel.json`) y base en MongoDB Atlas |
+| Secretos en variables de entorno | `MONGO_URI` y `JWT_SECRET` se leen de `process.env`; `.env` está en `.gitignore` y se versionan solo los `.env.example` |
+
+### Notas de seguridad
+
+- El rol se asigna siempre en el servidor (`cliente` por defecto): el registro público no permite crear administradores.
+- El precio y el total de cada pedido se calculan en el backend con los datos de la base, y el descuento de stock se hace dentro de una transacción.
+- El token se guarda en `localStorage` para mantener la sesión al recargar. Es una decisión de simplicidad; una alternativa más estricta sería usar cookies `httpOnly`.
 
 ## API
 
@@ -133,12 +156,12 @@ Se abrirá automáticamente el navegador en `http://localhost:3000`. Si el backe
 
 | Método | Ruta | Descripción | Acceso |
 |---|---|---|---|
-| `POST` | `/api/usuarios/registro` | Registra un nuevo usuario con contraseña encriptada (`bcryptjs`) | Público |
+| `POST` | `/api/usuarios/registro` | Registra un nuevo usuario con contraseña encriptada (`bcrypt`) | Público |
 | `POST` | `/api/usuarios/login` | Autentica credenciales y devuelve token JWT con datos del usuario | Público |
 | `GET` | `/api/usuarios/perfil` | Retorna los datos del usuario logueado | Privado (JWT) |
 | `POST` | `/api/pedidos` | Genera un nuevo pedido asociado al usuario autenticado | Privado (JWT) |
 | `GET` | `/api/pedidos` | Obtiene el historial de pedidos del usuario logueado | Privado (JWT) |
-| cualquier otra | — | Retorna `404` con `{ "message": "Ruta no encontrada: ..." }` | Público |
+| cualquier otra | — | Retorna `404` con `{ "error": "Ruta no encontrada: ..." }` | Público |
 
 Cada petición recibida se registra en consola a través del middleware de logging:
 `[26/11/2026, 14:05] [GET] /api/productos`.
@@ -148,7 +171,7 @@ Cada petición recibida se registra en consola a través del middleware de loggi
 - **`Product` (`backend/models/Products.js`):** `nombre` (String, obligatorio), `categoria` (String / ref Categoria, obligatorio), `precio` (Number, obligatorio, `min: 0`), `stock` (Number, `default: 0`), `imagenUrl` (String), `descripcion` (String), `destacado` (Boolean) y `fabricacion` (`[{ label, value }]`).
 - **`Categoria` (`backend/models/Categoria.js`):** `nombre` (String, único, obligatorio) y `descripcion` (String).
 - **`Usuario` (`backend/models/Usuario.js`):** `nombre` (String, obligatorio), `email` (String, único, obligatorio), `password` (String, con hash seguro) y `rol` (String, enum `cliente` o `admin`).
-- **`Pedido` (`backend/models/Pedido.js`):** referencia a `usuario`, arreglo de `items` (producto, cantidad, precio unitario), `total` calculado en servidor, `fecha` y `estado`.
+- **`Pedido` (`backend/models/Pedido.js`):** referencia a `usuario`, arreglo de `items` (producto, cantidad, precio unitario), `total` calculado en servidor y fechas de creación y actualización (`createdAt` / `updatedAt`).
 
 Los errores se gestionan en un manejador centralizado que responde en formato JSON con el código de estado correspondiente (o `500` por defecto).
 
@@ -175,7 +198,7 @@ Los errores se gestionan en un manejador centralizado que responde en formato JS
 ┌─────────────────────────────────┐      /api/... (JSON + JWT)     ┌─────────────────────────────────┐
 │     client/ (React, :3000)      │ ─────────────────────────────▶ │    backend/ (Express, :4000)    │
 │                                 │ ◀───────────────────────────── │                                 │
-│ AuthContext / CartContext / App │    Respuesta JSON y estados    │ logger ➔ express.json() ➔ cors  │
+│ AuthContext / CartContext / App │    Respuesta JSON y estados    │ cors ➔ logger ➔ express.json()  │
 │ gestión de estado, auth y rutas │       de carga y errores       │ ➔ authMiddleware ➔ Router ➔ DB  │
 └─────────────────────────────────┘                                └─────────────────────────────────┘
 ```
@@ -251,9 +274,9 @@ client/src/
 ## Decisiones tomadas
 
 - **React Router para la navegación:** Cada vista tiene su propia URL, lo que permite utilizar el historial del navegador, recargar cualquier página y compartir enlaces directos.
-- **Autenticación con JWT y Context API:** Las contraseñas se almacenan con hash mediante `bcryptjs`. Los endpoints sensibles en el backend están protegidos por `verificarToken` y `soloAdmin`. En el frontend, `AuthContext` mantiene la sesión en memoria y `ProtectedRoute` protege las vistas privadas y de administrador.
+- **Autenticación con JWT y Context API:** Las contraseñas se almacenan con hash mediante `bcrypt`. Los endpoints sensibles en el backend están protegidos por `verificarToken` y `soloAdmin`. En el frontend, `AuthContext` mantiene la sesión en memoria y `ProtectedRoute` protege las vistas privadas y de administrador.
 - **Carrito centralizado en `CartContext` con persistencia en `localStorage`:** Permite agregar productos, modificar unidades y calcular totales desde cualquier componente sin perder los ítems al recargar o navegar entre páginas.
-- **Proxy en desarrollo y CORS en producción:** `client/package.json` incluye `"proxy": "http://localhost:4000"` para omitir problemas de origen en local, mientras que el backend aplica `cors()` para autorizar peticiones desde el frontend alojado en Vercel.
+- **Proxy en desarrollo y CORS en producción:** `client/package.json` incluye `"proxy": "http://localhost:4000"` para omitir problemas de origen en local, mientras que el backend aplica `cors()` para autorizar peticiones desde el frontend alojado en Vercel (el origen se podría restringir al dominio del frontend como mejora futura).
 - **Cliente HTTP desacoplado en `services/api.js`:** Los componentes no manipulan URLs directas; todas las peticiones `fetch` se resuelven en un módulo centralizado que adjunta el encabezado `Authorization: Bearer <token>` cuando corresponde y maneja respuestas de error (401, 404, 500).
 - **Imágenes optimizadas en `.webp`:** El catálogo utiliza imágenes en formato `.webp` ubicadas en `client/public/assets` para optimizar los tiempos de carga en producción.
 
